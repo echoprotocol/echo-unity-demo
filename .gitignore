@@ -1,6 +1,6 @@
-EchoLib/.vs
+.vs
 *.csproj
 *.sln
-EchoLib/Temp
-EchoLib/obj
-EchoLib/Library
+Temp
+obj
+Library
