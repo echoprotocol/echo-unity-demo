@@ -1,0 +1,6 @@
+EchoLib/.vs
+*.csproj
+*.sln
+EchoLib/Temp
+EchoLib/obj
+EchoLib/Library
