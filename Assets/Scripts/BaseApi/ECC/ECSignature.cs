@@ -3,117 +3,120 @@ using BigI;
 using Tools;
 
 
-namespace Base.ECC {
-
-	public class ECSignature {
-
-		public class Compact {
-
-			public readonly bool compressed;
-			public readonly byte i;
-			public readonly ECSignature signature;
-
-
-			public Compact( bool compressed, byte i, ECSignature signature ) {
-				this.compressed = compressed;
-				this.i = i;
-				this.signature = signature;
-			}
-		}
+namespace Base.ECC
+{
+    public class ECSignature
+    {
+        public class Compact
+        {
+            public readonly bool compressed;
+            public readonly byte i;
+            public readonly ECSignature signature;
 
 
-		readonly BigInteger r;
-		readonly BigInteger s;
+            public Compact(bool compressed, byte i, ECSignature signature)
+            {
+                this.compressed = compressed;
+                this.i = i;
+                this.signature = signature;
+            }
+        }
 
 
-		public BigInteger R {
-			get { return r; }
-		}
+        private readonly BigInteger r;
+        private readonly BigInteger s;
 
-		public BigInteger S {
-			get { return s; }
-		}
 
-		public ECSignature( BigInteger r, BigInteger s ) {
-			this.r = r;
-			this.s = s;
-		}
+        public BigInteger R => r;
 
-		// Import operations
-		public static Compact ParseCompact( byte[] buffer ) {
-			Assert.Equal( buffer.Length, 65, "Invalid signature length: " + buffer.Length );
-			var i = buffer[ 0 ];
-			i -= 27;
+        public BigInteger S => s;
 
-			// At most 3 bits
-			Assert.Equal( i, (i & 7), "Invalid signature parameter" );
-			var compressed = (i & 4) != 0;
+        public ECSignature(BigInteger r, BigInteger s)
+        {
+            this.r = r;
+            this.s = s;
+        }
 
-			// Recovery param only
-			i = ( byte )(i & 3);
+        // Import operations
+        public static Compact ParseCompact(byte[] buffer)
+        {
+            Assert.Equal(buffer.Length, 65, "Invalid signature length: " + buffer.Length);
+            var i = buffer[0];
+            i -= 27;
 
-			var r = BigInteger.FromBuffer( buffer.Slice( 1, 33 ) );
-			var s = BigInteger.FromBuffer( buffer.Slice( 33 ) );
+            // At most 3 bits
+            Assert.Equal(i, (i & 7), "Invalid signature parameter");
+            var compressed = (i & 4) != 0;
 
-			return new Compact( compressed, i, new ECSignature( r, s ) );
-		}
+            // Recovery param only
+            i = (byte)(i & 3);
 
-		public static ECSignature FromDER( byte[] buffer ) {
-			Assert.Equal( buffer[ 0 ], 0x30, "Not a DER sequence" );
-			Assert.Equal( buffer[ 1 ], buffer.Length - 2, "Invalid sequence length" );
+            var r = BigInteger.FromBuffer(buffer.Slice(1, 33));
+            var s = BigInteger.FromBuffer(buffer.Slice(33));
 
-			Assert.Equal( buffer[ 2 ], 0x02, "Expected a DER integer" );
-			var rLength = buffer[ 3 ];
-			Assert.Check( rLength > 0, "R length is zero" );
+            return new Compact(compressed, i, new ECSignature(r, s));
+        }
 
-			var offset = 4 + rLength;
-			Assert.Equal( buffer[ offset ], 0x02, "Expected a DER integer (2)" );
-			var sLength = buffer[ offset + 1 ];
-			Assert.Check( sLength > 0, "S length is zero" );
+        public static ECSignature FromDER(byte[] buffer)
+        {
+            Assert.Equal(buffer[0], 0x30, "Not a DER sequence");
+            Assert.Equal(buffer[1], buffer.Length - 2, "Invalid sequence length");
 
-			var rB = buffer.Slice( 4, offset );
-			var sB = buffer.Slice( offset + 2 );
-			offset += 2 + sLength;
+            Assert.Equal(buffer[2], 0x02, "Expected a DER integer");
+            var rLength = buffer[3];
+            Assert.Check(rLength > 0, "R length is zero");
 
-			if ( rLength > 1 && rB[ 0 ] == 0 ) {
-				Assert.Check( (rB[ 1 ] & 0x80) != 0, "R value excessively padded" );
-			}
+            var offset = 4 + rLength;
+            Assert.Equal(buffer[offset], 0x02, "Expected a DER integer (2)");
+            var sLength = buffer[offset + 1];
+            Assert.Check(sLength > 0, "S length is zero");
 
-			if ( sLength > 1 && sB[ 0 ] == 0 ) {
-				Assert.Check( (sB[ 1 ] & 0x80) != 0, "S value excessively padded" );
-			}
+            var rB = buffer.Slice(4, offset);
+            var sB = buffer.Slice(offset + 2);
+            offset += 2 + sLength;
 
-			Assert.Equal( offset, buffer.Length, "Invalid DER encoding" );
+            if (rLength > 1 && rB[0] == 0)
+            {
+                Assert.Check((rB[1] & 0x80) != 0, "R value excessively padded");
+            }
 
-			var r = BigInteger.FromBuffer( rB );
-			var s = BigInteger.FromBuffer( sB );
+            if (sLength > 1 && sB[0] == 0)
+            {
+                Assert.Check((sB[1] & 0x80) != 0, "S value excessively padded");
+            }
 
-			Assert.Check( r.Sign >= 0, "R value is negative" );
-			Assert.Check( s.Sign >= 0, "S value is negative" );
+            Assert.Equal(offset, buffer.Length, "Invalid DER encoding");
 
-			return new ECSignature( r, s );
-		}
+            var r = BigInteger.FromBuffer(rB);
+            var s = BigInteger.FromBuffer(sB);
 
-		public byte[] ToDER() {
-			var rBa = r.ToDERInteger();
-			var sBa = s.ToDERInteger();
+            Assert.Check(r.Sign >= 0, "R value is negative");
+            Assert.Check(s.Sign >= 0, "S value is negative");
 
-			var sequence = new List<byte>();
+            return new ECSignature(r, s);
+        }
 
-			// INTEGER
-			sequence.Add( 0x02 );
-			sequence.Add( ( byte )rBa.Length );
-			sequence.AddRange( rBa );
+        public byte[] ToDER()
+        {
+            var rBa = r.ToDERInteger();
+            var sBa = s.ToDERInteger();
 
-			// INTEGER
-			sequence.Add( 0x02 );
-			sequence.Add( ( byte )sBa.Length );
-			sequence.AddRange( sBa );
+            var sequence = new List<byte>();
 
-			// SEQUENCE
-			sequence.InsertRange( 0, new byte[] { 0x30, ( byte )sequence.Count } );
+            // INTEGER
+            sequence.Add(0x02);
+            sequence.Add((byte)rBa.Length);
+            sequence.AddRange(rBa);
 
-			return sequence.ToArray();
-		}
-	}
+            // INTEGER
+            sequence.Add(0x02);
+            sequence.Add((byte)sBa.Length);
+            sequence.AddRange(sBa);
+
+            // SEQUENCE
+            sequence.InsertRange(0, new byte[] { 0x30, (byte)sequence.Count });
+
+            return sequence.ToArray();
+        }
+    }
 }

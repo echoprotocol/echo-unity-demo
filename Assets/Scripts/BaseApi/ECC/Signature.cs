@@ -10,22 +10,19 @@ namespace Base.ECC
 {
     public sealed class Signature
     {
-        readonly byte i;
-        readonly BigInteger r;
-        readonly BigInteger s;
+        private readonly byte i;
+        private readonly BigInteger r;
+        private readonly BigInteger s;
 
 
-        Signature(BigInteger r, BigInteger s, byte i)
+        private Signature(BigInteger r, BigInteger s, byte i)
         {
             this.r = r;
             this.s = s;
             this.i = i;
         }
 
-        public static Signature FromHex(string hex)
-        {
-            return FromBuffer(Tool.FromHex(hex));
-        }
+        public static Signature FromHex(string hex) => FromBuffer(Tool.FromHex(hex));
 
         public static Signature FromBuffer(byte[] buffer)
         {
@@ -37,10 +34,7 @@ namespace Base.ECC
             return new Signature(r, s, i);
         }
 
-        public string ToHex()
-        {
-            return Tool.ToHex(ToBuffer());
-        }
+        public string ToHex() => Tool.ToHex(ToBuffer());
 
         public byte[] ToBuffer()
         {
@@ -57,22 +51,16 @@ namespace Base.ECC
             return RecoverPublicKey(hash);
         }
 
-        PublicKey RecoverPublicKey(byte[] bufferSha256)
+        private PublicKey RecoverPublicKey(byte[] bufferSha256)
         {
             var e = BigInteger.FromBuffer(bufferSha256);
             var q = ECDSA.RecoverPublicKey(Curve.SecP256k1, e, new ECSignature(r, s), (byte)((i - 27) & 3));
             return PublicKey.FromPoint(q);
         }
 
-        public static Signature Sign(string str, PrivateKey privateKey)
-        {
-            return SignBuffer(Encoding.UTF8.GetBytes(str), privateKey);
-        }
+        public static Signature Sign(string str, PrivateKey privateKey) => SignBuffer(Encoding.UTF8.GetBytes(str), privateKey);
 
-        public static Signature SignHex(string hex, PrivateKey privateKey)
-        {
-            return SignBuffer(Tool.FromHex(hex), privateKey);
-        }
+        public static Signature SignHex(string hex, PrivateKey privateKey) => SignBuffer(Tool.FromHex(hex), privateKey);
 
         public static Signature SignBuffer(byte[] buffer, PrivateKey privateKey)
         {
@@ -80,7 +68,7 @@ namespace Base.ECC
             return SignBufferSha256(hash, privateKey);
         }
 
-        static Signature SignBufferSha256(byte[] bufferSha256, PrivateKey privateKey)
+        private static Signature SignBufferSha256(byte[] bufferSha256, PrivateKey privateKey)
         {
             if (bufferSha256.Length != 32)
             {
@@ -111,10 +99,7 @@ namespace Base.ECC
             return new Signature(ecSignature.R, ecSignature.S, i);
         }
 
-        public bool VerifyHex(string hex, PublicKey publicKey)
-        {
-            return VerifyBuffer(Tool.FromHex(hex), publicKey);
-        }
+        public bool VerifyHex(string hex, PublicKey publicKey) => VerifyBuffer(Tool.FromHex(hex), publicKey);
 
         public bool VerifyBuffer(byte[] buffer, PublicKey publicKey)
         {
@@ -122,7 +107,7 @@ namespace Base.ECC
             return VerifyHash(hash, publicKey);
         }
 
-        bool VerifyHash(byte[] hash, PublicKey publicKey)
+        private bool VerifyHash(byte[] hash, PublicKey publicKey)
         {
             if (hash.Length != 32)
             {

@@ -32,11 +32,7 @@ namespace Base.Data.Json
 
         protected override JArray Serialize(OperationResultData value)
         {
-            if (value == null)
-            {
-                return new JArray();
-            }
-            return new JArray((int)value.Type, JToken.FromObject(value.Value));
+            return value.IsNull() ? new JArray() : new JArray((int)value.Type, JToken.FromObject(value.Value));
         }
     }
 }

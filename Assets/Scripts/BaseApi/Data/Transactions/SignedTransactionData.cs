@@ -1,19 +1,21 @@
 using Newtonsoft.Json;
 
 
-namespace Base.Data.Transactions {
+namespace Base.Data.Transactions
+{
+    public class SignedTransactionData : TransactionData
+    {
+        [JsonProperty("signatures")]
+        public string[] Signatures { get; set; }
 
-	public class SignedTransactionData : TransactionData {
+        public SignedTransactionData() : base()
+        {
+            Signatures = new string[0];
+        }
 
-		[JsonProperty( "signatures" )]
-		public string[] Signatures { get; set; }
-
-		public SignedTransactionData() : base() {
-			Signatures = new string[ 0 ];
-		}
-
-		public SignedTransactionData( TransactionBuilder builder ) : base( builder ) {
-			Signatures = builder.Signatures;
-		}
-	}
+        public SignedTransactionData(TransactionBuilder builder) : base(builder)
+        {
+            Signatures = builder.Signatures;
+        }
+    }
 }

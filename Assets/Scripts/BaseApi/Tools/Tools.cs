@@ -10,20 +10,20 @@ using Newtonsoft.Json.Linq;
 
 namespace Tools
 {
-    public class JSONDictionary : Dictionary<string, object>
+    public class JsonDictionary : Dictionary<string, object>
     {
-        public JSONDictionary() : base() { }
+        public JsonDictionary() : base() { }
 
-        public JSONDictionary(IDictionary<string, object> fields) : base(fields) { }
+        public JsonDictionary(IDictionary<string, object> fields) : base(fields) { }
     }
 
 
-    public class JSONBuilder
+    public class JsonBuilder
     {
-        StringBuilder builder = new StringBuilder();
+        private StringBuilder builder = new StringBuilder();
 
 
-        public JSONBuilder(JSONDictionary pairs = null)
+        public JsonBuilder(JsonDictionary pairs = null)
         {
             if (!pairs.IsNullOrEmpty())
             {
@@ -31,7 +31,7 @@ namespace Tools
             }
         }
 
-        public JSONBuilder WriteKeyValuePairs(Dictionary<string, object> pairs, params JsonConverter[] converters)
+        public JsonBuilder WriteKeyValuePairs(Dictionary<string, object> pairs, params JsonConverter[] converters)
         {
             foreach (var pair in pairs)
             {
@@ -40,7 +40,7 @@ namespace Tools
             return this;
         }
 
-        public JSONBuilder WriteKeyValuePair(string key, object value, params JsonConverter[] converters)
+        public JsonBuilder WriteKeyValuePair(string key, object value, params JsonConverter[] converters)
         {
             key = JsonConvert.SerializeObject(key);
             value = JsonConvert.SerializeObject(value, converters);
@@ -48,7 +48,7 @@ namespace Tools
             return this;
         }
 
-        public JSONBuilder WriteOptionalStructKeyValuePair<T>(string key, T? nullable, params JsonConverter[] converters) where T : struct
+        public JsonBuilder WriteOptionalStructKeyValuePair<T>(string key, T? nullable, params JsonConverter[] converters) where T : struct
         {
             if (nullable.HasValue)
             {
@@ -57,7 +57,7 @@ namespace Tools
             return this;
         }
 
-        public JSONBuilder WriteOptionalClassKeyValuePair<T>(string key, T nullable, params JsonConverter[] converters) where T : class
+        public JsonBuilder WriteOptionalClassKeyValuePair<T>(string key, T nullable, params JsonConverter[] converters) where T : class
         {
             if (!nullable.IsNull())
             {
@@ -66,7 +66,7 @@ namespace Tools
             return this;
         }
 
-        public JSONBuilder WriteKeyValuesPair<T>(string key, T[] values, Func<T, string> writeItem)
+        public JsonBuilder WriteKeyValuesPair<T>(string key, T[] values, Func<T, string> writeItem)
         {
             if (builder.Length > 0)
             {
@@ -82,29 +82,17 @@ namespace Tools
             return this;
         }
 
-        public string Build()
-        {
-            return new StringBuilder().Append('{').Append(builder.ToString()).Append('}').ToString();
-        }
+        public string Build() => new StringBuilder().Append('{').Append(builder.ToString()).Append('}').ToString();
 
-        public override string ToString()
-        {
-            return Build();
-        }
+        public override string ToString() => Build();
     }
 
 
     public abstract class NullableObject
     {
-        public override string ToString()
-        {
-            return Serialize();
-        }
+        public override string ToString() => Serialize();
 
-        public virtual string Serialize()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
+        public virtual string Serialize() => JsonConvert.SerializeObject(this);
     }
 
 
@@ -127,11 +115,11 @@ namespace Tools
 
     public static class Tool
     {
-        readonly static Dictionary<string, byte> hexLibrary = new Dictionary<string, byte>();
-        readonly static Dictionary<string, byte> binaryLibrary = new Dictionary<string, byte>();
+        private readonly static Dictionary<string, byte> hexLibrary = new Dictionary<string, byte>();
+        private readonly static Dictionary<string, byte> binaryLibrary = new Dictionary<string, byte>();
 
 
-        static Dictionary<string, byte> HexLibrary
+        private static Dictionary<string, byte> HexLibrary
         {
             get
             {
@@ -146,7 +134,7 @@ namespace Tools
             }
         }
 
-        static Dictionary<string, byte> BinaryLibrary
+        private static Dictionary<string, byte> BinaryLibrary
         {
             get
             {
@@ -253,20 +241,11 @@ namespace Tools
             return result.ToArray();
         }
 
-        public static string WrapUInt64(ulong value)
-        {
-            return value.ToString();
-        }
+        public static string WrapUInt64(ulong value) => value.ToString();
 
-        public static string WrapInt64(long value)
-        {
-            return value.ToString();
-        }
+        public static string WrapInt64(long value) => value.ToString();
 
-        public static DateTime ZeroTime()
-        {
-            return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        }
+        public static DateTime ZeroTime() => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public static ByteBuffer ToBuffer(Action<ByteBuffer> serializer)
         {
@@ -275,10 +254,7 @@ namespace Tools
             return buffer;
         }
 
-        public static void PrintException(Exception ex)
-        {
-            PrintException(null, ex);
-        }
+        public static void PrintException(Exception ex) => PrintException(null, ex);
 
         public static void PrintException(string tag, Exception ex)
         {
@@ -311,20 +287,11 @@ namespace Tools
 
     public static class Extensions
     {
-        public static bool IsNull<T>(this T n) where T : class
-        {
-            return n == null;
-        }
+        public static bool IsNull<T>(this T n) where T : class => n == null;
 
-        public static bool IsNullOrEmpty(this JContainer jC)
-        {
-            return jC.IsNull() || jC.Count == 0;
-        }
+        public static bool IsNullOrEmpty(this JContainer jC) => jC.IsNull() || jC.Count == 0;
 
-        public static T ToNullableObject<T>(this JObject jO) where T : class
-        {
-            return jO.IsNull() ? null : jO.ToObject<T>();
-        }
+        public static T ToNullableObject<T>(this JObject jO) where T : class => jO.IsNull() ? null : jO.ToObject<T>();
 
         public static uint Count(this IEnumerable e)
         {
@@ -336,10 +303,7 @@ namespace Tools
             return count;
         }
 
-        public static bool IsNullOrEmpty(this ICollection c)
-        {
-            return c.IsNull() || c.Count == 0;
-        }
+        public static bool IsNullOrEmpty(this ICollection c) => c.IsNull() || c.Count == 0;
 
         public static object[] ToArray(this IList l)
         {
@@ -355,41 +319,20 @@ namespace Tools
             return r;
         }
 
-        public static List<T> OrEmpty<T>(this List<T> l)
-        {
-            return l.Or(new List<T>());
-        }
+        public static List<T> OrEmpty<T>(this List<T> l) => l.Or(new List<T>());
 
-        public static List<T> Or<T>(this List<T> l, List<T> defaultValue)
-        {
-            return l ?? defaultValue;
-        }
+        public static List<T> Or<T>(this List<T> l, List<T> defaultValue) => l ?? defaultValue;
 
-        public static bool IsNullOrEmpty(this Base.Data.SpaceTypeId sti)
-        {
-            return sti.IsNull() || Base.Data.SpaceTypeId.EMPTY.Equals(sti);
-        }
+        public static bool IsNullOrEmpty(this Base.Data.SpaceTypeId sti) => sti.IsNull() || Base.Data.SpaceTypeId.EMPTY.Equals(sti);
 
         #region String
-        public static bool IsNullOrEmpty(this string s)
-        {
-            return string.IsNullOrEmpty(s);
-        }
+        public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
 
-        public static string OrEmpty(this string s)
-        {
-            return s.Or(string.Empty);
-        }
+        public static string OrEmpty(this string s) => s.Or(string.Empty);
 
-        public static string Or(this string s, string defaultValue)
-        {
-            return s ?? defaultValue;
-        }
+        public static string Or(this string s, string defaultValue) => s ?? defaultValue;
 
-        public static string ToNullableString<T>(this T n) where T : class
-        {
-            return n.IsNull() ? null : n.ToString();
-        }
+        public static string ToNullableString<T>(this T n) where T : class => n.IsNull() ? null : n.ToString();
 
         public static string ToString<T>(this List<T> l, string separator = null)
         {
@@ -444,15 +387,9 @@ namespace Tools
             return o.GetType().IsArray;
         }
 
-        public static bool IsNullOrEmpty<T>(this T[] a)
-        {
-            return a.IsNull() || a.Length == 0;
-        }
+        public static bool IsNullOrEmpty<T>(this T[] a) => a.IsNull() || a.Length == 0;
 
-        public static T[] OrEmpty<T>(this T[] a)
-        {
-            return a ?? new T[0];
-        }
+        public static T[] OrEmpty<T>(this T[] a) => a ?? new T[0];
 
         public static T[] Add<T>(this T[] a, T b)
         {
@@ -550,10 +487,7 @@ namespace Tools
             return result;
         }
 
-        public static T[] Slice<T>(this T[] b, int fromIndex = 0)
-        {
-            return b.Slice(fromIndex, b.Length);
-        }
+        public static T[] Slice<T>(this T[] b, int fromIndex = 0) => b.Slice(fromIndex, b.Length);
 
         public static bool DeepEqual<T>(this T[] a, T[] b) where T : struct
         {
@@ -608,23 +542,9 @@ namespace Tools
             return false;
         }
 
-        public static T First<T>(this T[] a) where T : class
-        {
-            if (a.IsNullOrEmpty())
-            {
-                return null;
-            }
-            return a[0];
-        }
+        public static T First<T>(this T[] a) where T : class => a.IsNullOrEmpty() ? null : a[0];
 
-        public static T Last<T>(this T[] a) where T : class
-        {
-            if (a.IsNullOrEmpty())
-            {
-                return null;
-            }
-            return a[a.Length - 1];
-        }
+        public static T Last<T>(this T[] a) where T : class => a.IsNullOrEmpty() ? null : a[a.Length - 1];
 
         public static T Next<T>(this T[] a, T o) where T : class
         {
@@ -660,12 +580,9 @@ namespace Tools
         #endregion
 
         #region DateTime
-        public static bool IsZero(this DateTime dt)
-        {
-            return dt.GetTimeFrom1Jan1970().TotalMilliseconds < 1.0;
-        }
+        public static bool IsZero(this DateTime dt) => dt.GetTimeFrom1Jan1970().TotalMilliseconds < 1.0;
 
-        static TimeSpan GetTimeFrom1Jan1970(this DateTime dt)
+        private static TimeSpan GetTimeFrom1Jan1970(this DateTime dt)
         {
             if (dt.Kind.Equals(DateTimeKind.Utc))
             {

@@ -9,6 +9,7 @@ using Base.Data.Operations;
 using Base.Data.Properties;
 using Base.Data.Transactions;
 using Base.Data.Witnesses;
+using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json.Linq;
 using Promises;
 using Tools;
@@ -21,18 +22,15 @@ namespace Base
     {
         public static event Action<IdObject> OnObjectUpdate;
 
-        readonly static Dictionary<SpaceType, IdObjectDictionary> root = new Dictionary<SpaceType, IdObjectDictionary>();
+        private readonly static Dictionary<SpaceType, IdObjectDictionary> root = new Dictionary<SpaceType, IdObjectDictionary>();
 
 
-        static void ObjectUpdate(IdObject idObject)
+        private static void ObjectUpdate(IdObject idObject)
         {
-            if (!OnObjectUpdate.IsNull())
-            {
-                OnObjectUpdate.Invoke(idObject);
-            }
+            OnObjectUpdate.SafeInvoke(idObject);
         }
 
-        static void ChangeNotify(JToken[] list)
+        private static void ChangeNotify(JToken[] list)
         {
             var notifyList = new List<IdObject>();
             foreach (var item in list)
@@ -57,8 +55,8 @@ namespace Base
                         idObject = item.ToObject<AssetObject>();
                         break;
                     case SpaceType.Witness:
-                    	idObject = item.ToObject<WitnessObject>();
-                    	break;
+                        idObject = item.ToObject<WitnessObject>();
+                        break;
                     case SpaceType.OperationHistory:
                         idObject = item.ToObject<OperationHistoryObject>();
                         break;
@@ -81,8 +79,8 @@ namespace Base
                         idObject = item.ToObject<TransactionObject>();
                         break;
                     case SpaceType.BlockSummary:
-                    	idObject = item.ToObject<BlockSummaryObject>();
-                    	break;
+                        idObject = item.ToObject<BlockSummaryObject>();
+                        break;
                     case SpaceType.AccountTransactionHistory:
                         idObject = item.ToObject<AccountTransactionHistoryObject>();
                         break;
@@ -106,18 +104,18 @@ namespace Base
             }
         }
 
-        static void Add(IdObject idObject)
+        private static void Add(IdObject idObject)
         {
             (root.ContainsKey(idObject.SpaceType) ? root[idObject.SpaceType] : (root[idObject.SpaceType] = new IdObjectDictionary()))[idObject.Id] = idObject;
         }
 
-        static IPromise AddInPromise(IdObject idObject)
+        private static IPromise AddInPromise(IdObject idObject)
         {
             Add(idObject);
             return Promise.Resolved();
         }
 
-        static IPromise Init(DatabaseApi api)
+        private static IPromise Init(DatabaseApi api)
         {
             return Promise.All(
                 api.GetDynamicGlobalProperties().Then(AddInPromise),

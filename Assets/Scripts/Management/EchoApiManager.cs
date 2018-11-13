@@ -6,6 +6,7 @@ using Base.Api.Database;
 using Base.Config;
 using Base.Requests;
 using Base.Responses;
+using CustomTools.Extensions.Core.Action;
 using Promises;
 using Tools;
 using WebSocketSharp;
@@ -22,49 +23,31 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     public static event Action<HistoryApi> OnHistoryApiInitialized;
     public static event Action<CryptoApi> OnCryptoApiInitialized;
 
-    static string chainId = string.Empty;
-    static RequestIdentificator identificators;
+    private static string chainId = string.Empty;
+    private static RequestIdentificator identificators;
 
-    readonly static List<Request> requestBuffer = new List<Request>();
+    private readonly static List<Request> requestBuffer = new List<Request>();
 
     [UnityEngine.SerializeField]
-    bool sendByUpdate = false;
+    private bool sendByUpdate = false;
 
-    DatabaseApi database;
-    NetworkBroadcastApi networkBroadcast;
-    HistoryApi history;
-    CryptoApi crypto;
+    private DatabaseApi database;
+    private NetworkBroadcastApi networkBroadcast;
+    private HistoryApi history;
+    private CryptoApi crypto;
 
 
-    public static string ChainId
-    {
-        get { return chainId.OrEmpty(); }
-    }
+    public static string ChainId => chainId.OrEmpty();
 
-    public static bool CanDoRequest
-    {
-        get { return IsInstanceExist && ConnectionManager.IsConnected; }
-    }
+    public static bool CanDoRequest => IsInstanceExist && ConnectionManager.IsConnected;
 
-    public DatabaseApi Database
-    {
-        get { return database ?? (database = DatabaseApi.Create(this)); }
-    }
+    public DatabaseApi Database => database ?? (database = DatabaseApi.Create(this));
 
-    public NetworkBroadcastApi NetworkBroadcast
-    {
-        get { return networkBroadcast ?? (networkBroadcast = NetworkBroadcastApi.Create(this)); }
-    }
+    public NetworkBroadcastApi NetworkBroadcast => networkBroadcast ?? (networkBroadcast = NetworkBroadcastApi.Create(this));
 
-    public HistoryApi History
-    {
-        get { return history ?? (history = HistoryApi.Create(this)); }
-    }
+    public HistoryApi History => history ?? (history = HistoryApi.Create(this));
 
-    public CryptoApi Crypto
-    {
-        get { return crypto ?? (crypto = CryptoApi.Create(this)); }
-    }
+    public CryptoApi Crypto => crypto ?? (crypto = CryptoApi.Create(this));
 
 
     #region UnityCallbacks
@@ -75,7 +58,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         base.Awake();
     }
 
-    void Update()
+    private void Update()
     {
         UpConnection();
         if (sendByUpdate && CanSend)
@@ -84,7 +67,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         }
     }
 
-    void UpConnection()
+    private void UpConnection()
     {
         if (ConnectionManager.ReadyState.Equals(WebSocketState.Closed) || ConnectionManager.ReadyState.Equals(WebSocketState.Closing))
         {
@@ -92,10 +75,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         }
     }
 
-    bool CanSend
-    {
-        get { return ConnectionManager.ReadyState.Equals(WebSocketState.Open); }
-    }
+    private bool CanSend => ConnectionManager.ReadyState.Equals(WebSocketState.Open);
 
     protected override void OnDestroy()
     {
@@ -103,45 +83,26 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         base.OnDestroy();
     }
 
-    void OnApplicationPause(bool state)
-    {
-    }
-
-    void OnApplicationQuit()
-    {
-        requestBuffer.Clear();
-    }
+    private void OnApplicationQuit() => requestBuffer.Clear();
     #endregion
 
 
     #region Initialization
-    void ConnectionOpened(Response response)
+    private void ConnectionOpened(Response response)
     {
         CustomTools.Console.DebugLog("EchoApiManager class", CustomTools.Console.SetMagentaColor("Regular Callback:"), "ConnectionOpened()");
         InitializeApi(LoginApi.Create(this));
-        response.SendResultData<string>(url =>
-        {
-            if (OnConnectionOpened != null)
-            {
-                OnConnectionOpened.Invoke(url);
-            }
-        });
+        response.SendResultData<string>(url => OnConnectionOpened.SafeInvoke(url));
     }
 
-    void ConnectionClosed(Response response)
+    private void ConnectionClosed(Response response)
     {
         CustomTools.Console.DebugLog("EchoApiManager class", CustomTools.Console.SetMagentaColor("Regular Callback:"), "ConnectionClosed()");
         ResetApi();
-        response.SendResultData<string>(reason =>
-        {
-            if (OnConnectionClosed != null)
-            {
-                OnConnectionClosed.Invoke(reason);
-            }
-        });
+        response.SendResultData<string>(reason => OnConnectionClosed.SafeInvoke(reason));
     }
 
-    void ResetApi()
+    private void ResetApi()
     {
         database = null;
         networkBroadcast = null;
@@ -149,15 +110,9 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         crypto = null;
     }
 
-    void InitializeDone()
-    {
-        if (!OnAllApiInitialized.IsNull())
-        {
-            OnAllApiInitialized.Invoke();
-        }
-    }
+    private void InitializeDone() => OnAllApiInitialized.SafeInvoke();
 
-    void InitializeApi(LoginApi api)
+    private void InitializeApi(LoginApi api)
     {
         api.Login(string.Empty, string.Empty).Then(loginResult =>
         {
@@ -177,53 +132,38 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         });
     }
 
-    IPromise DatabaseApiInitialized(DatabaseApi api)
+    private IPromise DatabaseApiInitialized(DatabaseApi api)
     {
-        return api.GetChainId().Then((Action<string>)SetChainId).Then(result =>
+        return api.GetChainId().Then((Action<string>)SetChainId).Then(result => Repository.SubscribeToNotice(api).Then(() =>
         {
-            return Repository.SubscribeToNotice(api).Then(() =>
-            {
-                if (!OnDatabaseApiInitialized.IsNull())
-                {
-                    OnDatabaseApiInitialized.Invoke(api);
-                }
-                return Promise.Resolved();
-            });
-        });
+            OnDatabaseApiInitialized.SafeInvoke(api);
+            return Promise.Resolved();
+        }));
     }
 
-    IPromise NetworkBroadcastApiInitialized(NetworkBroadcastApi api)
+    private IPromise NetworkBroadcastApiInitialized(NetworkBroadcastApi api)
     {
         return new Promise((resolved, rejected) =>
         {
-            if (!OnNetworkBroadcastApiInitialized.IsNull())
-            {
-                OnNetworkBroadcastApiInitialized.Invoke(api);
-            }
+            OnNetworkBroadcastApiInitialized.SafeInvoke(api);
             resolved();
         });
     }
 
-    IPromise HistoryApiInitialized(HistoryApi api)
+    private IPromise HistoryApiInitialized(HistoryApi api)
     {
         return new Promise((resolved, rejected) =>
         {
-            if (!OnHistoryApiInitialized.IsNull())
-            {
-                OnHistoryApiInitialized.Invoke(api);
-            }
+            OnHistoryApiInitialized.SafeInvoke(api);
             resolved();
         });
     }
 
-    IPromise CryptoApiInitialized(CryptoApi api)
+    private IPromise CryptoApiInitialized(CryptoApi api)
     {
         return new Promise((resolved, rejected) =>
         {
-            if (!OnCryptoApiInitialized.IsNull())
-            {
-                OnCryptoApiInitialized.Invoke(api);
-            }
+            OnCryptoApiInitialized.SafeInvoke(api);
             resolved();
         });
     }
@@ -240,12 +180,9 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         }
     }
 
-    public RequestIdentificator Identificators
-    {
-        get { return identificators; }
-    }
+    public RequestIdentificator Identificators => identificators;
 
-    void InitRegularCallbacks(Connection connection)
+    private void InitRegularCallbacks(Connection connection)
     {
         connection.AddRegular(identificators.OpenId, ConnectionOpened);
         connection.AddRegular(identificators.CloseId, ConnectionClosed);
@@ -253,7 +190,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     #endregion
 
 
-    static void SetChainId(string newChainId)
+    private static void SetChainId(string newChainId)
     {
         newChainId = newChainId.OrEmpty();
         chainId = newChainId;

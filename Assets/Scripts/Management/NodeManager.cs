@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json;
 using Tools;
 using UnityEngine;
@@ -17,11 +18,11 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
 
     public static Action<string> OnSelecteHostChanged;
 
-    const string SELECTED_HOST_KEY = "host";
-    const string HOSTS_LIST_KEY = "hosts_list";
+    private const string SELECTED_HOST_KEY = "host";
+    private const string HOSTS_LIST_KEY = "hosts_list";
 
-    [SerializeField] string[] defaultHosts = new[] { "wss://echo-dev.io/ws" };
-    [SerializeField] bool resetAtStart;
+    [SerializeField] private string[] defaultHosts = new[] { "wss://echo-dev.io/ws" };
+    [SerializeField] private bool resetAtStart;
 
 
     public string[] Urls
@@ -55,10 +56,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         {
             PlayerPrefs.SetString(SELECTED_HOST_KEY, value);
             PlayerPrefs.Save();
-            if (!OnSelecteHostChanged.IsNull())
-            {
-                OnSelecteHostChanged(value);
-            }
+            OnSelecteHostChanged.SafeInvoke(value);
         }
     }
 
@@ -82,12 +80,9 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         }
     }
 
-    void Start()
-    {
-        InitConnection();
-    }
+    private void Start() => InitConnection();
 
-    void ResetAll()
+    private void ResetAll()
     {
         CustomTools.Console.DebugError("NodeManager", "ResetAll()", "Reset all saved hosts.");
         PlayerPrefs.DeleteKey(HOSTS_LIST_KEY);
@@ -95,7 +90,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         PlayerPrefs.Save();
     }
 
-    void InitConnection()
+    private void InitConnection()
     {
         var url = SelecteUrl;
         if (url.IsNull() || (url = url.Trim()).IsNullOrEmpty())
@@ -115,7 +110,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         ConnectionManager.OnConnectionAttemptsDone += ConnectionAttemptsDone;
     }
 
-    void ConnectionAttemptsDone(string url)
+    private void ConnectionAttemptsDone(string url)
     {
         if (IsDefault(url))
         {
@@ -123,7 +118,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         }
     }
 
-    bool Validation(string url)
+    private bool Validation(string url)
     {
         if (!url.StartsWith(ConnectionManager.WSS, StringComparison.Ordinal))
         {
@@ -141,10 +136,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         return true;
     }
 
-    public bool IsDefault(string url)
-    {
-        return !defaultHosts.IsNullOrEmpty() && defaultHosts.Contains(url);
-    }
+    public bool IsDefault(string url) => !defaultHosts.IsNullOrEmpty() && defaultHosts.Contains(url);
 
     public bool ConnectTo(string url, Action<ConnectResult> resultCallback)
     {
@@ -160,7 +152,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         return true;
     }
 
-    IEnumerator TryConnectTo(string url, Action<ConnectResult> resultCallback)
+    private IEnumerator TryConnectTo(string url, Action<ConnectResult> resultCallback)
     {
         var ping = new WWW(ConnectionManager.PingUrl);
         yield return ping;
@@ -171,16 +163,16 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
             if (IsDefault(url) || ping.error.IsNull())
             {
                 ConnectionManager.Instance.ReconnectTo(SelecteUrl = url); // save new host only if them exist
-                resultCallback.Invoke(ConnectResult.Ok);
+                resultCallback.SafeInvoke(ConnectResult.Ok);
             }
             else
             {
-                resultCallback.Invoke(ConnectResult.BadRequest);
+                resultCallback.SafeInvoke(ConnectResult.BadRequest);
             }
         }
         else
         {
-            resultCallback.Invoke(ConnectResult.NoInternet);
+            resultCallback.SafeInvoke(ConnectResult.NoInternet);
         }
     }
 

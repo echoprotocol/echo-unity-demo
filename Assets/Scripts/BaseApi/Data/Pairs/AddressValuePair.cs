@@ -2,17 +2,18 @@
 using Newtonsoft.Json;
 
 
-namespace Base.Data.Pairs {
+namespace Base.Data.Pairs
+{
+    [JsonConverter(typeof(AddressValuePairConverter))]
+    public class AddressValuePair
+    {
+        public string Address { get; private set; }
+        public ushort Value { get; private set; }
 
-	[JsonConverter( typeof( AddressValuePairConverter ) )]
-	public class AddressValuePair {
-
-		public string Address { get; private set; }
-		public ushort Value { get; private set; }
-
-		public AddressValuePair( string address, ushort value ) {
-			Address = address;
-			Value = value;
-		}
-	}
+        public AddressValuePair(string address, ushort value)
+        {
+            Address = address;
+            Value = value;
+        }
+    }
 }

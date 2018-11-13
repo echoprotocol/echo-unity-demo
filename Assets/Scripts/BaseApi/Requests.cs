@@ -12,7 +12,7 @@ namespace Base.Requests
         public const int CLOSE_ID = -2;
         public const int INVALID_ID = 0;
 
-        int currentId;
+        private int currentId;
 
 
         public RequestIdentificator()
@@ -25,26 +25,17 @@ namespace Base.Requests
             currentId = startId;
         }
 
-        public int GenerateNewId()
-        {
-            return ++currentId;
-        }
+        public int GenerateNewId() => ++currentId;
 
-        public int OpenId
-        {
-            get { return OPEN_ID; }
-        }
+        public int OpenId => OPEN_ID;
 
-        public int CloseId
-        {
-            get { return CLOSE_ID; }
-        }
+        public int CloseId => CLOSE_ID;
     }
 
 
     public class Request
     {
-        const string METHOD_NAME = "call";
+        private const string METHOD_NAME = "call";
 
         [JsonProperty("id")]
         public int RequestId { get; private set; }
@@ -67,10 +58,7 @@ namespace Base.Requests
             Debug = debug;
         }
 
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
+        public override string ToString() => JsonConvert.SerializeObject(this);
 
         public void PrintLog()
         {

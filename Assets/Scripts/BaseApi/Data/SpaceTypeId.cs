@@ -43,16 +43,17 @@ namespace Base.Data
         BudgetRecord
     }
 
+
     [JsonConverter(typeof(SpaceTypeIdConverter))]
     public sealed class SpaceTypeId : NullableObject, ISerializeToBuffer, IEquatable<SpaceTypeId>, IComparable<SpaceTypeId>
     {
         public readonly static SpaceTypeId EMPTY = new SpaceTypeId();
 
-        const char TYPE_SEPARATOR = '.';
+        private const char TYPE_SEPARATOR = '.';
 
-        readonly byte space = 0;
-        readonly byte type = 0;
-        readonly uint id = 0;
+        private readonly byte space = 0;
+        private readonly byte type = 0;
+        private readonly uint id = 0;
 
 
         public static SpaceTypeId[] CreateMany(SpaceType spaceType, uint[] ids)
@@ -65,11 +66,7 @@ namespace Base.Data
             return result;
         }
 
-        public static SpaceTypeId CreateOne(SpaceType spaceType, uint id = uint.MinValue)
-        {
-
-            return Create(ToString(spaceType, id));
-        }
+        public static SpaceTypeId CreateOne(SpaceType spaceType, uint id = uint.MinValue) => Create(ToString(spaceType, id));
 
         public static SpaceTypeId Create(string spaceTypeId)
         {
@@ -89,24 +86,18 @@ namespace Base.Data
             );
         }
 
-        SpaceTypeId() { }
+        private SpaceTypeId() { }
 
-        SpaceTypeId(byte space, byte type, uint id)
+        private SpaceTypeId(byte space, byte type, uint id)
         {
             this.space = space;
             this.type = type;
             this.id = id;
         }
 
-        public uint Id
-        {
-            get { return id; }
-        }
+        public uint Id => id;
 
-        public SpaceType SpaceType
-        {
-            get { return SpaceTypeEnumConverter.ConvertFrom(space.ToString() + TYPE_SEPARATOR + type.ToString()); }
-        }
+        public SpaceType SpaceType => SpaceTypeEnumConverter.ConvertFrom(space.ToString() + TYPE_SEPARATOR + type.ToString());
 
         public override string Serialize()
         {
@@ -119,10 +110,7 @@ namespace Base.Data
             return builder.ToString();
         }
 
-        public override int GetHashCode()
-        {
-            return ToString().GetHashCode();
-        }
+        public override int GetHashCode() => ToString().GetHashCode();
 
         public override bool Equals(object obj)
         {
@@ -137,20 +125,14 @@ namespace Base.Data
             return Equals((SpaceTypeId)obj);
         }
 
-        public bool Equals(SpaceTypeId spaceTypeId)
-        {
-            return ToString().Equals(spaceTypeId.ToString());
-        }
+        public bool Equals(SpaceTypeId spaceTypeId) => ToString().Equals(spaceTypeId.ToString());
 
         public int CompareTo(SpaceTypeId other)
         {
             return string.Compare(ToString(), other.ToString(), StringComparison.Ordinal);
         }
 
-        public static int Compare(SpaceTypeId a, SpaceTypeId b)
-        {
-            return a.CompareTo(b);
-        }
+        public static int Compare(SpaceTypeId a, SpaceTypeId b) => a.CompareTo(b);
 
         public static string ToString(SpaceType spaceType, uint id = uint.MinValue)
         {

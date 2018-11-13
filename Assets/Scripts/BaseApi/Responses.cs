@@ -10,20 +10,17 @@ namespace Base.Responses
 {
     public sealed class Response
     {
-        readonly string rawData;
-        readonly JObject jsonObject;
+        private readonly string rawData;
+        private readonly JObject jsonObject;
 
 
-        Response(string rawData)
+        private Response(string rawData)
         {
             jsonObject = JObject.Parse(rawData ?? string.Empty);
             this.rawData = rawData;
         }
 
-        public static Response Parse(string data)
-        {
-            return data.IsNullOrEmpty() ? null : new Response(data);
-        }
+        public static Response Parse(string data) => data.IsNullOrEmpty() ? null : new Response(data);
 
         public void SendResultData<T>(System.Action<T> resolve, System.Action<System.Exception> reject = null, bool isProcessed = true)
         {
@@ -48,20 +45,11 @@ namespace Base.Responses
             IsProcessed = isProcessed;
         }
 
-        bool IsError
-        {
-            get { return Error.IsInstance(jsonObject); }
-        }
+        private bool IsError => Error.IsInstance(jsonObject);
 
-        bool IsResult
-        {
-            get { return Result.IsInstance(jsonObject); }
-        }
+        private bool IsResult => Result.IsInstance(jsonObject);
 
-        bool IsNotice
-        {
-            get { return Notice.IsInstance(jsonObject); }
-        }
+        private bool IsNotice => Notice.IsInstance(jsonObject);
 
         public int RequestId
         {
@@ -85,10 +73,7 @@ namespace Base.Responses
 
         public bool IsProcessed { get; private set; }
 
-        public override string ToString()
-        {
-            return rawData;
-        }
+        public override string ToString() => rawData;
 
         public void PrintLog(string title)
         {
@@ -108,38 +93,26 @@ namespace Base.Responses
             }
         }
 
-        public static Response Open(string url)
-        {
-            return new Response(JsonConvert.SerializeObject(Result.Open(url)));
-        }
+        public static Response Open(string url) => new Response(JsonConvert.SerializeObject(Result.Open(url)));
 
-        public static Response Close(string reason)
-        {
-            return new Response(JsonConvert.SerializeObject(Result.Close(reason)));
-        }
+        public static Response Close(string reason) => new Response(JsonConvert.SerializeObject(Result.Close(reason)));
     }
 
 
     public sealed class Result
     {
-        const string ID_FIELD_KEY = "id";
-        const string RESULT_FIELD_KEY = "result";
+        private const string ID_FIELD_KEY = "id";
+        private const string RESULT_FIELD_KEY = "result";
 
         [JsonProperty(ID_FIELD_KEY)]
-        int id;
+        private int id;
         [JsonProperty(RESULT_FIELD_KEY)]
-        JToken result;
+        private JToken result;
 
 
-        public int ForRequestId
-        {
-            get { return id; }
-        }
+        public int ForRequestId => id;
 
-        public T GetData<T>()
-        {
-            return result.ToObject<T>();
-        }
+        public T GetData<T>() => result.ToObject<T>();
 
         public static Result Open(string url)
         {
@@ -160,7 +133,7 @@ namespace Base.Responses
 
     public sealed class Notice
     {
-        sealed class ParametersConverter : JsonCustomConverter<Parameters, JArray>
+        private sealed class ParametersConverter : JsonCustomConverter<Parameters, JArray>
         {
             protected override Parameters Deserialize(JArray value, System.Type objectType)
             {
@@ -177,15 +150,12 @@ namespace Base.Responses
                 return new Parameters(id, value.ToObject<JToken[]>());
             }
 
-            protected override JArray Serialize(Parameters value)
-            {
-                return new JArray(value.Id, value.Results);
-            }
+            protected override JArray Serialize(Parameters value) => new JArray(value.Id, value.Results);
         }
 
 
         [JsonConverter(typeof(ParametersConverter))]
-        sealed class Parameters
+        private sealed class Parameters
         {
             public int Id { get; private set; }
             public JToken[] Results { get; private set; }
@@ -198,25 +168,19 @@ namespace Base.Responses
         }
 
 
-        const string METHOD_FIELD_KEY = "method";
-        const string NOTICE_FIELD_KEY = "notice";
-        const string PARAMS_FIELD_KEY = "params";
+        private const string METHOD_FIELD_KEY = "method";
+        private const string NOTICE_FIELD_KEY = "notice";
+        private const string PARAMS_FIELD_KEY = "params";
 
         [JsonProperty(METHOD_FIELD_KEY)]
-        string method;
+        private string method;
         [JsonProperty(PARAMS_FIELD_KEY)]
-        Parameters parameters;
+        private Parameters parameters;
 
 
-        public int SubscribeId
-        {
-            get { return parameters.Id; }
-        }
+        public int SubscribeId => parameters.Id;
 
-        public JToken[] Results
-        {
-            get { return parameters.Results; }
-        }
+        public JToken[] Results => parameters.Results;
 
         public static bool IsInstance(JObject jsonObject)
         {
@@ -238,25 +202,19 @@ namespace Base.Responses
         }
 
 
-        const string ID_FIELD_KEY = "id";
-        const string ERROR_FIELD_KEY = "error";
-        const string DATA_FIELD_KEY = "data";
+        private const string ID_FIELD_KEY = "id";
+        private const string ERROR_FIELD_KEY = "error";
+        private const string DATA_FIELD_KEY = "data";
 
         [JsonProperty(ID_FIELD_KEY)]
-        int id;
+        private int id;
         [JsonProperty(ERROR_FIELD_KEY)]
-        JObject data;
+        private JObject data;
 
 
-        public int ForRequestId
-        {
-            get { return id; }
-        }
+        public int ForRequestId => id;
 
-        public WrappedErrorException ToException()
-        {
-            return new WrappedErrorException(this);
-        }
+        public WrappedErrorException ToException() => new WrappedErrorException(this);
 
         public string Data
         {
@@ -267,10 +225,7 @@ namespace Base.Responses
             }
         }
 
-        public override string ToString()
-        {
-            return Data;
-        }
+        public override string ToString() => Data;
 
         public static bool IsInstance(JObject jsonObject)
         {

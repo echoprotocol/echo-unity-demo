@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Base;
 using Base.Requests;
 using Base.Responses;
+using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json.Linq;
 using Tools;
 using UnityEngine;
@@ -12,13 +13,13 @@ using WebSocketSharp;
 
 public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehaviour<ConnectionManager>
 {
-    static public event Action<Connection> OnConnectionChanged;
-    static public event Action<Connection> OnConnectionOpened;
-    static public event Action<Connection> OnConnectionClosed;
-    static public event Action<Connection, Response> OnMessageReceived;
-    static public event Action<string> OnConnectionAttemptsDone;
+    public static event Action<Connection> OnConnectionChanged;
+    public static event Action<Connection> OnConnectionOpened;
+    public static event Action<Connection> OnConnectionClosed;
+    public static event Action<Connection, Response> OnMessageReceived;
+    public static event Action<string> OnConnectionAttemptsDone;
 
-    const int MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE = 20;
+    private const int MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE = 20;
 
     public const string HTTP = "http://";
     public const string WSS = "wss://";
@@ -26,34 +27,25 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
     public const string SEPARATOR = "://";
     public const string DOT = ".";
 
-    [SerializeField] bool pingHostBeforeConnecting = true;
-    [SerializeField] float delayBetweenTryConnect = 5f;
-    [SerializeField] int tryConnectCount = 5;
-    [SerializeField] bool sendFromIndividualThread = false;
+    [SerializeField] private bool pingHostBeforeConnecting = true;
+    [SerializeField] private float delayBetweenTryConnect = 5f;
+    [SerializeField] private int tryConnectCount = 5;
+    [SerializeField] private bool sendFromIndividualThread = false;
 
-    string url = string.Empty;
-    float lastTryConnectTime;
-    int connectAttempts;
-    bool connectProcessing;
+    private string url = string.Empty;
+    private float lastTryConnectTime;
+    private int connectAttempts;
+    private bool connectProcessing;
 
-    static bool lastServerAvaliableFlag;
-    static Connection openConnection;
+    private static bool lastServerAvaliableFlag;
+    private static Connection openConnection;
 
 
-    public static string PingUrl
-    {
-        get { return HTTP + "www.google.com/"; }
-    }
+    public static string PingUrl => HTTP + "www.google.com/";
 
-    void Update()
-    {
-        if (!openConnection.IsNull())
-        {
-            openConnection.DequeuReceivedMessages(MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE);
-        }
-    }
+    private void Update() =>openConnection?.DequeuReceivedMessages(MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE);
 
-    void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
         if (!openConnection.IsNull())
         {
@@ -76,51 +68,36 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
     }
 
     // call when client connect to server successful
-    static void ConnectionOpened(Connection connection)
+    private static void ConnectionOpened(Connection connection)
     {
         CustomTools.Console.DebugLog("Connected to", connection.FullUrl);
-        if (!OnConnectionOpened.IsNull())
-        {
-            OnConnectionOpened(connection);
-        }
+        OnConnectionOpened.SafeInvoke(connection);
     }
 
     // call when client close connection
-    static void ConnectionClosed(Connection connection)
+    private static void ConnectionClosed(Connection connection)
     {
         CustomTools.Console.DebugLog("Connection closed");
-        if (!OnConnectionClosed.IsNull())
-        {
-            OnConnectionClosed(connection);
-        }
+        OnConnectionClosed.SafeInvoke(connection);
     }
 
     // call if received message not find event for processing
-    static void MessageReceived(Connection connection, Response msg)
+    private static void MessageReceived(Connection connection, Response msg)
     {
         CustomTools.Console.DebugLog(CustomTools.Console.SetYellowColor("Received unbinding message:"), CustomTools.Console.SetWhiteColor(msg));
-        if (!OnMessageReceived.IsNull())
-        {
-            OnMessageReceived(connection, msg);
-        }
+        OnMessageReceived.SafeInvoke(connection, msg);
     }
 
-    static public bool IsConnected
+    public static bool IsConnected
     {
         get { return IsServerAvaliable && (openConnection.ReadyState.Equals(WebSocketState.Connecting) || openConnection.ReadyState.Equals(WebSocketState.Open)); }
     }
 
-    static public bool IsServerAvaliable
-    {
-        get { return !openConnection.IsNull() && lastServerAvaliableFlag; }
-    }
+    public static bool IsServerAvaliable => !openConnection.IsNull() && lastServerAvaliableFlag;
 
-    static public WebSocketState ReadyState
-    {
-        get { return IsServerAvaliable ? openConnection.ReadyState : WebSocketState.Closed; }
-    }
+    public static WebSocketState ReadyState => IsServerAvaliable ? openConnection.ReadyState : WebSocketState.Closed;
 
-    static public void DoAll(List<Request> requests)
+    public static void DoAll(List<Request> requests)
     {
         var notSended = new List<Request>(requests);
         foreach (var request in requests)
@@ -138,7 +115,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
         requests.AddRange(notSended);
     }
 
-    static public void Subscribe(string responseTitle, int subscribeId, Action<JToken[]> subscribeCallback, bool debug, bool singleCall = false)
+    public static void Subscribe(string responseTitle, int subscribeId, Action<JToken[]> subscribeCallback, bool debug, bool singleCall = false)
     {
         if (!openConnection.IsNull() && !subscribeCallback.IsNull())
         {
@@ -168,13 +145,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
         }
     }
 
-    static public void Unsubscribe(int subscribeId)
-    {
-        if (!openConnection.IsNull())
-        {
-            openConnection.RemoveRegular(subscribeId);
-        }
-    }
+    public static void Unsubscribe(int subscribeId) => openConnection?.RemoveRegular(subscribeId);
 
     public bool InitConnect()
     {
@@ -232,17 +203,14 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
 
     public void Disconnect(bool resetConnection = false)
     {
-        if (!openConnection.IsNull())
-        {
-            openConnection.Disconnect();
-        }
+        openConnection?.Disconnect();
         if (resetConnection)
         {
             openConnection = null;
         }
     }
 
-    IEnumerator PingAndConnect(string targetHost)
+    private IEnumerator PingAndConnect(string targetHost)
     {
         var parts = targetHost.Split(new[] { SEPARATOR }, StringSplitOptions.None);
         var scheme = parts.First();
@@ -262,7 +230,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
         connectProcessing = false;
     }
 
-    void Connect(string targetHost)
+    private void Connect(string targetHost)
     {
         if (openConnection.IsNull())
         {
@@ -270,10 +238,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
             openConnection.ConnectionOpened += ConnectionOpened;
             openConnection.ConnectionClosed += ConnectionClosed;
             openConnection.MessageReceived += MessageReceived;
-            if (!OnConnectionChanged.IsNull())
-            {
-                OnConnectionChanged(openConnection);
-            }
+            OnConnectionChanged.SafeInvoke(openConnection);
         }
         openConnection.Connect();
     }

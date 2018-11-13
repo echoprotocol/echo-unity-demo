@@ -13,320 +13,371 @@ using Promises;
 using Tools;
 
 
-namespace Base.Data.Transactions {
+namespace Base.Data.Transactions
+{
+    public class TransactionBuilder : NullableObject
+    {
+        public class SignaturesContainer
+        {
+            public PublicKey[] PublicKeys { get; private set; }
+            public object[] Addys { get; private set; }
 
-	public class TransactionBuilder : NullableObject {
-
-		public class SignaturesContainer {
-
-			public PublicKey[] PublicKeys { get; private set; }
-			public object[] Addys { get; private set; }
-
-			public SignaturesContainer( PublicKey[] publicKeys, object[] addys ) {
-				PublicKeys = publicKeys;
-				Addys = addys;
-			}
-		}
-
-
-		protected static DateTime headBlockTime = Tool.ZeroTime();
-
-		ushort referenceBlockNumber = ushort.MinValue;
-		uint referenceBlockPrefix = uint.MinValue;
-		DateTime expiration = Tool.ZeroTime();
-		bool signed = false;
-		byte[] buffer = new byte[ 0 ];
-
-		readonly List<OperationData> operations = new List<OperationData>();
-		readonly List<string> signatures = new List<string>();
-		readonly List<KeyPair> signerKeys = new List<KeyPair>();
+            public SignaturesContainer(PublicKey[] publicKeys, object[] addys)
+            {
+                PublicKeys = publicKeys;
+                Addys = addys;
+            }
+        }
 
 
-		public ushort ReferenceBlockNumber {
-			get { return referenceBlockNumber; }
-		}
+        protected static DateTime headBlockTime = Tool.ZeroTime();
 
-		public uint ReferenceBlockPrefix {
-			get { return referenceBlockPrefix; }
-		}
+        private ushort referenceBlockNumber = ushort.MinValue;
+        private uint referenceBlockPrefix = uint.MinValue;
+        private DateTime expiration = Tool.ZeroTime();
+        private bool signed = false;
+        private byte[] buffer = new byte[0];
 
-		public DateTime Expiration {
-			get { return expiration; }
-		}
+        private readonly List<OperationData> operations = new List<OperationData>();
+        private readonly List<string> signatures = new List<string>();
+        private readonly List<KeyPair> signerKeys = new List<KeyPair>();
 
-		public OperationData[] Operations {
-			get { return operations.ToArray(); }
-		}
 
-		public string[] Signatures {
-			get { return signatures.ToArray(); }
-		}
+        public ushort ReferenceBlockNumber => referenceBlockNumber;
 
-		public TransactionBuilder() { }
+        public uint ReferenceBlockPrefix => referenceBlockPrefix;
 
-		public TransactionBuilder AddOperation( OperationData operation ) {
-			if ( IsFinalized ) {
-				throw new InvalidOperationException( "AddOperation... Already finalized" );
-			}
-			if ( operation.Fee.IsNull() ) {
-				operation.Fee = AssetData.EMPTY;
-			}
-			if ( operation.Type.Equals( ChainTypes.Operation.ProposalCreate ) ) {
-				var proposalCreateOperation = ( ProposalCreateOperationData )operation;
-				if ( proposalCreateOperation.ExpirationTime.IsZero() ) {
-					proposalCreateOperation.ExpirationTime = Tool.ZeroTime().AddSeconds( BaseExpirationSeconds + ChainConfig.ExpireInSecondsProposal );
-				}
-			}
-			operations.Add( operation );
-			return this;
-		}
+        public DateTime Expiration => expiration;
 
-		// Typically this is called automatically just prior to signing. Once finalized this transaction can not be changed.
-		IPromise Finalize() {
-			if ( IsFinalized ) {
-				return Promise.Rejected( new InvalidOperationException( "Finalize... Already finalized" ) );
-			}
-			var dynamicGlobalProperties = SpaceTypeId.CreateOne( SpaceType.DynamicGlobalProperties );
-			return Repository.GetInPromise( dynamicGlobalProperties, () => EchoApiManager.Instance.Database.GetObject<DynamicGlobalPropertiesObject>( dynamicGlobalProperties ) ).Then( FinalizeInPromise );
-		}
+        public OperationData[] Operations => operations.ToArray();
 
-		IPromise FinalizeInPromise( DynamicGlobalPropertiesObject dynamicGlobalProperty ) {
-			headBlockTime = dynamicGlobalProperty.Time;
-			if ( expiration.IsZero() ) {
-				expiration = Tool.ZeroTime().AddSeconds( BaseExpirationSeconds + ChainConfig.ExpireInSeconds );
-			}
-			referenceBlockNumber = ( ushort )dynamicGlobalProperty.HeadBlockNumber;
-			var prefix = Tool.FromHex( dynamicGlobalProperty.HeadBlockId );
-			if ( !BitConverter.IsLittleEndian ) {
-				Array.Reverse( prefix );
-			}
-			referenceBlockPrefix = BitConverter.ToUInt32( prefix, 4 );
-			buffer = new TransactionData( this ).ToBuffer().ToArray();
-			return Promise.Resolved();
-		}
+        public string[] Signatures => signatures.ToArray();
 
-		public string Id {
-			get {
-				if ( !IsFinalized ) {
-					throw new InvalidOperationException( "Not finalized" );
-				}
-				return Tool.ToHex( SHA256.Create().HashAndDispose( buffer ) ).Substring( 0, 40 );
-			}
-		}
+        public TransactionBuilder() { }
 
-		public DateTime SetExpireSeconds( long seconds ) {
-			if ( IsFinalized ) {
-				throw new InvalidOperationException( "SetExpireSeconds... Already finalized" );
-			}
-			return (expiration = Tool.ZeroTime().AddSeconds( BaseExpirationSeconds + seconds ));
-		}
+        public TransactionBuilder AddOperation(OperationData operation)
+        {
+            if (IsFinalized)
+            {
+                throw new InvalidOperationException("AddOperation... Already finalized");
+            }
+            if (operation.Fee.IsNull())
+            {
+                operation.Fee = AssetData.EMPTY;
+            }
+            if (operation.Type.Equals(ChainTypes.Operation.ProposalCreate))
+            {
+                var proposalCreateOperation = (ProposalCreateOperationData)operation;
+                if (proposalCreateOperation.ExpirationTime.IsZero())
+                {
+                    proposalCreateOperation.ExpirationTime = Tool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSecondsProposal);
+                }
+            }
+            operations.Add(operation);
+            return this;
+        }
 
-		// Wraps this transaction in a proposal_create transaction
-		public TransactionBuilder Propose( ProposalCreateOperationData proposalCreateOperation ) {
-			if ( IsFinalized ) {
-				throw new InvalidOperationException( "Propose... Already finalized" );
-			}
-			if ( operations.IsNullOrEmpty() ) {
-				throw new InvalidOperationException( "Propose... Add operation first" );
-			}
-			var proposedOperations = new OperationWrapperData[ operations.Count ];
-			for ( var i = 0; i < operations.Count; i++ ) {
-				proposedOperations[ i ] = new OperationWrapperData { Operation = operations[ i ] };
-			}
-			operations.Clear();
-			signatures.Clear();
-			signerKeys.Clear();
-			proposalCreateOperation.ProposedOperations = proposedOperations;
-			return AddOperation( proposalCreateOperation );
-		}
+        // Typically this is called automatically just prior to signing. Once finalized this transaction can not be changed.
+        private IPromise Finalize()
+        {
+            if (IsFinalized)
+            {
+                return Promise.Rejected(new InvalidOperationException("Finalize... Already finalized"));
+            }
+            var dynamicGlobalProperties = SpaceTypeId.CreateOne(SpaceType.DynamicGlobalProperties);
+            return Repository.GetInPromise(dynamicGlobalProperties, () => EchoApiManager.Instance.Database.GetObject<DynamicGlobalPropertiesObject>(dynamicGlobalProperties)).Then(FinalizeInPromise);
+        }
 
-		public bool HasProposedOperation {
-			get { return operations.Exists( o => o.Type.Equals( ChainTypes.Operation.ProposalCreate ) ); }
-		}
+        private IPromise FinalizeInPromise(DynamicGlobalPropertiesObject dynamicGlobalProperty)
+        {
+            headBlockTime = dynamicGlobalProperty.Time;
+            if (expiration.IsZero())
+            {
+                expiration = Tool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSeconds);
+            }
+            referenceBlockNumber = (ushort)dynamicGlobalProperty.HeadBlockNumber;
+            var prefix = Tool.FromHex(dynamicGlobalProperty.HeadBlockId);
+            if (!BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(prefix);
+            }
+            referenceBlockPrefix = BitConverter.ToUInt32(prefix, 4);
+            buffer = new TransactionData(this).ToBuffer().ToArray();
+            return Promise.Resolved();
+        }
 
-		// Optional: the fees can be obtained from the witness node
-		public static IPromise<TransactionBuilder> SetRequiredFees( TransactionBuilder builder, SpaceTypeId asset = null ) {
-			var feePool = 0L;
-			if ( builder.IsFinalized ) {
-				throw new InvalidOperationException( "SetRequiredFees... Already finalized" );
-			}
-			if ( builder.operations.IsNullOrEmpty() ) {
-				throw new InvalidOperationException( "SetRequiredFees... Add operation first" );
-			}
-			var ops = new OperationData[ builder.operations.Count ];
-			for ( var i = 0; i < builder.operations.Count; i++ ) {
-				ops[ i ] = builder.operations[ i ].Clone();
-			}
-			var zeroAsset = SpaceTypeId.CreateOne( SpaceType.Asset );
-			if ( asset.IsNull() ) {
-				var firstFee = ops[ 0 ].Fee;
-				if ( !firstFee.IsNull() && !firstFee.Asset.IsNullOrEmpty() ) {
-					asset = firstFee.Asset;
-				} else {
-					asset = zeroAsset;
-				}
-			}
+        public string Id
+        {
+            get
+            {
+                if (!IsFinalized)
+                {
+                    throw new InvalidOperationException("Not finalized");
+                }
+                return Tool.ToHex(SHA256.Create().HashAndDispose(buffer)).Substring(0, 40);
+            }
+        }
 
-			var promises = new List<IPromise<object>>();
-			promises.Add( EchoApiManager.Instance.Database.GetRequiredFees( ops, asset.Id ).Then<object>( feesData => feesData ) );
+        public DateTime SetExpireSeconds(long seconds)
+        {
+            if (IsFinalized)
+            {
+                throw new InvalidOperationException("SetExpireSeconds... Already finalized");
+            }
+            return expiration = Tool.ZeroTime().AddSeconds(BaseExpirationSeconds + seconds);
+        }
 
-			if ( !asset.Equals( zeroAsset ) ) {
-				// This handles the fallback to paying fees in BTS if the fee pool is empty.
-				promises.Add( EchoApiManager.Instance.Database.GetRequiredFees( ops, zeroAsset.Id ).Then<object>( coreFeesData => coreFeesData ) );
-				promises.Add( Repository.GetInPromise( asset, () => EchoApiManager.Instance.Database.GetAsset( asset.Id ) ).Then<object>( assetObject => assetObject ) );
-			}
+        // Wraps this transaction in a proposal_create transaction
+        public TransactionBuilder Propose(ProposalCreateOperationData proposalCreateOperation)
+        {
+            if (IsFinalized)
+            {
+                throw new InvalidOperationException("Propose... Already finalized");
+            }
+            if (operations.IsNullOrEmpty())
+            {
+                throw new InvalidOperationException("Propose... Add operation first");
+            }
+            var proposedOperations = new OperationWrapperData[operations.Count];
+            for (var i = 0; i < operations.Count; i++)
+            {
+                proposedOperations[i] = new OperationWrapperData { Operation = operations[i] };
+            }
+            operations.Clear();
+            signatures.Clear();
+            signerKeys.Clear();
+            proposalCreateOperation.ProposedOperations = proposedOperations;
+            return AddOperation(proposalCreateOperation);
+        }
 
-			return Promise<object>.All( promises.ToArray() ).Then( results => {
-				var list = new List<object>( results ).ToArray();
+        public bool HasProposedOperation => operations.Exists(o => o.Type.Equals(ChainTypes.Operation.ProposalCreate));
 
-				var feesData = list[ 0 ] as AssetData[];
-				var coreFeesData = (list.Length > 1) ? (list[ 1 ] as AssetData[]) : null;
-				var assetObject = (list.Length > 2) ? (list[ 2 ] as AssetObject) : null;
+        // Optional: the fees can be obtained from the witness node
+        public static IPromise<TransactionBuilder> SetRequiredFees(TransactionBuilder builder, SpaceTypeId asset = null)
+        {
+            var feePool = 0L;
+            if (builder.IsFinalized)
+            {
+                throw new InvalidOperationException("SetRequiredFees... Already finalized");
+            }
+            if (builder.operations.IsNullOrEmpty())
+            {
+                throw new InvalidOperationException("SetRequiredFees... Add operation first");
+            }
+            var ops = new OperationData[builder.operations.Count];
+            for (var i = 0; i < builder.operations.Count; i++)
+            {
+                ops[i] = builder.operations[i].Clone();
+            }
+            var zeroAsset = SpaceTypeId.CreateOne(SpaceType.Asset);
+            if (asset.IsNull())
+            {
+                var firstFee = ops[0].Fee;
+                if (!firstFee.IsNull() && !firstFee.Asset.IsNullOrEmpty())
+                {
+                    asset = firstFee.Asset;
+                }
+                else
+                {
+                    asset = zeroAsset;
+                }
+            }
 
-				var dynamicPromise = (!asset.Equals( zeroAsset ) && !asset.IsNull()) ?
-					EchoApiManager.Instance.Database.GetObject<AssetDynamicDataObject>( assetObject.DynamicAssetData ) : Promise<AssetDynamicDataObject>.Resolved( null );
+            var promises = new List<IPromise<object>>();
+            promises.Add(EchoApiManager.Instance.Database.GetRequiredFees(ops, asset.Id).Then<object>(feesData => feesData));
 
-				return dynamicPromise.Then( dynamicObject => {
-					if ( !asset.Equals( zeroAsset ) ) {
-						feePool = !dynamicObject.IsNull() ? dynamicObject.FeePool : 0L;
-						var totalFees = 0L;
-						for ( var j = 0; j < coreFeesData.Length; j++ ) {
-							totalFees += coreFeesData[ j ].Amount;
-						}
-						if ( totalFees > feePool ) {
-							feesData = coreFeesData;
-							asset = zeroAsset;
-						}
-					}
+            if (!asset.Equals(zeroAsset))
+            {
+                // This handles the fallback to paying fees in BTS if the fee pool is empty.
+                promises.Add(EchoApiManager.Instance.Database.GetRequiredFees(ops, zeroAsset.Id).Then<object>(coreFeesData => coreFeesData));
+                promises.Add(Repository.GetInPromise(asset, () => EchoApiManager.Instance.Database.GetAsset(asset.Id)).Then<object>(assetObject => assetObject));
+            }
 
-					// Proposed transactions need to be flattened
-					var flatAssets = new List<AssetData>();
-					Action<object> flatten = null;
-					flatten = obj => {
-						if ( obj.IsArray() ) {
-							var array = obj as IList;
-							for ( var k = 0; k < array.Count; k++ ) {
-								flatten( array[ k ] );
-							}
-						} else {
-							flatAssets.Add( ( AssetData )obj );
-						}
-					};
-					flatten( feesData.OrEmpty() );
+            return Promise<object>.All(promises.ToArray()).Then(results =>
+            {
+                var list = new List<object>(results).ToArray();
 
-					var assetIndex = 0;
+                var feesData = list[0] as AssetData[];
+                var coreFeesData = (list.Length > 1) ? (list[1] as AssetData[]) : null;
+                var assetObject = (list.Length > 2) ? (list[2] as AssetObject) : null;
 
-					Action<OperationData> setFee = null;
-					setFee = operation => {
-						if ( operation.Fee.IsNull() || operation.Fee.Amount == 0L ) {
-							operation.Fee = flatAssets[ assetIndex ];
-						}
-						assetIndex++;
-						if ( operation.Type.Equals( ChainTypes.Operation.ProposalCreate ) ) {
-							var proposedOperations = (operation as ProposalCreateOperationData).ProposedOperations;
-							for ( var y = 0; y < proposedOperations.Length; y++ ) {
-								setFee( proposedOperations[ y ].Operation );
-							}
-						}
-					};
-					for ( var i = 0; i < builder.operations.Count; i++ ) {
-						setFee( builder.operations[ i ] );
-					}
-				} );
-			} ).Then( results => Promise<TransactionBuilder>.Resolved( builder ) );
-		}
+                var dynamicPromise = (!asset.Equals(zeroAsset) && !asset.IsNull()) ?
+                    EchoApiManager.Instance.Database.GetObject<AssetDynamicDataObject>(assetObject.DynamicAssetData) : Promise<AssetDynamicDataObject>.Resolved(null);
 
-		public IPromise<SignaturesContainer> GetPotentialSignatures() {
-			var signedTransaction = new SignedTransactionData( this );
-			return Promise<object[]>.All(
-				EchoApiManager.Instance.Database.GetPotentialSignatures( signedTransaction ).Then<object[]>( keys => keys ),
-				EchoApiManager.Instance.Database.GetPotentialAddressSignatures( signedTransaction ).Then<object[]>( addresses => addresses )
-			).Then( results => {
-				return new SignaturesContainer( results.First() as PublicKey[], results.Last() as object[] );
-			} );
-		}
+                return dynamicPromise.Then(dynamicObject =>
+                {
+                    if (!asset.Equals(zeroAsset))
+                    {
+                        feePool = !dynamicObject.IsNull() ? dynamicObject.FeePool : 0L;
+                        var totalFees = 0L;
+                        for (var j = 0; j < coreFeesData.Length; j++)
+                        {
+                            totalFees += coreFeesData[j].Amount;
+                        }
+                        if (totalFees > feePool)
+                        {
+                            feesData = coreFeesData;
+                            asset = zeroAsset;
+                        }
+                    }
 
-		public IPromise<PublicKey[]> GetRequiredSignatures( PublicKey[] availableKeys ) {
-			if ( availableKeys.IsNullOrEmpty() ) {
-				return Promise<PublicKey[]>.Resolved( new PublicKey[ 0 ] );
-			}
-			var signedTransaction = new SignedTransactionData( this );
-			return EchoApiManager.Instance.Database.GetRequiredSignatures( signedTransaction, availableKeys );
-		}
+                    // Proposed transactions need to be flattened
+                    var flatAssets = new List<AssetData>();
+                    Action<object> flatten = null;
+                    flatten = obj =>
+                    {
+                        if (obj.IsArray())
+                        {
+                            var array = obj as IList;
+                            for (var k = 0; k < array.Count; k++)
+                            {
+                                flatten(array[k]);
+                            }
+                        }
+                        else
+                        {
+                            flatAssets.Add((AssetData)obj);
+                        }
+                    };
+                    flatten(feesData.OrEmpty());
 
-		public TransactionBuilder AddSigner( KeyPair key ) {
-			if ( signed ) {
-				throw new InvalidOperationException( "AddSigner... Already signed" );
-			}
-			// prevent duplicates
-			if ( !signerKeys.Contains( key ) ) {
-				signerKeys.Add( key );
-			}
-			return this;
-		}
+                    var assetIndex = 0;
 
-		void Sign() {
-			if ( !IsFinalized ) {
-				throw new InvalidOperationException( "Sign... Not finalized" );
-			}
-			if ( signed ) {
-				throw new InvalidOperationException( "Sign... Already signed" );
-			}
-			if ( signerKeys.IsNullOrEmpty() ) {
-				throw new InvalidOperationException( "Sign... Transaction was not signed. Do you have a private key?" );
-			}
-			foreach ( var key in signerKeys ) {
-				signatures.Add( Tool.ToHex( Signature.SignBuffer( Tool.FromHex( EchoApiManager.ChainId ).Concat( buffer.OrEmpty() ), key.Private ).ToBuffer() ) );
-			}
-			signerKeys.Clear();
-			signed = true;
-		}
+                    Action<OperationData> setFee = null;
+                    setFee = operation =>
+                    {
+                        if (operation.Fee.IsNull() || operation.Fee.Amount == 0L)
+                        {
+                            operation.Fee = flatAssets[assetIndex];
+                        }
+                        assetIndex++;
+                        if (operation.Type.Equals(ChainTypes.Operation.ProposalCreate))
+                        {
+                            var proposedOperations = (operation as ProposalCreateOperationData).ProposedOperations;
+                            for (var y = 0; y < proposedOperations.Length; y++)
+                            {
+                                setFee(proposedOperations[y].Operation);
+                            }
+                        }
+                    };
+                    for (var i = 0; i < builder.operations.Count; i++)
+                    {
+                        setFee(builder.operations[i]);
+                    }
+                });
+            }).Then(results => Promise<TransactionBuilder>.Resolved(builder));
+        }
 
-		public override string Serialize() {
-			return new SignedTransactionData( this ).Serialize();
-		}
+        public IPromise<SignaturesContainer> GetPotentialSignatures()
+        {
+            var signedTransaction = new SignedTransactionData(this);
+            return Promise<object[]>.All(
+                EchoApiManager.Instance.Database.GetPotentialSignatures(signedTransaction).Then<object[]>(keys => keys),
+                EchoApiManager.Instance.Database.GetPotentialAddressSignatures(signedTransaction).Then<object[]>(addresses => addresses)
+            ).Then(results =>
+            {
+                return new SignaturesContainer(results.First() as PublicKey[], results.Last() as object[]);
+            });
+        }
 
-		public bool IsFinalized {
-			get { return !buffer.IsNullOrEmpty(); }
-		}
+        public IPromise<PublicKey[]> GetRequiredSignatures(PublicKey[] availableKeys)
+        {
+            if (availableKeys.IsNullOrEmpty())
+            {
+                return Promise<PublicKey[]>.Resolved(new PublicKey[0]);
+            }
+            var signedTransaction = new SignedTransactionData(this);
+            return EchoApiManager.Instance.Database.GetRequiredSignatures(signedTransaction, availableKeys);
+        }
 
-		public IPromise Broadcast( Action<JToken[]> resultCallback ) {
-			if ( IsFinalized ) {
-				return BroadcastTransaction( this, resultCallback );
-			}
-			return Finalize().Then( () => BroadcastTransaction( this, resultCallback ) );
-		}
+        public TransactionBuilder AddSigner(KeyPair key)
+        {
+            if (signed)
+            {
+                throw new InvalidOperationException("AddSigner... Already signed");
+            }
+            // prevent duplicates
+            if (!signerKeys.Contains(key))
+            {
+                signerKeys.Add(key);
+            }
+            return this;
+        }
 
-		static double BaseExpirationSeconds {
-			get {
-				var headBlockSeconds = Math.Ceiling( headBlockTime.GetTimeFrom1Jan1970AtMilliseconds() / 1000.0 );
-				var nowSeconds = Math.Ceiling( DateTime.UtcNow.GetTimeFrom1Jan1970AtMilliseconds() / 1000.0 );
-				// The head block time should be updated every 3 seconds.  If it isn't
-				// then help the transaction to expire (use headBlockSeconds)
-				if ( nowSeconds - headBlockSeconds > 30.0 ) {
-					return headBlockSeconds;
-				}
-				// If the user's clock is very far behind, use the head block time.
-				return Math.Max( nowSeconds, headBlockSeconds );
-			}
-		}
+        private void Sign()
+        {
+            if (!IsFinalized)
+            {
+                throw new InvalidOperationException("Sign... Not finalized");
+            }
+            if (signed)
+            {
+                throw new InvalidOperationException("Sign... Already signed");
+            }
+            if (signerKeys.IsNullOrEmpty())
+            {
+                throw new InvalidOperationException("Sign... Transaction was not signed. Do you have a private key?");
+            }
+            foreach (var key in signerKeys)
+            {
+                signatures.Add(Tool.ToHex(Signature.SignBuffer(Tool.FromHex(EchoApiManager.ChainId).Concat(buffer.OrEmpty()), key.Private).ToBuffer()));
+            }
+            signerKeys.Clear();
+            signed = true;
+        }
 
-		static IPromise BroadcastTransaction( TransactionBuilder transactionBuilder, Action<JToken[]> resultCallback ) {
-			return new Promise( ( resolve, reject ) => {
-				if ( !transactionBuilder.signed ) {
-					transactionBuilder.Sign();
-				}
-				if ( !transactionBuilder.IsFinalized ) {
-					throw new InvalidOperationException( "Not finalized" );
-				}
-				if ( transactionBuilder.signatures.IsNullOrEmpty() ) {
-					throw new InvalidOperationException( "Not signed" );
-				}
-				if ( transactionBuilder.operations.IsNullOrEmpty() ) {
-					throw new InvalidOperationException( "No operations" );
-				}
-				EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback( resultCallback, new SignedTransactionData( transactionBuilder ) ).Then( resolve ).Catch( reject );
-			} );
-		}
-	}
+        public override string Serialize() => new SignedTransactionData(this).Serialize();
+
+        public bool IsFinalized => !buffer.IsNullOrEmpty();
+
+        public IPromise Broadcast(Action<JToken[]> resultCallback)
+        {
+            if (IsFinalized)
+            {
+                return BroadcastTransaction(this, resultCallback);
+            }
+            return Finalize().Then(() => BroadcastTransaction(this, resultCallback));
+        }
+
+        private static double BaseExpirationSeconds
+        {
+            get
+            {
+                var headBlockSeconds = Math.Ceiling(headBlockTime.GetTimeFrom1Jan1970AtMilliseconds() / 1000.0);
+                var nowSeconds = Math.Ceiling(DateTime.UtcNow.GetTimeFrom1Jan1970AtMilliseconds() / 1000.0);
+                // The head block time should be updated every 3 seconds.  If it isn't
+                // then help the transaction to expire (use headBlockSeconds)
+                if (nowSeconds - headBlockSeconds > 30.0)
+                {
+                    return headBlockSeconds;
+                }
+                // If the user's clock is very far behind, use the head block time.
+                return Math.Max(nowSeconds, headBlockSeconds);
+            }
+        }
+
+        private static IPromise BroadcastTransaction(TransactionBuilder transactionBuilder, Action<JToken[]> resultCallback)
+        {
+            return new Promise((resolve, reject) =>
+            {
+                if (!transactionBuilder.signed)
+                {
+                    transactionBuilder.Sign();
+                }
+                if (!transactionBuilder.IsFinalized)
+                {
+                    throw new InvalidOperationException("Not finalized");
+                }
+                if (transactionBuilder.signatures.IsNullOrEmpty())
+                {
+                    throw new InvalidOperationException("Not signed");
+                }
+                if (transactionBuilder.operations.IsNullOrEmpty())
+                {
+                    throw new InvalidOperationException("No operations");
+                }
+                EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(resultCallback, new SignedTransactionData(transactionBuilder)).Then(resolve).Catch(reject);
+            });
+        }
+    }
 }

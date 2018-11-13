@@ -4,37 +4,35 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
-namespace Base.Data.Operations {
+namespace Base.Data.Operations
+{
+    public sealed class VoidOperationResultData : OperationResultData
+    {
+        private object value;
 
-	public sealed class VoidOperationResultData : OperationResultData {
 
-		object value;
+        public override object Value => value;
 
+        public override ChainTypes.OperationResult Type => ChainTypes.OperationResult.Void;
 
-		public override object Value {
-			get { return value; }
-		}
+        public VoidOperationResultData()
+        {
+            value = new object();
+        }
 
-		public override ChainTypes.OperationResult Type {
-			get { return ChainTypes.OperationResult.Void; }
-		}
+        public override ByteBuffer ToBufferRaw(ByteBuffer buffer = null)
+        {
+            return buffer ?? new ByteBuffer(ByteBuffer.LITTLE_ENDING);
+        }
 
-		public VoidOperationResultData() {
-			value = new object();
-		}
+        public override string Serialize() => JsonConvert.SerializeObject(value);
 
-		public override ByteBuffer ToBufferRaw( ByteBuffer buffer = null ) {
-			return buffer ?? new ByteBuffer( ByteBuffer.LITTLE_ENDING );
-		}
-
-		public override string Serialize() {
-			return JsonConvert.SerializeObject( value );
-		}
-
-		public static VoidOperationResultData Create( JToken value ) {
-			var instance = new VoidOperationResultData();
-			instance.value = value.ToObject<object>();
-			return instance;
-		}
-	}
+        public static VoidOperationResultData Create(JToken value)
+        {
+            return new VoidOperationResultData
+            {
+                value = value.ToObject<object>()
+            };
+        }
+    }
 }

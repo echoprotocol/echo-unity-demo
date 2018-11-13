@@ -75,11 +75,7 @@ namespace Base.Data.Json
 
         protected override JArray Serialize(FeeParametersData value)
         {
-            if (value == null)
-            {
-                return new JArray();
-            }
-            return new JArray((int)value.Type, JObject.Parse(value.ToString()));
+            return value.IsNull() ? new JArray() : new JArray((int)value.Type, JObject.Parse(value.ToString()));
         }
     }
 }

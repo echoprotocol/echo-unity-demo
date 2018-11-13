@@ -8,19 +8,19 @@ namespace Buffers
 {
     public class ByteBuffer
     {
-        const int BYTE_SIZE = 1;
-        const int SHORT_SIZE = 2;
-        const int INT_SIZE = 4;
-        const int LONG_SIZE = 8;
-        const int DOUBLE_SIZE = 8;
+        private const int BYTE_SIZE = 1;
+        private const int SHORT_SIZE = 2;
+        private const int INT_SIZE = 4;
+        private const int LONG_SIZE = 8;
+        private const int DOUBLE_SIZE = 8;
 
         public const bool LITTLE_ENDING = true;
         public const bool BIG_ENDING = false;
 
-        const bool DEFAULT_ENDING = BIG_ENDING;
+        private const bool DEFAULT_ENDING = BIG_ENDING;
 
-        bool littleEndian = DEFAULT_ENDING;
-        Bytes buffer = new Bytes();
+        private bool littleEndian = DEFAULT_ENDING;
+        private Bytes buffer = new Bytes();
 
 
         // Zigzag encodes a signed 32bit integer so that it can be effectively used with varint encoding.
@@ -36,7 +36,7 @@ namespace Buffers
         }
 
         // Calculates the actual number of bytes required to store a 32bit base 128 variable-length integer.
-        static int CalculateVarint32(int n)
+        private static int CalculateVarint32(int n)
         {
             // ref: src/google/protobuf/io/coded_stream.cc
             var value = (uint)n;
@@ -52,10 +52,7 @@ namespace Buffers
             this.littleEndian = littleEndian;
         }
 
-        public byte[] ToArray()
-        {
-            return buffer.ToArray();
-        }
+        public byte[] ToArray() => buffer.ToArray();
 
         public override string ToString()
         {
@@ -67,15 +64,9 @@ namespace Buffers
             CustomTools.Console.Log(new StringBuilder().Append('[').Append(ToString()).Append(']').ToString());
         }
 
-        public string ToHex()
-        {
-            return buffer.IsNullOrEmpty() ? string.Empty : Tool.ToHex(ToArray());
-        }
+        public string ToHex() => buffer.IsNullOrEmpty() ? string.Empty : Tool.ToHex(ToArray());
 
-        public string ToBinary()
-        {
-            return buffer.IsNullOrEmpty() ? string.Empty : Tool.ToBinary(ToArray());
-        }
+        public string ToBinary() => buffer.IsNullOrEmpty() ? string.Empty : Tool.ToBinary(ToArray());
 
         #region bool
         // Writes a boolean.
@@ -86,10 +77,7 @@ namespace Buffers
         }
 
         // Reads a boolean.
-        public bool ReadBool()
-        {
-            return ReadUInt8() > 0;
-        }
+        public bool ReadBool() => ReadUInt8() > 0;
         #endregion
 
         #region byte
@@ -159,10 +147,7 @@ namespace Buffers
         }
 
         // Writes a zig-zag encoded (signed) 32bit base 128 variable-length integer.
-        public int WriteVarInt32ZigZag(int value)
-        {
-            return WriteVarInt32((int)ZigZagEncode32(value));
-        }
+        public int WriteVarInt32ZigZag(int value) => WriteVarInt32((int)ZigZagEncode32(value));
 
         // Writes a 32bit unsigned integer.
         public ByteBuffer WriteUInt32(uint value)
@@ -206,10 +191,7 @@ namespace Buffers
 
         #region long
         // Writes a 64bit signed integer.
-        public ByteBuffer WriteInt64(string value)
-        {
-            return WriteInt64(Convert.ToInt64(value));
-        }
+        public ByteBuffer WriteInt64(string value) => WriteInt64(Convert.ToInt64(value));
 
         public ByteBuffer WriteInt64(long value)
         {
@@ -237,10 +219,7 @@ namespace Buffers
         }
 
         // Writes a 64bit unsigned integer.
-        public ByteBuffer WriteUInt64(string value)
-        {
-            return WriteUInt64(Convert.ToUInt64(value));
-        }
+        public ByteBuffer WriteUInt64(string value) => WriteUInt64(Convert.ToUInt64(value));
 
         public ByteBuffer WriteUInt64(ulong value)
         {

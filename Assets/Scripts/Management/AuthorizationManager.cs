@@ -7,6 +7,7 @@ using Base.Data.Accounts;
 using Base.Data.Pairs;
 using Base.Data.Transactions;
 using Base.ECC;
+using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json.Linq;
 using Promises;
 using Tools;
@@ -54,7 +55,7 @@ public sealed class AuthorizationManager : CustomTools.Singleton.SingletonMonoBe
 
     public static event Action<AuthorizationData> OnAuthorizationChanged;
 
-    AuthorizationData authorization;
+    private AuthorizationData authorization;
 
     public AuthorizationData Authorization
     {
@@ -64,10 +65,7 @@ public sealed class AuthorizationManager : CustomTools.Singleton.SingletonMonoBe
             if (authorization != value)
             {
                 authorization = value;
-                if (!OnAuthorizationChanged.IsNull())
-                {
-                    OnAuthorizationChanged.Invoke(authorization);
-                }
+                OnAuthorizationChanged.SafeInvoke(authorization);
             }
         }
     }
@@ -84,7 +82,7 @@ public sealed class AuthorizationManager : CustomTools.Singleton.SingletonMonoBe
         base.OnDestroy();
     }
 
-    void EchoApiManager_OnDatabaseApiInitialized(DatabaseApi api)
+    private void EchoApiManager_OnDatabaseApiInitialized(DatabaseApi api)
     {
         // TODO: check saved authorization
     }
@@ -155,13 +153,7 @@ public sealed class AuthorizationManager : CustomTools.Singleton.SingletonMonoBe
         }).Catch(reject)).Catch(reject));
     }
 
-    public bool IsAuthorized
-    {
-        get { return !Authorization.IsNull(); }
-    }
+    public bool IsAuthorized => !Authorization.IsNull();
 
-    public UserNameFullAccountDataPair UserData
-    {
-        get { return IsAuthorized ? Authorization.UserNameData : null; }
-    }
+    public UserNameFullAccountDataPair UserData => IsAuthorized ? Authorization.UserNameData : null;
 }
