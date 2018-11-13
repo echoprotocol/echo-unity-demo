@@ -2,25 +2,25 @@
 using Promises;
 
 
-namespace Base.Api.Database {
+namespace Base.Api.Database
+{
+    public sealed class LoginApi : ApiId
+    {
+        public const int ID = 1;
 
-	public sealed class LoginApi : ApiId {
+        private LoginApi(ISender sender) : base(ID, sender) { }
 
-		public const int ID = 1;
+        public static LoginApi Create(ISender sender) => new LoginApi(sender);
 
-		LoginApi( ISender sender ) : base( ID, sender ) { }
-
-		public static LoginApi Create( ISender sender ) {
-			return new LoginApi( sender );
-		}
-
-		public IPromise<bool> Login( string userName, string password ) {
-			return new Promise<bool>( ( resolve, reject ) => {
-				var debug = false;
-				var methodName = "login";
-				var parameters = new Parameters { Id.Value, methodName, new object[] { userName, password } };
-				DoRequest( GenerateNewId(), parameters, resolve, reject, methodName, debug );
-			} );
-		}
-	}
+        public IPromise<bool> Login(string userName, string password)
+        {
+            return new Promise<bool>((resolve, reject) =>
+            {
+                var debug = false;
+                var methodName = "login";
+                var parameters = new Parameters { Id.Value, methodName, new object[] { userName, password } };
+                DoRequest(GenerateNewId(), parameters, resolve, reject, methodName, debug);
+            });
+        }
+    }
 }

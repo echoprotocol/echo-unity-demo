@@ -40,25 +40,13 @@ namespace Base.Config
         private static double expireInSecondsProposal = 24.0 * 60.0 * 60.0;
 
 
-        public static string CoreAsset
-        {
-            get { return coreAsset; }
-        }
+        public static string CoreAsset => coreAsset;
 
-        public static string AddressPrefix
-        {
-            get { return addressPrefix; }
-        }
+        public static string AddressPrefix => addressPrefix;
 
-        public static double ExpireInSeconds
-        {
-            get { return expireInSeconds; }
-        }
+        public static double ExpireInSeconds => expireInSeconds;
 
-        public static double ExpireInSecondsProposal
-        {
-            get { return expireInSecondsProposal; }
-        }
+        public static double ExpireInSecondsProposal => expireInSecondsProposal;
 
         public static void SetChainId(string chainId)
         {

@@ -4,6 +4,7 @@ using System.Threading;
 using Base.Eventing;
 using Base.Requests;
 using Base.Responses;
+using CustomTools.Extensions.Core.Action;
 using Tools;
 using WebSocketSharp;
 
@@ -16,31 +17,22 @@ namespace Base
         public event Action<Connection> ConnectionClosed;
         public event Action<Connection, Response> MessageReceived;
 
-        Queue<string> sendingQueue;
-        Queue<Response> receivedQueue;
-        Uri uri;
-        WebSocket webSocket;
-        CallbackControl callbackManager;
+        private Queue<string> sendingQueue;
+        private Queue<Response> receivedQueue;
+        private Uri uri;
+        private WebSocket webSocket;
+        private CallbackControl callbackManager;
 
-        readonly ManualResetEvent connectionOpenEvent = new ManualResetEvent(false);
-        readonly object connectionLocker = new object();
-        readonly object webSocketLocker = new object();
+        private readonly ManualResetEvent connectionOpenEvent = new ManualResetEvent(false);
+        private readonly object connectionLocker = new object();
+        private readonly object webSocketLocker = new object();
 
 
-        public WebSocketState ReadyState
-        {
-            get { return !webSocket.IsNull() ? webSocket.ReadyState : WebSocketState.Closed; }
-        }
+        public WebSocketState ReadyState => webSocket.IsNull() ? WebSocketState.Closed : webSocket.ReadyState;
 
-        public string Url
-        {
-            get { return uri.OriginalString; }
-        }
+        public string Url => uri.OriginalString;
 
-        public string FullUrl
-        {
-            get { return !webSocket.IsNull() ? webSocket.Url.ToString() : string.Empty; }
-        }
+        public string FullUrl => webSocket.IsNull() ? string.Empty : webSocket.Url.ToString();
 
         public Connection(string url, bool sendFromThread)
         {
@@ -74,36 +66,21 @@ namespace Base
             }
         }
 
-        public bool IsConnected
-        {
-            get { return !webSocket.IsNull() && webSocket.ReadyState.Equals(WebSocketState.Open); }
-        }
+        public bool IsConnected => !webSocket.IsNull() && webSocket.ReadyState.Equals(WebSocketState.Open);
         #endregion
 
 
         #region RegisterEvent
-        public void AddRegular(int eventId, Action<Response> action)
-        {
-            callbackManager.AddRegularCallback(eventId, action);
-        }
+        public void AddRegular(int eventId, Action<Response> action) => callbackManager.AddRegularCallback(eventId, action);
 
-        public void RemoveRegular(int eventId)
-        {
-            callbackManager.RemoveRegularCallback(eventId);
-        }
+        public void RemoveRegular(int eventId) => callbackManager.RemoveRegularCallback(eventId);
 
-        public void ResetRequest(int eventId)
-        {
-            callbackManager.ResetRequestCallback(eventId);
-        }
+        public void ResetRequest(int eventId) => callbackManager.ResetRequestCallback(eventId);
         #endregion
 
 
         #region Send
-        public bool SendFromThread
-        {
-            get { return !sendingQueue.IsNull(); }
-        }
+        public bool SendFromThread => !sendingQueue.IsNull();
 
         public bool Send(Request request)
         {
@@ -128,7 +105,7 @@ namespace Base
             return false;
         }
 
-        void ThreadDequeuSendMessages(object parameter)
+        private void ThreadDequeuSendMessages(object parameter)
         {
             var queue = parameter as Queue<string>;
             while (SendFromThread)
@@ -162,10 +139,7 @@ namespace Base
 
 
         #region Receive
-        public int ReceivedQueueCount
-        {
-            get { return receivedQueue.Count; }
-        }
+        public int ReceivedQueueCount => receivedQueue.Count;
 
         public int DequeuOneReceivedMessage()
         {
@@ -178,10 +152,7 @@ namespace Base
                     dequeuCount++;
                     if (!callbackManager.InvokeCallback(message))
                     {
-                        if (!MessageReceived.IsNull())
-                        {
-                            MessageReceived(this, message);
-                        }
+                        MessageReceived.SafeInvoke(this, message);
                     }
                 }
             }
@@ -203,10 +174,7 @@ namespace Base
                     dequeuCount++;
                     if (!callbackManager.InvokeCallback(message))
                     {
-                        if (!MessageReceived.IsNull())
-                        {
-                            MessageReceived(this, message);
-                        }
+                        MessageReceived.SafeInvoke(this, message);
                     }
                 }
             }
@@ -228,10 +196,7 @@ namespace Base
                     dequeuCount++;
                     if (!callbackManager.InvokeCallback(message))
                     {
-                        if (MessageReceived.IsNull())
-                        {
-                            MessageReceived(this, message);
-                        }
+                        MessageReceived.SafeInvoke(this, message);
                     }
                 }
             }
@@ -245,10 +210,7 @@ namespace Base
 
 
         #region Close
-        public void Disconnect()
-        {
-            Close();
-        }
+        public void Disconnect() => Close();
 
         public void Dispose()
         {
@@ -257,7 +219,7 @@ namespace Base
             CustomTools.Console.DebugLog("Client::Dispose() Dispose client");
         }
 
-        void Close()
+        private void Close()
         {
             CustomTools.Console.DebugLog("Client::Close() Close client");
             CloseWebSocket();
@@ -265,13 +227,10 @@ namespace Base
             {
                 sendingQueue.Clear();
             }
-            if (!ConnectionClosed.IsNull())
-            {
-                ConnectionClosed(this);
-            }
+            ConnectionClosed.SafeInvoke(this);
         }
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -300,7 +259,7 @@ namespace Base
 
 
         #region WebSocket
-        void OpenWebSocket(Uri serverUri)
+        private void OpenWebSocket(Uri serverUri)
         {
             lock (webSocketLocker)
             {
@@ -330,7 +289,7 @@ namespace Base
             }
         }
 
-        void CloseWebSocket()
+        private void CloseWebSocket()
         {
             lock (webSocketLocker)
             {
@@ -349,29 +308,26 @@ namespace Base
             }
         }
 
-        void WebSocketOpened(object sender, EventArgs e)
+        private void WebSocketOpened(object sender, EventArgs e)
         {
             connectionOpenEvent.Set(); // send signal about connection done
-            if (!ConnectionOpened.IsNull())
-            {
-                ConnectionOpened(this);
-            }
+            ConnectionOpened.SafeInvoke(this);
             receivedQueue.Enqueue(Response.Open(Url));
         }
 
-        void WebSocketMessageReceived(object sender, MessageEventArgs e)
+        private void WebSocketMessageReceived(object sender, MessageEventArgs e)
         {
-            //			Unity.Console.DebugLog( "Client::WebSocketMessageReceived() Message:", Unity.Console.SetWhiteColor( e.Data ) );
+            //CustomTools.Console.DebugLog("Client::WebSocketMessageReceived() Message:", CustomTools.Console.SetWhiteColor(e.Data));
             receivedQueue.Enqueue(Response.Parse(e.Data));
         }
 
-        void WebSocketError(object sender, ErrorEventArgs e)
+        private void WebSocketError(object sender, ErrorEventArgs e)
         {
             CustomTools.Console.DebugError("Client::WebSocketError() Exception:", CustomTools.Console.SetRedColor(e.Message), e.Exception.Message);
             Close();
         }
 
-        void WebSocketClose(object sender, CloseEventArgs e)
+        private void WebSocketClose(object sender, CloseEventArgs e)
         {
             var builder = new System.Text.StringBuilder();
             builder.Append(e.Reason).Append(' ').Append(e.Code);
