@@ -1,12 +1,12 @@
-﻿using Buffers;
-using Base.ECC;
+﻿using Base.ECC;
+using Buffers;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
-using Tools;
 
 
 namespace Base.Data.Accounts
 {
-    public sealed class AccountOptionsData : NullableObject, ISerializeToBuffer
+    public sealed class AccountOptionsData : SerializableObject, ISerializeToBuffer
     {
         [JsonProperty("memo_key")]
         public PublicKey MemoKey { get; private set; }

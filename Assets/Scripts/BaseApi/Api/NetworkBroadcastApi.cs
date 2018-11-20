@@ -1,6 +1,7 @@
 ﻿using System;
 using Base.Data.Transactions;
 using Base.Requests;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json.Linq;
 using Promises;
 
@@ -24,25 +25,28 @@ namespace Base.Api.Database
             }).Then(apiId => (NetworkBroadcastApi)Init(apiId));
         }
 
-        public IPromise BroadcastTransactionWithCallback(Action<JToken[]> transactionResultCallback, SignedTransactionData transaction)
+        public IPromise BroadcastTransactionWithCallback(SignedTransactionData transaction, Action<JToken[]> transactionResultCallback = null)
         {
             if (IsInitialized)
             {
                 return new Promise((resolve, reject) =>
                 {
-                    var debug = false;
+                    var debug = true;
                     var requestId = GenerateNewId();
                     var methodName = "broadcast_transaction_with_callback";
                     var title = methodName + " " + requestId;
                     var parameters = new Parameters { Id.Value, methodName, new object[] { requestId, transaction } };
                     DoRequestVoid(requestId, parameters, () =>
                     {
-                        ConnectionManager.Subscribe("broadcast by " + requestId, requestId, transactionResultCallback, debug, true);
+                        if (!transactionResultCallback.IsNull())
+                        {
+                            ConnectionManager.Subscribe("broadcast by " + requestId, requestId, transactionResultCallback, debug, true);
+                        }
                         resolve();
                     }, reject, title, debug);
                 });
             }
-            return Init().Then(api => api.BroadcastTransactionWithCallback(transactionResultCallback, transaction));
+            return Init().Then(api => api.BroadcastTransactionWithCallback(transaction, transactionResultCallback));
         }
     }
 }

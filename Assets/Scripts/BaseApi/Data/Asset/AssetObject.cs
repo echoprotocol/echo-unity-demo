@@ -1,4 +1,3 @@
-using Tools;
 using Newtonsoft.Json;
 
 
@@ -26,7 +25,7 @@ namespace Base.Data.Assets
     }
 
 
-    public sealed class AssetOptionsData : NullableObject
+    public sealed class AssetOptionsData : SerializableObject
     {
         [JsonProperty("max_supply")]
         public long MaxSupply { get; private set; }
@@ -55,7 +54,7 @@ namespace Base.Data.Assets
     }
 
 
-    public sealed class PriceData : NullableObject
+    public sealed class PriceData : SerializableObject
     {
         [JsonProperty("base")]
         public AssetData Base { get; private set; }

@@ -1,8 +1,8 @@
 using System;
-using Buffers;
 using Base.Config;
+using Buffers;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
 
 
 namespace Base.Data.Operations.Fee
@@ -11,6 +11,7 @@ namespace Base.Data.Operations.Fee
     {
         private const string FEE_FIELD_KEY = "fee";
         private const string PRICE_PER_KBYTE_FIELD_KEY = "price_per_kbyte";
+
 
         public ulong Fee { get; set; }
         public uint PricePerKByte { get; set; }

@@ -8,7 +8,7 @@ namespace Base.Data.Properties
     // id "2.1.x"
     public sealed class DynamicGlobalPropertiesObject : IdObject
     {
-        [JsonProperty("random")]
+        [JsonProperty("random")] // deprecated? 
         public string Random { get; private set; }
         [JsonProperty("head_block_number")]
         public uint HeadBlockNumber { get; private set; }

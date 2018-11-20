@@ -1,5 +1,5 @@
 ﻿using BigI;
-using Tools;
+using Tools.Assert;
 
 
 namespace ECurve

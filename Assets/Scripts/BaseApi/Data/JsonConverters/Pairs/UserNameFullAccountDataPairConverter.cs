@@ -1,30 +1,21 @@
-using System;
 using Base.Data.Accounts;
 using Base.Data.Pairs;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json.Linq;
-using Tools;
 
 
 namespace Base.Data.Json
 {
-    public sealed class UserNameFullAccountDataPairConverter : JsonCustomConverter<UserNameFullAccountDataPair, JArray>
+    public sealed class UserNameFullAccountDataPairConverter : PairConverter<UserNameFullAccountDataPair>
     {
-        protected override UserNameFullAccountDataPair Deserialize(JArray value, Type objectType)
+        protected override UserNameFullAccountDataPair ConvertFrom(JToken key, JToken value)
         {
-            if (value.IsNullOrEmpty() || value.Count != 2)
-            {
-                return null;
-            }
-            return new UserNameFullAccountDataPair(value.First.ToNullableString(), value.Last.ToObject<FullAccountData>());
+            return new UserNameFullAccountDataPair(key.ToNullableString(), value.ToObject<FullAccountData>());
         }
 
-        protected override JArray Serialize(UserNameFullAccountDataPair value)
+        protected override JArray ConvertTo(UserNameFullAccountDataPair pair)
         {
-            if (value.IsNull())
-            {
-                return new JArray();
-            }
-            return new JArray(value.UserName, JToken.FromObject(value.FullAccount));
+            return new JArray(pair.UserName, JToken.FromObject(pair.FullAccount));
         }
     }
 }

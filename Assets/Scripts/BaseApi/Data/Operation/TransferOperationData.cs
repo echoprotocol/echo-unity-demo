@@ -1,7 +1,8 @@
-using Buffers;
 using Base.Config;
+using Buffers;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
 
 
 namespace Base.Data.Operations
@@ -14,6 +15,7 @@ namespace Base.Data.Operations
         private const string AMOUNT_FIELD_KEY = "amount";
         private const string MEMO_FIELD_KEY = "memo";
         private const string EXTENSIONS_FIELD_KEY = "extensions";
+
 
         public override AssetData Fee { get; set; }
         public SpaceTypeId From { get; private set; }

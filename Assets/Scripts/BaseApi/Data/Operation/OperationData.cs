@@ -1,14 +1,13 @@
-using Buffers;
 using Base.Config;
 using Base.Data.Json;
+using Buffers;
 using Newtonsoft.Json;
-using Tools;
 
 
 namespace Base.Data.Operations
 {
     [JsonConverter(typeof(OperationDataPairConverter))]
-    public abstract class OperationData : NullableObject, ISerializeToBuffer
+    public abstract class OperationData : SerializableObject, ISerializeToBuffer
     {
         public abstract AssetData Fee { get; set; }
         public abstract ChainTypes.Operation Type { get; }

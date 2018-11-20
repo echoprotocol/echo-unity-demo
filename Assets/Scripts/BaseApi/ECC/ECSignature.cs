@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BigI;
-using Tools;
+using CustomTools.Extensions.Core.Array;
+using Tools.Assert;
 
 
 namespace Base.ECC

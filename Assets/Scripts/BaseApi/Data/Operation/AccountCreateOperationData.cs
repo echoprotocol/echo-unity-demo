@@ -1,10 +1,10 @@
 using System;
-using Buffers;
 using Base.Config;
 using Base.Data.Accounts;
 using Base.ECC;
+using Buffers;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
 
 
 namespace Base.Data.Operations
@@ -20,6 +20,7 @@ namespace Base.Data.Operations
         private const string ACTIVE_FIELD_KEY = "active";
         private const string OPTIONS_FIELD_KEY = "options";
         private const string EXTENSIONS_FIELD_KEY = "extensions";
+
 
         public override AssetData Fee { get; set; }
         public SpaceTypeId Registrar { get; private set; }

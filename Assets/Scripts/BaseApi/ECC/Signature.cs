@@ -2,8 +2,11 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using BigI;
+using CustomTools.Extensions.Core.Array;
 using ECurve;
-using Tools;
+using Tools.Assert;
+using Tools.Hash;
+using Tools.HexBinDec;
 
 
 namespace Base.ECC
@@ -22,7 +25,7 @@ namespace Base.ECC
             this.i = i;
         }
 
-        public static Signature FromHex(string hex) => FromBuffer(Tool.FromHex(hex));
+        public static Signature FromHex(string hexString) => FromBuffer(hexString.FromHex2Data());
 
         public static Signature FromBuffer(byte[] buffer)
         {
@@ -34,7 +37,7 @@ namespace Base.ECC
             return new Signature(r, s, i);
         }
 
-        public string ToHex() => Tool.ToHex(ToBuffer());
+        public string ToHex() => ToBuffer().ToHexString();
 
         public byte[] ToBuffer()
         {
@@ -60,7 +63,7 @@ namespace Base.ECC
 
         public static Signature Sign(string str, PrivateKey privateKey) => SignBuffer(Encoding.UTF8.GetBytes(str), privateKey);
 
-        public static Signature SignHex(string hex, PrivateKey privateKey) => SignBuffer(Tool.FromHex(hex), privateKey);
+        public static Signature SignHex(string hexString, PrivateKey privateKey) => SignBuffer(hexString.FromHex2Data(), privateKey);
 
         public static Signature SignBuffer(byte[] buffer, PrivateKey privateKey)
         {
@@ -99,7 +102,7 @@ namespace Base.ECC
             return new Signature(ecSignature.R, ecSignature.S, i);
         }
 
-        public bool VerifyHex(string hex, PublicKey publicKey) => VerifyBuffer(Tool.FromHex(hex), publicKey);
+        public bool VerifyHex(string hexString, PublicKey publicKey) => VerifyBuffer(hexString.FromHex2Data(), publicKey);
 
         public bool VerifyBuffer(byte[] buffer, PublicKey publicKey)
         {

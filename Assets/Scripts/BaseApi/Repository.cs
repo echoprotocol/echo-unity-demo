@@ -5,102 +5,68 @@ using Base.Data;
 using Base.Data.Accounts;
 using Base.Data.Assets;
 using Base.Data.Block;
+using Base.Data.Contract;
 using Base.Data.Operations;
+using Base.Data.Order;
 using Base.Data.Properties;
 using Base.Data.Transactions;
 using Base.Data.Witnesses;
+using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json.Linq;
 using Promises;
-using Tools;
 using IdObjectDictionary = System.Collections.Generic.Dictionary<Base.Data.SpaceTypeId, Base.Data.IdObject>;
 
 
-namespace Base
+namespace Base.Storage
 {
     public static class Repository
     {
-        public static event Action<IdObject> OnObjectUpdate;
+        public static event Action<IdObject> OnGetObject;
+        public static event Action<string> OnGetString;
 
         private readonly static Dictionary<SpaceType, IdObjectDictionary> root = new Dictionary<SpaceType, IdObjectDictionary>();
 
 
-        private static void ObjectUpdate(IdObject idObject)
-        {
-            OnObjectUpdate.SafeInvoke(idObject);
-        }
+        private static void GetObject(IdObject idObject) => OnGetObject.SafeInvoke(idObject);
+
+        private static void GetString(string value) => OnGetString.SafeInvoke(value);
 
         private static void ChangeNotify(JToken[] list)
-        {
-            var notifyList = new List<IdObject>();
+        {  
+            var notifyObjectList = new List<IdObject>();
+            var notifyStringList = new List<string>();
             foreach (var item in list)
             {
-                if (!item.Type.Equals(JTokenType.Object))
+                if (item.Type.Equals(JTokenType.Object))
                 {
-                    CustomTools.Console.Warning("Get unexpected type:", CustomTools.Console.SetCyanColor(item.ToString()));
-                    continue;
-                }
-                var idObject = item.ToObject<IdObject>();
-                if (idObject.Id.IsNullOrEmpty())
-                {
-                    CustomTools.Console.Warning("Get unexpected object:", item.ToString());
-                    continue;
-                }
-                switch (idObject.SpaceType)
-                {
-                    case SpaceType.Account:
-                        idObject = item.ToObject<AccountObject>();
-                        break;
-                    case SpaceType.Asset:
-                        idObject = item.ToObject<AssetObject>();
-                        break;
-                    case SpaceType.Witness:
-                        idObject = item.ToObject<WitnessObject>();
-                        break;
-                    case SpaceType.OperationHistory:
-                        idObject = item.ToObject<OperationHistoryObject>();
-                        break;
-                    case SpaceType.DynamicGlobalProperties:
-                        idObject = item.ToObject<DynamicGlobalPropertiesObject>();
-                        break;
-                    case SpaceType.GlobalProperties:
-                        idObject = item.ToObject<GlobalPropertiesObject>();
-                        break;
-                    case SpaceType.AssetDynamicData:
-                        idObject = item.ToObject<AssetDynamicDataObject>();
-                        break;
-                    case SpaceType.AccountBalance:
-                        idObject = item.ToObject<AccountBalanceObject>();
-                        break;
-                    case SpaceType.AccountStatistics:
-                        idObject = item.ToObject<AccountStatisticsObject>();
-                        break;
-                    case SpaceType.Transaction:
-                        idObject = item.ToObject<TransactionObject>();
-                        break;
-                    case SpaceType.BlockSummary:
-                        idObject = item.ToObject<BlockSummaryObject>();
-                        break;
-                    case SpaceType.AccountTransactionHistory:
-                        idObject = item.ToObject<AccountTransactionHistoryObject>();
-                        break;
-                    case SpaceType.WitnessSchedule:
-                    case SpaceType.VestingBalance:
-                    case SpaceType.BudgetRecord:
-                    case SpaceType.CommitteeMember:
-                        // skip objects
+                    var idObject = item.ToIdObject();
+                    if (idObject.IsNull())
+                    {
                         continue;
-                    default:
-                        CustomTools.Console.Warning("Get unexpected object type:", CustomTools.Console.SetCyanColor(idObject.SpaceType), '\n', item.ToString());
-                        continue;
+                    }
+                    Add(idObject);
+                    notifyObjectList.Add(idObject);
+                    CustomTools.Console.Log("Update object:", CustomTools.Console.SetGreenColor(idObject.SpaceType), idObject.Id, '\n', CustomTools.Console.SetWhiteColor(idObject));
                 }
-                Add(idObject);
-                notifyList.Add(idObject);
-                CustomTools.Console.Log("Update object:", CustomTools.Console.SetGreenColor(idObject.SpaceType), idObject.Id, '\n', CustomTools.Console.SetWhiteColor(idObject));
+                else
+                if (item.Type.Equals(JTokenType.String))
+                {
+                    notifyStringList.Add(item.ToString());
+                    CustomTools.Console.Log("Get string:", CustomTools.Console.SetCyanColor(item));
+                }
+                else
+                {
+                    CustomTools.Console.Warning("Get unexpected json type:", CustomTools.Console.SetYellowColor(item.Type), CustomTools.Console.SetCyanColor(item));
+                }
             }
-            foreach (var notify in notifyList)
+            foreach (var newObject in notifyObjectList)
             {
-                ObjectUpdate(notify);
+                GetObject(newObject);
+            }
+            foreach (var newString in notifyStringList)
+            {
+                GetString(newString);
             }
         }
 
@@ -120,13 +86,27 @@ namespace Base
             return Promise.All(
                 api.GetDynamicGlobalProperties().Then(AddInPromise),
                 api.GetGlobalProperties().Then(AddInPromise),
-                api.GetAsset().Then(AddInPromise)
+                api.GetAsset().Then(AddInPromise),
+
+                api.CallContractNoChangingState(2544, 41, 0, "f39ec1f74175677572000000000000000000000000000000000000000000000000000000").Then(d =>
+                {
+                    return Promise.Resolved();
+                })
+
+
+            //api.GetContractInfo(1880).Then(d => {
+            //    return Promise.Resolved();
+            //}),
+            //api.GetContractResult(1066).Then(d => {
+            //    return Promise.Resolved();
+            //})
+
             );
         }
 
         public static IPromise SubscribeToNotice(DatabaseApi api)
         {
-            return api.Subscribe(ChangeNotify).Then(() => Init(api));
+            return api.SubscribeNotice(ChangeNotify).Then(() => Init(api));
         }
 
         public static bool IsExist(SpaceTypeId spaceTypeId)
@@ -154,6 +134,63 @@ namespace Base
         public static IdObject[] GetAll(SpaceType spaceType)
         {
             return root.ContainsKey(spaceType) ? new List<IdObject>(root[spaceType].Values).ToArray() : new IdObject[0];
+        }
+    }
+
+
+    public static class Extensions
+    {
+        public static IdObject ToIdObject(this JToken source)
+        {
+            var sample = source.ToObject<IdObject>();
+            if (sample.Id.IsNullOrEmpty())
+            {
+                CustomTools.Console.Warning("Get unexpected object:", source.ToString());
+                return null;
+            }
+            switch (sample.SpaceType)
+            {
+                case SpaceType.Base:/*                          */return source.ToObject<BaseObject>();
+                case SpaceType.Account:/*                       */return source.ToObject<AccountObject>();
+                case SpaceType.Asset:/*                         */return source.ToObject<AssetObject>();
+                case SpaceType.ForceSettlement:/*               */return source.ToObject<ForceSettlementObject>();
+                case SpaceType.CommitteeMember:/*               */return source.ToObject<CommitteeMemberObject>();
+                case SpaceType.Witness:/*                       */return source.ToObject<WitnessObject>();
+                case SpaceType.LimitOrder:/*                    */return source.ToObject<LimitOrderObject>();
+                case SpaceType.CallOrder:/*                     */return source.ToObject<CallOrderObject>();
+                case SpaceType.Custom:/*                        */return source.ToObject<CustomObject>();
+                case SpaceType.Proposal:/*                      */return source.ToObject<ProposalObject>();
+                case SpaceType.OperationHistory:/*              */return source.ToObject<OperationHistoryObject>();
+                case SpaceType.WithdrawPermission:/*            */return source.ToObject<WithdrawPermissionObject>();
+                case SpaceType.VestingBalance:/*                */return source.ToObject<VestingBalanceObject>();
+                case SpaceType.Worker:/*                        */return source.ToObject<WorkerObject>();
+                case SpaceType.Balance:/*                       */return source.ToObject<BalanceObject>();
+                case SpaceType.Contract:/*                      */return source.ToObject<ContractObject>();
+                case SpaceType.ResultExecute:/*                 */return source.ToObject<ResultExecuteObject>();
+                case SpaceType.BlockResult:/*                   */return source.ToObject<BlockResultObject>();
+                case SpaceType.GlobalProperties:/*              */return source.ToObject<GlobalPropertiesObject>();
+                case SpaceType.DynamicGlobalProperties:/*       */return source.ToObject<DynamicGlobalPropertiesObject>();
+                case SpaceType.AssetDynamicData:/*              */return source.ToObject<AssetDynamicDataObject>();
+                case SpaceType.AssetBitassetData:/*             */return source.ToObject<AssetBitassetDataObject>();
+                case SpaceType.AccountBalance:/*                */return source.ToObject<AccountBalanceObject>();
+                case SpaceType.AccountStatistics:/*             */return source.ToObject<AccountStatisticsObject>();
+                case SpaceType.Transaction:/*                   */return source.ToObject<TransactionObject>();
+                case SpaceType.BlockSummary:/*                  */return source.ToObject<BlockSummaryObject>();
+                case SpaceType.AccountTransactionHistory:/*     */return source.ToObject<AccountTransactionHistoryObject>();
+                case SpaceType.BlindedBalance:/*                */return source.ToObject<BlindedBalanceObject>();
+                case SpaceType.ChainProperty:/*                 */return source.ToObject<ChainPropertyObject>();
+                case SpaceType.WitnessSchedule:/*               */return source.ToObject<WitnessScheduleObject>();
+                case SpaceType.BudgetRecord:/*                  */return source.ToObject<BudgetRecordObject>();
+                case SpaceType._todo_object_2_14:/*             */return source.ToObject<Object_2_14>();
+                case SpaceType._todo_object_2_15:/*             */return source.ToObject<Object_2_15>();
+                case SpaceType._todo_object_2_16:/*             */return source.ToObject<Object_2_16>();
+                case SpaceType._todo_object_2_17:/*             */return source.ToObject<Object_2_17>();
+                case SpaceType._todo_object_2_18:/*             */return source.ToObject<Object_2_18>();
+                case SpaceType.ContractTransactionHistory:/*    */return source.ToObject<ContractTransactionHistoryObject>();
+                default:
+                    CustomTools.Console.Warning("Get unexpected SpaceType:", CustomTools.Console.SetCyanColor(sample.SpaceType), sample.Id, '\n', source);
+                    return null;
+            }
         }
     }
 }

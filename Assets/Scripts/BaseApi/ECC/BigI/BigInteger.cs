@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tools;
+using CustomTools.Extensions.Core.Array;
 
 
 namespace BigI
@@ -197,8 +197,8 @@ namespace BigI
             // x = x/R mod m (HAC 14.32)
             private void Reduce(BigInteger x)
             {
-                while (x.t <= mt2)
-                { // pad x so am has enough room later
+                while (x.t <= mt2) // pad x so am has enough room later
+                {
                     x[x.t++] = 0;
                 }
                 for (var i = 0; i < m.t; i++)
@@ -270,7 +270,8 @@ namespace BigI
 
         // Digit conversions
         public static readonly string BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
-        public static readonly Dictionary<char, int> BI_RC = new Dictionary<char, int> {
+        public static readonly Dictionary<char, int> BI_RC = new Dictionary<char, int>
+        {
             { '0', 0 },     { '1', 1 },     { '2', 2 },     { '3', 3 },     { '4', 4 },     { '5', 5 },     { '6', 6 },     { '7', 7 },     { '8', 8 },     { '9', 9 },
             { 'a', 10 },    { 'b', 11 },    { 'c', 12 },    { 'd', 13 },    { 'e', 14 },    { 'f', 15 },    { 'g', 16 },    { 'h', 17 },    { 'i', 18 },    { 'j', 19 },
             { 'k', 20 },    { 'l', 21 },    { 'm', 22 },    { 'n', 23 },    { 'o', 24 },    { 'p', 25 },    { 'q', 26 },    { 'r', 27 },    { 's', 28 },    { 't', 29 },
@@ -461,10 +462,34 @@ namespace BigI
             DivideRemainderTo(d, y, z);
             while (y.Sign > 0)
             {
-                result = (a + z.IntValue).ToString(b).Substring(1) + result;
+                result = ToRadixString(a + z.IntValue, b).Substring(1) + result;
                 y.DivideRemainderTo(d, y, z);
             }
-            return z.IntValue.ToString(b) + result;
+            return ToRadixString(z.IntValue, b) + result;
+        }
+
+        private string ToRadixString(int value, int radix)
+        {
+            if (radix < 2 || radix > 36)
+            {
+                throw new ArgumentException(string.Format("Radix {0} doesn't support!", radix));
+            }
+            var currentBase = "0123456789abcdefghijklmnopqrstuvwxyz".Substring(0, radix).ToCharArray();
+
+            // 32 is the worst cast buffer size for base 2 and int.MaxValue
+            var i = 32;
+            var buffer = new char[i];
+
+            do
+            {
+                buffer[--i] = currentBase[value % radix];
+                value /= radix;
+            } while (value > 0);
+
+            var result = new char[32 - i];
+            Array.Copy(buffer, i, result, 0, 32 - i);
+
+            return new string(result);
         }
 
         // convert from radix string
@@ -769,8 +794,8 @@ namespace BigI
                     i += DB;
                     j--;
                 }
-                if (isFirstIteration)
-                { // ret == 1, don't bother squaring or multiplying it
+                if (isFirstIteration) // ret == 1, don't bother squaring or multiplying it
+                {
                     g[w].CopyTo(result);
                     isFirstIteration = false;
                 }
@@ -1398,8 +1423,8 @@ namespace BigI
             {
                 // Estimate quotient digit
                 var qd = (remainder[--i] == y0) ? DM : (int)Math.Floor(remainder[i] * d1 + (remainder[i - 1] + e) * d2);
-                if ((remainder[i] += (int)y.Am(0, qd, remainder, j, 0, ys)) < qd)
-                { // Try it out
+                if ((remainder[i] += (int)y.Am(0, qd, remainder, j, 0, ys)) < qd) // Try it out
+                {
                     y.DigitLeftShiftTo(j, temp);
                     remainder.SubtractTo(temp, remainder);
                     while (remainder[i] < --qd)

@@ -1,4 +1,6 @@
+using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json;
+using Tools.HexBinDec;
 
 
 namespace Base.Data.Transactions
@@ -15,7 +17,7 @@ namespace Base.Data.Transactions
 
         public SignedTransactionData(TransactionBuilder builder) : base(builder)
         {
-            Signatures = builder.Signatures;
+            Signatures = builder.Signatures.ConvertAll(signature => signature.ToHexString());
         }
     }
 }

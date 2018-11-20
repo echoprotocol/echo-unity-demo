@@ -1,6 +1,7 @@
 ﻿using System;
 using BigI;
-using Tools;
+using CustomTools.Extensions.Core.Array;
+using Tools.Assert;
 
 
 namespace ECurve
@@ -233,13 +234,13 @@ namespace ECurve
             var byteLength = (int)Math.Floor((curve.P.BitLength + 7) / 8.0);
 
             if (compressed)
-            {       // 0x02/0x03 | X
-                buffer = buffer.Add((byte)(affineY.IsEven ? 0x02 : 0x03));
+            {   // 0x02/0x03 | X
+                buffer = buffer.Concat(new[] { (byte)(affineY.IsEven ? 0x02 : 0x03) });
                 buffer = buffer.Concat(affineX.ToBuffer(byteLength));
             }
             else
-            {               // 0x04 | X | Y
-                buffer = buffer.Add((byte)0x04);
+            {   // 0x04 | X | Y
+                buffer = buffer.Concat(new[] { (byte)0x04 });
                 buffer = buffer.Concat(affineX.ToBuffer(byteLength));
                 buffer = buffer.Concat(affineY.ToBuffer(byteLength));
             }
@@ -250,7 +251,7 @@ namespace ECurve
         public static Point DecodeFrom(Curve curve, byte[] buffer)
         {
             var type = buffer[0];
-            var compressed = (type != 4);
+            var compressed = type != 4;
 
             var byteLength = (int)Math.Floor((curve.P.BitLength + 7) / 8.0);
             var x = BigInteger.FromBuffer(buffer.Slice(1, 1 + byteLength));

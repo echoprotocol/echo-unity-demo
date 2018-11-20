@@ -1,10 +1,11 @@
 using System;
-using Buffers;
 using Base.Config;
 using Base.Data.Json;
+using Buffers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
+using Tools.Time;
 
 
 namespace Base.Data.Operations
@@ -18,6 +19,7 @@ namespace Base.Data.Operations
         private const string REVIEW_PERIOD_SECONDS_FIELD_KEY = "review_period_seconds";
         private const string EXTENSIONS_FIELD_KEY = "extensions";
 
+
         public override AssetData Fee { get; set; }
         public SpaceTypeId FeePayingAccount { get; set; }
         public DateTime ExpirationTime { get; set; }
@@ -30,7 +32,7 @@ namespace Base.Data.Operations
         public ProposalCreateOperationData()
         {
             ProposedOperations = new OperationWrapperData[0];
-            ExpirationTime = Tool.ZeroTime();
+            ExpirationTime = TimeTool.ZeroTime();
             Extensions = new object[0];
         }
 
@@ -59,7 +61,7 @@ namespace Base.Data.Operations
             var instance = new ProposalCreateOperationData();
             instance.Fee = value.TryGetValue(FEE_FIELD_KEY, out token) ? token.ToObject<AssetData>() : AssetData.EMPTY;
             instance.FeePayingAccount = value.TryGetValue(FEE_PAYING_ACCOUNT_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : SpaceTypeId.EMPTY;
-            instance.ExpirationTime = value.TryGetValue(EXPIRATION_TIME_FIELD_KEY, out token) ? token.ToObject<DateTime>(new DateTimeConverter().GetSerializer()) : Tool.ZeroTime();
+            instance.ExpirationTime = value.TryGetValue(EXPIRATION_TIME_FIELD_KEY, out token) ? token.ToObject<DateTime>(new DateTimeConverter().GetSerializer()) : TimeTool.ZeroTime();
             instance.ProposedOperations = value.TryGetValue(PROPOSED_OPS_FIELD_KEY, out token) ? token.ToObject<OperationWrapperData[]>() : new OperationWrapperData[0];
             instance.ReviewPeriodSeconds = value.TryGetValue(REVIEW_PERIOD_SECONDS_FIELD_KEY, out token) ? new uint?(token.ToObject<uint>()) : null; // optional
             instance.Extensions = value.TryGetValue(EXTENSIONS_FIELD_KEY, out token) ? token.ToObject<object[]>() : new object[0];
@@ -68,7 +70,7 @@ namespace Base.Data.Operations
     }
 
 
-    public sealed class OperationWrapperData : NullableObject, ISerializeToBuffer
+    public sealed class OperationWrapperData : SerializableObject, ISerializeToBuffer
     {
         [JsonProperty("op")]
         public OperationData Operation { get; set; }

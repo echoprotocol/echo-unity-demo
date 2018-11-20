@@ -1,11 +1,10 @@
 ﻿using Base.Data.Operations.Fee;
 using Newtonsoft.Json;
-using Tools;
 
 
 namespace Base.Data.Properties
 {
-    public sealed class ChainParametersData : NullableObject
+    public sealed class ChainParametersData : SerializableObject
     {
         [JsonProperty("current_fees")]
         public FeeScheduleData CurrentFees { get; private set; }

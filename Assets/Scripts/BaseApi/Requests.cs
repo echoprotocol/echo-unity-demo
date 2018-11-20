@@ -37,6 +37,8 @@ namespace Base.Requests
     {
         private const string METHOD_NAME = "call";
 
+        [JsonProperty("jsonrpc")]
+        public string JsonRPC { get; private set; } = "2.0";
         [JsonProperty("id")]
         public int RequestId { get; private set; }
         [JsonProperty("method")]

@@ -1,6 +1,5 @@
 using Base.Data.Operations;
 using Newtonsoft.Json;
-using Tools;
 
 
 namespace Base.Data.Transactions
@@ -17,7 +16,7 @@ namespace Base.Data.Transactions
     }
 
 
-    public class TransactionConfirmation : NullableObject
+    public class TransactionConfirmation : SerializableObject
     {
         [JsonProperty("id")]
         public string Id { get; set; }

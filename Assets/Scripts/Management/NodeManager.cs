@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
+using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
+using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json;
-using Tools;
 using UnityEngine;
 
 
@@ -97,13 +98,13 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         {
             return;
         }
-        if (!Urls.Contains(url) && !Urls.Contains(url))
+        if (!Urls.Contains(url))
         {
             return;
         }
         if (IsDefault(SelecteUrl))
         {
-            SelecteUrl = defaultHosts.Next(SelecteUrl);
+            SelecteUrl = defaultHosts.NextLoop(SelecteUrl);
         }
         ConnectionManager.Instance.ReconnectTo(SelecteUrl);
         ConnectionManager.OnConnectionAttemptsDone -= ConnectionAttemptsDone;
@@ -114,7 +115,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
     {
         if (IsDefault(url))
         {
-            ConnectionManager.Instance.ReconnectTo(SelecteUrl = defaultHosts.Next(url));
+            ConnectionManager.Instance.ReconnectTo(SelecteUrl = defaultHosts.NextLoop(url));
         }
     }
 
@@ -144,7 +145,7 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         {
             return false;
         }
-        if (!Urls.Contains(url) && !Urls.Contains(url))
+        if (!Urls.Contains(url))
         {
             return false;
         }
@@ -191,7 +192,8 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         {
             return false;
         }
-        Urls = currentUrls.Add(url);
+        ArrayTools.Add(ref currentUrls, url);
+        Urls = currentUrls;
         return true;
     }
 
@@ -206,7 +208,8 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
         {
             return false;
         }
-        Urls = currentUrls.Remove(url);
+        ArrayTools.Remove(ref currentUrls, url);
+        Urls = currentUrls;
         return true;
     }
 }

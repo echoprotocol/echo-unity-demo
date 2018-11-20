@@ -486,7 +486,11 @@ namespace CustomTools.Extensions.Core.Array {
 			return a[ 0 ];
 		}
 
-		public static T Last<T>( this T[] a ) {
+        public static T FirstOr<T>( this T[] a, T defaultValue ) {
+            return a.IsNullOrEmpty() ? defaultValue : a[ 0 ];
+        }
+
+        public static T Last<T>( this T[] a ) {
             if ( a.IsNull() ) {
                 throw new System.NullReferenceException();
             }
@@ -495,6 +499,10 @@ namespace CustomTools.Extensions.Core.Array {
             }
 			return a[ a.Length - 1 ];
 		}
+
+        public static T LastOr<T>( this T[] a, T defaultValue ) {
+            return a.IsNullOrEmpty() ? defaultValue : a[ a.Length - 1 ];
+        }
 
         public static T Next<T>( this T[] a, T o ) where T : class, System.IEquatable<T> {
 			if ( a.IsNullOrEmpty() ) {

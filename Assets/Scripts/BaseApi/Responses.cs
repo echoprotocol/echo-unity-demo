@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Base.Data.Json;
 using Base.Requests;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
 
 
 namespace Base.Responses
@@ -24,12 +25,12 @@ namespace Base.Responses
 
         public void SendResultData<T>(System.Action<T> resolve, System.Action<System.Exception> reject = null, bool isProcessed = true)
         {
-            if (resolve != null && IsResult)
+            if (!resolve.IsNull() && IsResult)
             {
                 resolve.Invoke(jsonObject.ToObject<Result>().GetData<T>());
             }
             else
-            if (reject != null && IsError)
+            if (!reject.IsNull() && IsError)
             {
                 reject.Invoke(jsonObject.ToObject<Error>().ToException());
             }
@@ -38,7 +39,7 @@ namespace Base.Responses
 
         public void SendNoticeData(System.Action<JToken[]> callback, bool isProcessed = true)
         {
-            if (callback != null && IsNotice)
+            if (!callback.IsNull() && IsNotice)
             {
                 callback.Invoke(jsonObject.ToObject<Notice>().Results);
             }
@@ -102,15 +103,20 @@ namespace Base.Responses
     public sealed class Result
     {
         private const string ID_FIELD_KEY = "id";
+        private const string JSONRPC_FIELD_KEY = "jsonrpc";
         private const string RESULT_FIELD_KEY = "result";
 
         [JsonProperty(ID_FIELD_KEY)]
         private int id;
+        [JsonProperty(JSONRPC_FIELD_KEY)]
+        private string jsonrpc;
         [JsonProperty(RESULT_FIELD_KEY)]
         private JToken result;
 
 
         public int ForRequestId => id;
+
+        public string JsonRPC => jsonrpc;
 
         public T GetData<T>() => result.ToObject<T>();
 

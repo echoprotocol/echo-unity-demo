@@ -2,13 +2,12 @@ using Buffers;
 using Base.Config;
 using Base.Data.Json;
 using Newtonsoft.Json;
-using Tools;
 
 
 namespace Base.Data.Operations.Fee
 {
     [JsonConverter(typeof(FeeParametersDataPairConverter))]
-    public abstract class FeeParametersData : NullableObject, ISerializeToBuffer
+    public abstract class FeeParametersData : SerializableObject, ISerializeToBuffer
     {
         public abstract ChainTypes.FeeParameters Type { get; }
         public abstract ByteBuffer ToBufferRaw(ByteBuffer buffer = null);

@@ -1,14 +1,18 @@
 using System;
 using System.Security.Cryptography;
-using BigI;
-using Buffers;
-using ECurve;
 using Base.Config;
 using Base.Data;
 using Base.Data.Json;
+using BigI;
+using Buffers;
+using CustomTools.Extensions.Core;
+using CustomTools.Extensions.Core.Array;
+using ECurve;
 using Newtonsoft.Json;
 using SimpleBase;
-using Tools;
+using Tools.Assert;
+using Tools.Hash;
+using Tools.HexBinDec;
 
 
 namespace Base.ECC
@@ -30,12 +34,14 @@ namespace Base.ECC
 
         public static PublicKey FromBuffer(byte[] buffer)
         {
-            if (Tool.ToHex(buffer).Equals(new string('0', 33 * 2)))
+            if (buffer.ToHexString().Equals(new string('0', 33 * 2)))
             {
                 return new PublicKey(null);
             }
             return new PublicKey(Point.DecodeFrom(Curve.SecP256k1, buffer));
         }
+
+        public byte[] ToBuffer(bool compressed) => ToArray(compressed);
 
         private byte[] ToArray(bool compressed = true)
         {
@@ -162,9 +168,9 @@ namespace Base.ECC
             return FromPoint(qPrime);
         }
 
-        public static PublicKey FromHex(string hex) => FromBuffer(Tool.FromHex(hex));
+        public static PublicKey FromHex(string hexString) => FromBuffer(hexString.FromHex2Data());
 
-        public string ToHex() => Tool.ToHex(ToArray());
+        public string ToHex() => ToArray().ToHexString();
 
         public override int GetHashCode() => ToString().GetHashCode();
 

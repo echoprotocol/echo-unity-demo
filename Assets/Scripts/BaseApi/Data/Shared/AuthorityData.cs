@@ -2,7 +2,6 @@
 using Buffers;
 using Base.Data.Pairs;
 using Newtonsoft.Json;
-using Tools;
 
 
 namespace Base.Data
@@ -15,16 +14,16 @@ namespace Base.Data
     }
 
 
-    public sealed class AuthorityData : NullableObject, ISerializeToBuffer
+    public sealed class AuthorityData : SerializableObject, ISerializeToBuffer
     {
         [JsonProperty("weight_threshold")]
         public uint WeightThreshold { get; private set; }
         [JsonProperty("account_auths")]
-        public AccountIdValuePair[] AccountAuths { get; private set; }
+        public AccountIdWeightPair[] AccountAuths { get; private set; }
         [JsonProperty("key_auths")]
-        public PublicKeyValuePair[] KeyAuths { get; private set; }
+        public PublicKeyWeightPair[] KeyAuths { get; private set; }
         [JsonProperty("address_auths")]
-        public AddressValuePair[] AddressAuths { get; private set; }
+        public AddressWeightPair[] AddressAuths { get; private set; }
 
         public ByteBuffer ToBuffer(ByteBuffer buffer = null)
         {

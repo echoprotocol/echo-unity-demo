@@ -10,9 +10,9 @@ namespace Base.Data.Json
 
         protected override JToken Serialize(VoteId value) => ConvertTo(value);
 
-        private static JToken ConvertTo(VoteId voteId)
+        private static JToken ConvertTo(VoteId value)
         {
-            return VoteId.EMPTY.Equals(voteId) ? JToken.FromObject(0) : JToken.FromObject(voteId.ToString());
+            return VoteId.EMPTY.Equals(value) ? JToken.FromObject(0) : JToken.FromObject(value.ToString());
         }
 
         private static VoteId ConvertFrom(JToken value)

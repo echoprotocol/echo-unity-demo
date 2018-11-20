@@ -1,14 +1,15 @@
 ﻿using System;
-using Buffers;
 using Base.Data.Json;
 using Base.Data.Operations;
+using Buffers;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
-using Tools;
+using Tools.Time;
 
 
 namespace Base.Data.Transactions
 {
-    public class TransactionData : NullableObject
+    public class TransactionData : SerializableObject
     {
         [JsonProperty("ref_block_num")]
         public ushort ReferenceBlockNumber { get; set; }
@@ -23,7 +24,7 @@ namespace Base.Data.Transactions
 
         public TransactionData()
         {
-            Expiration = Tool.ZeroTime();
+            Expiration = TimeTool.ZeroTime();
             Operations = new OperationData[0];
             Extensions = new object[0];
         }

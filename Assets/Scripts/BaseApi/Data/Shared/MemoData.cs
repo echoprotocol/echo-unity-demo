@@ -1,10 +1,10 @@
 using System;
-using Buffers;
 using Base.Data.Json;
 using Base.ECC;
+using Buffers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
 
 
 namespace Base.Data
@@ -17,10 +17,11 @@ namespace Base.Data
         private const string NONCE_FIELD_KEY = "nonce";
         private const string MESSAGE_FIELD_KEY = "message";
 
+
         public PublicKey From { get; set; }
         public PublicKey To { get; set; }
         public ulong Nonce { get; set; }
-        public string Message { get; set; }
+        public byte[] Message { get; set; }
 
         public ByteBuffer ToBuffer(ByteBuffer buffer = null)
         {
@@ -28,7 +29,7 @@ namespace Base.Data
             From.ToBuffer(buffer);
             To.ToBuffer(buffer);
             buffer.WriteUInt64(Nonce);
-            buffer.WriteBytes(Tool.FromHex(Message));
+            buffer.WriteBytes(Message);
             return buffer;
         }
 
@@ -37,7 +38,7 @@ namespace Base.Data
             return new JsonBuilder(new JsonDictionary {
                 { FROM_FIELD_KEY,       From },
                 { TO_FIELD_KEY,         To },
-                { NONCE_FIELD_KEY,      Tool.WrapUInt64( Nonce ) },
+                { NONCE_FIELD_KEY,      Nonce.ToString() },
                 { MESSAGE_FIELD_KEY,    Message }
             }).Build();
         }
@@ -51,7 +52,7 @@ namespace Base.Data
             instance.From = value.TryGetValue(FROM_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
             instance.To = value.TryGetValue(TO_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
             instance.Nonce = Convert.ToUInt64(value.TryGetValue(NONCE_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
-            instance.Message = value.TryGetValue(MESSAGE_FIELD_KEY, out token) ? token.ToObject<string>() : string.Empty;
+            instance.Message = value.TryGetValue(MESSAGE_FIELD_KEY, out token) ? token.ToObject<byte[]>(new ByteArrayConverter().GetSerializer()) : new byte[0];
             return instance;
         }
     }

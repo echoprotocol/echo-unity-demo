@@ -1,7 +1,7 @@
 using System;
 using Base.Data.Json;
 using Base.ECC;
-using Tools;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
 
 
@@ -103,7 +103,7 @@ namespace Base.Data.Accounts
     }
 
 
-    public sealed class FullAccountData : NullableObject
+    public sealed class FullAccountData : SerializableObject
     {
         [JsonProperty("account")]
         public AccountObject Account { get; set; }

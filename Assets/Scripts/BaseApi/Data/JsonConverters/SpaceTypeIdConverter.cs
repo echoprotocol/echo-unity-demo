@@ -10,9 +10,9 @@ namespace Base.Data.Json
 
         protected override JToken Serialize(SpaceTypeId value) => ConvertTo(value);
 
-        private static JToken ConvertTo(SpaceTypeId spaceTypeId)
+        private static JToken ConvertTo(SpaceTypeId value)
         {
-            return SpaceTypeId.EMPTY.Equals(spaceTypeId) ? JToken.FromObject(0) : JToken.FromObject(spaceTypeId.ToString());
+            return SpaceTypeId.EMPTY.Equals(value) ? JToken.FromObject(0) : JToken.FromObject(value.ToString());
         }
 
         private static SpaceTypeId ConvertFrom(JToken value)

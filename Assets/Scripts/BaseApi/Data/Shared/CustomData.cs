@@ -1,17 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Buffers;
 using Base.Data.Json;
+using Buffers;
+using CustomTools.Extensions.Core;
+using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
 
 
 namespace Base.Data
 {
     [JsonConverter(typeof(CustomDataConverter))] // only JTokenType.Object will be converted
-    public sealed class CustomData : NullableObject, ISerializeToBuffer
+    public sealed class CustomData : SerializableObject, ISerializeToBuffer
     {
         public Dictionary<string, object> Fields { get; private set; }
 

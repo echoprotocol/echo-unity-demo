@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +8,19 @@ using Base.Data.Assets;
 using Base.Data.Operations;
 using Base.Data.Properties;
 using Base.ECC;
+using Base.Storage;
+using CustomTools.Extensions.Core;
+using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json.Linq;
 using Promises;
-using Tools;
+using Tools.Hash;
+using Tools.HexBinDec;
+using Tools.Time;
 
 
 namespace Base.Data.Transactions
 {
-    public class TransactionBuilder : NullableObject
+    public class TransactionBuilder : SerializableObject
     {
         public class SignaturesContainer
         {
@@ -30,16 +35,16 @@ namespace Base.Data.Transactions
         }
 
 
-        protected static DateTime headBlockTime = Tool.ZeroTime();
+        protected static DateTime headBlockTime = TimeTool.ZeroTime();
 
         private ushort referenceBlockNumber = ushort.MinValue;
         private uint referenceBlockPrefix = uint.MinValue;
-        private DateTime expiration = Tool.ZeroTime();
+        private DateTime expiration = TimeTool.ZeroTime();
         private bool signed = false;
         private byte[] buffer = new byte[0];
 
         private readonly List<OperationData> operations = new List<OperationData>();
-        private readonly List<string> signatures = new List<string>();
+        private readonly List<byte[]> signatures = new List<byte[]>();
         private readonly List<KeyPair> signerKeys = new List<KeyPair>();
 
 
@@ -51,7 +56,7 @@ namespace Base.Data.Transactions
 
         public OperationData[] Operations => operations.ToArray();
 
-        public string[] Signatures => signatures.ToArray();
+        public byte[][] Signatures => signatures.ToArray();
 
         public TransactionBuilder() { }
 
@@ -70,7 +75,7 @@ namespace Base.Data.Transactions
                 var proposalCreateOperation = (ProposalCreateOperationData)operation;
                 if (proposalCreateOperation.ExpirationTime.IsZero())
                 {
-                    proposalCreateOperation.ExpirationTime = Tool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSecondsProposal);
+                    proposalCreateOperation.ExpirationTime = TimeTool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSecondsProposal);
                 }
             }
             operations.Add(operation);
@@ -93,10 +98,10 @@ namespace Base.Data.Transactions
             headBlockTime = dynamicGlobalProperty.Time;
             if (expiration.IsZero())
             {
-                expiration = Tool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSeconds);
+                expiration = TimeTool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSeconds);
             }
             referenceBlockNumber = (ushort)dynamicGlobalProperty.HeadBlockNumber;
-            var prefix = Tool.FromHex(dynamicGlobalProperty.HeadBlockId);
+            var prefix = dynamicGlobalProperty.HeadBlockId.FromHex2Data();
             if (!BitConverter.IsLittleEndian)
             {
                 Array.Reverse(prefix);
@@ -114,7 +119,7 @@ namespace Base.Data.Transactions
                 {
                     throw new InvalidOperationException("Not finalized");
                 }
-                return Tool.ToHex(SHA256.Create().HashAndDispose(buffer)).Substring(0, 40);
+                return SHA256.Create().HashAndDispose(buffer).ToHexString().Substring(0, 40);
             }
         }
 
@@ -124,7 +129,7 @@ namespace Base.Data.Transactions
             {
                 throw new InvalidOperationException("SetExpireSeconds... Already finalized");
             }
-            return expiration = Tool.ZeroTime().AddSeconds(BaseExpirationSeconds + seconds);
+            return expiration = TimeTool.ZeroTime().AddSeconds(BaseExpirationSeconds + seconds);
         }
 
         // Wraps this transaction in a proposal_create transaction
@@ -172,7 +177,7 @@ namespace Base.Data.Transactions
             var zeroAsset = SpaceTypeId.CreateOne(SpaceType.Asset);
             if (asset.IsNull())
             {
-                var firstFee = ops[0].Fee;
+                var firstFee = ops.First().Fee;
                 if (!firstFee.IsNull() && !firstFee.Asset.IsNullOrEmpty())
                 {
                     asset = firstFee.Asset;
@@ -197,7 +202,7 @@ namespace Base.Data.Transactions
             {
                 var list = new List<object>(results).ToArray();
 
-                var feesData = list[0] as AssetData[];
+                var feesData = list.First() as AssetData[];
                 var coreFeesData = (list.Length > 1) ? (list[1] as AssetData[]) : null;
                 var assetObject = (list.Length > 2) ? (list[2] as AssetObject) : null;
 
@@ -268,7 +273,7 @@ namespace Base.Data.Transactions
             }).Then(results => Promise<TransactionBuilder>.Resolved(builder));
         }
 
-        public IPromise<SignaturesContainer> GetPotentialSignatures()
+        public IPromise<SignaturesContainer> GetPotentialSignatures() // todo
         {
             var signedTransaction = new SignedTransactionData(this);
             return Promise<object[]>.All(
@@ -320,7 +325,7 @@ namespace Base.Data.Transactions
             }
             foreach (var key in signerKeys)
             {
-                signatures.Add(Tool.ToHex(Signature.SignBuffer(Tool.FromHex(EchoApiManager.ChainId).Concat(buffer.OrEmpty()), key.Private).ToBuffer()));
+                signatures.Add(Signature.SignBuffer(EchoApiManager.ChainId.FromHex2Data().Concat(buffer.OrEmpty()), key.Private).ToBuffer());
             }
             signerKeys.Clear();
             signed = true;
@@ -330,7 +335,7 @@ namespace Base.Data.Transactions
 
         public bool IsFinalized => !buffer.IsNullOrEmpty();
 
-        public IPromise Broadcast(Action<JToken[]> resultCallback)
+        public IPromise Broadcast(Action<JToken[]> resultCallback = null)
         {
             if (IsFinalized)
             {
@@ -356,7 +361,7 @@ namespace Base.Data.Transactions
             }
         }
 
-        private static IPromise BroadcastTransaction(TransactionBuilder transactionBuilder, Action<JToken[]> resultCallback)
+        private static IPromise BroadcastTransaction(TransactionBuilder transactionBuilder, Action<JToken[]> resultCallback = null)
         {
             return new Promise((resolve, reject) =>
             {
@@ -376,7 +381,7 @@ namespace Base.Data.Transactions
                 {
                     throw new InvalidOperationException("No operations");
                 }
-                EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(resultCallback, new SignedTransactionData(transactionBuilder)).Then(resolve).Catch(reject);
+                EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(transactionBuilder), resultCallback).Then(resolve).Catch(reject);
             });
         }
     }

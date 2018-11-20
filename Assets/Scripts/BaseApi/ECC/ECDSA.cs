@@ -1,8 +1,10 @@
 using System;
 using System.Security.Cryptography;
 using BigI;
+using CustomTools.Extensions.Core.Array;
 using ECurve;
-using Tools;
+using Tools.Assert;
+using Tools.Hash;
 
 
 namespace Base.ECC
@@ -163,7 +165,6 @@ namespace Base.ECC
             return v.Equals(r);
         }
 
-        // concat onli return new value TODO check
         private static BigInteger DeterministicGenerateK(Curve curve, byte[] hash, BigInteger d, SignDelegate checkSign, uint nonce)
         {
             if (nonce > 0)
@@ -177,13 +178,13 @@ namespace Base.ECC
             var value = new byte[32].Fill((byte)1);
 
             // Step D
-            key = new HMACSHA256(key).HashAndDispose(value.Add((byte)0).Concat(x, hash));
+            key = new HMACSHA256(key).HashAndDispose(value.Concat(new[] { (byte)0 }, x, hash));
 
             // Step E
             value = new HMACSHA256(key).HashAndDispose(value);
 
             // Step F
-            key = new HMACSHA256(key).HashAndDispose(value.Add((byte)1).Concat(x, hash));
+            key = new HMACSHA256(key).HashAndDispose(value.Concat(new[] { (byte)1 }, x, hash));
 
             // Step G
             value = new HMACSHA256(key).HashAndDispose(value);
@@ -197,7 +198,7 @@ namespace Base.ECC
             // Step H3, repeat until t is within the interval [1, n - 1]
             while ((t.Sign <= 0) || (t.CompareTo(curve.N) >= 0) || !checkSign(t))
             {
-                key = new HMACSHA256(key).HashAndDispose(value.Add((byte)0));
+                key = new HMACSHA256(key).HashAndDispose(value.Concat(new[] { (byte)0 }));
                 value = new HMACSHA256(key).HashAndDispose(value);
 
                 // Step H1/H2a, again, ignored as tlen == qlen (256 bit)

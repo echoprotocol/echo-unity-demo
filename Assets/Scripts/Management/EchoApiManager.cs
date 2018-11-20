@@ -4,11 +4,16 @@ using Base;
 using Base.Api;
 using Base.Api.Database;
 using Base.Config;
+using Base.Data;
+using Base.Data.Operations;
+using Base.Data.Transactions;
 using Base.Requests;
 using Base.Responses;
+using Base.Storage;
+using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
+using Newtonsoft.Json.Linq;
 using Promises;
-using Tools;
 using WebSocketSharp;
 
 
@@ -35,6 +40,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     private NetworkBroadcastApi networkBroadcast;
     private HistoryApi history;
     private CryptoApi crypto;
+    private AuthorizationContainer authorizationContainer;
 
 
     public static string ChainId => chainId.OrEmpty();
@@ -48,6 +54,8 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     public HistoryApi History => history ?? (history = HistoryApi.Create(this));
 
     public CryptoApi Crypto => crypto ?? (crypto = CryptoApi.Create(this));
+
+    public AuthorizationContainer Authorization => authorizationContainer ?? (authorizationContainer = new AuthorizationContainer());
 
 
     #region UnityCallbacks
@@ -195,5 +203,43 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         newChainId = newChainId.OrEmpty();
         chainId = newChainId;
         ChainConfig.SetChainId(newChainId);
+    }
+
+    public IPromise CallContract(uint accountId, uint contractId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<JToken[]> resultCallback = null)
+    {
+        if (!Authorization.IsAuthorized)
+        {
+            return Promise.Rejected(new InvalidOperationException("Isn't Authorized!"));
+        }
+        var operation = new ContractOperationData
+        {
+            Registrar = SpaceTypeId.CreateOne(SpaceType.Account, accountId),
+            Receiver = SpaceTypeId.CreateOne(SpaceType.Contract, contractId),
+            Code = bytecode.OrEmpty(),
+            Asset = SpaceTypeId.CreateOne(SpaceType.Asset, feeAssetId),
+            Value = amount,
+            GasPrice = gasPrice,
+            Gas = gas
+        };
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), resultCallback);
+    }
+
+    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<JToken[]> resultCallback = null)
+    {
+        if (!Authorization.IsAuthorized)
+        {
+            return Promise.Rejected(new InvalidOperationException("Isn't Authorized!"));
+        }
+        var operation = new ContractOperationData
+        {
+            Registrar = SpaceTypeId.CreateOne(SpaceType.Account, accountId),
+            Receiver = null,
+            Code = bytecode.OrEmpty(),
+            Asset = SpaceTypeId.CreateOne(SpaceType.Asset, feeAssetId),
+            Value = 0,
+            GasPrice = gasPrice,
+            Gas = gas
+        };
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), resultCallback);
     }
 }

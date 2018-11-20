@@ -1,8 +1,8 @@
 using System;
-using Buffers;
 using Base.Config;
+using Buffers;
 using Newtonsoft.Json.Linq;
-using Tools;
+using Tools.Json;
 
 
 namespace Base.Data.Operations.Fee
@@ -12,6 +12,7 @@ namespace Base.Data.Operations.Fee
         private const string BASIC_FEE_FIELD_KEY = "basic_fee";
         private const string PREMIUM_FEE_FIELD_KEY = "premium_fee";
         private const string PRICE_PER_KBYTE_FIELD_KEY = "price_per_kbyte";
+
 
         public ulong BasicFee { get; set; }
         public ulong PremiumFee { get; set; }

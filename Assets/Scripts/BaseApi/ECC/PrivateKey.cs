@@ -2,9 +2,13 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using BigI;
+using CustomTools.Extensions.Core;
+using CustomTools.Extensions.Core.Array;
 using ECurve;
 using SimpleBase;
-using Tools;
+using Tools.Assert;
+using Tools.Hash;
+using Tools.HexBinDec;
 
 
 namespace Base.ECC
@@ -68,9 +72,8 @@ namespace Base.ECC
 
         public string ToWif()
         {
-            var buffer = new byte[0];
             // checksum includes the version
-            buffer = buffer.Add((byte)0x80);
+            var buffer = new[] { (byte)0x80 };
             buffer = buffer.Concat(ToBuffer());
             var checksum = SHA256.Create().HashAndDispose(buffer);
             checksum = SHA256.Create().HashAndDispose(checksum);
@@ -118,7 +121,7 @@ namespace Base.ECC
             {
                 throw new InvalidOperationException("Child offset went out of bounds, try again");
             }
-            var derived = d.Addition(c);//.Modulo( Curve.SecP256k1.N );
+            var derived = d.Addition(c);//.Modulo(Curve.SecP256k1.N);
             if (derived.Sign == 0)
             {
                 throw new InvalidOperationException("Child offset derived to an invalid key, try again");
@@ -126,7 +129,7 @@ namespace Base.ECC
             return new PrivateKey(derived);
         }
 
-        public string ToHex() => Tool.ToHex(ToBuffer());
+        public string ToHex() => ToBuffer().ToHexString();
 
         public override string ToString() => ToHex();
     }

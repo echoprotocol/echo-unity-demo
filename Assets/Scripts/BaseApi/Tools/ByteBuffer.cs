@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
-using Tools;
-using Bytes = System.Collections.Generic.List<byte>;
+using CustomTools.Extensions.Core;
+using CustomTools.Extensions.Core.Array;
+using Tools.HexBinDec;
+using Tools.Time;
 
 
 namespace Buffers
@@ -54,19 +56,16 @@ namespace Buffers
 
         public byte[] ToArray() => buffer.ToArray();
 
-        public override string ToString()
-        {
-            return buffer.IsNullOrEmpty() ? string.Empty : Tool.ToDecimal(ToArray(), ',');
-        }
+        public override string ToString() => buffer.IsNullOrEmpty() ? string.Empty : ToArray().ToDecimalString(',');
 
         public void Print()
         {
             CustomTools.Console.Log(new StringBuilder().Append('[').Append(ToString()).Append(']').ToString());
         }
 
-        public string ToHex() => buffer.IsNullOrEmpty() ? string.Empty : Tool.ToHex(ToArray());
+        public string ToHex() => buffer.IsNullOrEmpty() ? string.Empty : ToArray().ToHexString();
 
-        public string ToBinary() => buffer.IsNullOrEmpty() ? string.Empty : Tool.ToBinary(ToArray());
+        public string ToBinary() => buffer.IsNullOrEmpty() ? string.Empty : ToArray().ToBinaryString();
 
         #region bool
         // Writes a boolean.
@@ -363,7 +362,7 @@ namespace Buffers
         public DateTime ReadDateTime()
         {
             var seconds = ReadUInt32();
-            return Tool.ZeroTime().AddSeconds(seconds);
+            return TimeTool.ZeroTime().AddSeconds(seconds);
         }
         #endregion
 
@@ -400,4 +399,7 @@ namespace Buffers
         }
         #endregion
     }
+
+
+    public class Bytes : System.Collections.Generic.List<byte> { }
 }

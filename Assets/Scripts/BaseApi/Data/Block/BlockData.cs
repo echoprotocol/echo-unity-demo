@@ -2,12 +2,11 @@
 using Base.Data.Json;
 using Base.Data.Transactions;
 using Newtonsoft.Json;
-using Tools;
 
 
 namespace Base.Data.Block
 {
-    public class BlockHeaderData : NullableObject
+    public class BlockHeaderData : SerializableObject
     {
         [JsonProperty("previous")]
         public string Previous { get; private set; }

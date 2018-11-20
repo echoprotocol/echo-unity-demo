@@ -29,7 +29,7 @@ namespace Base.Api.Database
             {
                 return new Promise<OperationHistoryObject[]>((resolve, reject) =>
                 {
-                    var debug = false;
+                    var debug = true;
                     var requestId = GenerateNewId();
                     var methodName = "get_account_history";
                     var title = methodName + " " + requestId;
