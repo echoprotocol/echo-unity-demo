@@ -187,6 +187,7 @@ namespace Base.Storage
                 case SpaceType._todo_object_2_17:/*             */return source.ToObject<Object_2_17>();
                 case SpaceType._todo_object_2_18:/*             */return source.ToObject<Object_2_18>();
                 case SpaceType.ContractTransactionHistory:/*    */return source.ToObject<ContractTransactionHistoryObject>();
+                case SpaceType.ContractStatistics:/*            */return source.ToObject<ContractStatisticsObject>();
                 default:
                     CustomTools.Console.Warning("Get unexpected SpaceType:", CustomTools.Console.SetCyanColor(sample.SpaceType), sample.Id, '\n', source);
                     return null;

@@ -47,6 +47,7 @@ namespace Base.Data.Json
         private readonly static string _TODO_OBJECT_2_17 =/*               */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType._todo_object_2_17);
         private readonly static string _TODO_OBJECT_2_18 =/*               */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType._todo_object_2_18);
         private readonly static string CONTRACT_TRANSACTION_HISTORY =/*    */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType.ContractTransactionHistory);
+        private readonly static string CONTRACT_STATISTICS =/*             */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType.ContractStatistics);
 
 
         protected override Enum Deserialize(string value, Type objectType) => ConvertFrom(value);
@@ -94,6 +95,7 @@ namespace Base.Data.Json
                 case Enum._todo_object_2_17:/*                     */return _TODO_OBJECT_2_17;
                 case Enum._todo_object_2_18:/*                     */return _TODO_OBJECT_2_18;
                 case Enum.ContractTransactionHistory:/*            */return CONTRACT_TRANSACTION_HISTORY;
+                case Enum.ContractStatistics:/*                    */return CONTRACT_STATISTICS;
             }
             return string.Empty;
         }
@@ -137,6 +139,7 @@ namespace Base.Data.Json
             if (_TODO_OBJECT_2_17.Equals(value))/*                 */return Enum._todo_object_2_17;
             if (_TODO_OBJECT_2_18.Equals(value))/*                 */return Enum._todo_object_2_18;
             if (CONTRACT_TRANSACTION_HISTORY.Equals(value))/*      */return Enum.ContractTransactionHistory;
+            if (CONTRACT_STATISTICS.Equals(value))/*               */return Enum.ContractStatistics;
             return Enum.Unknown;
         }
     }

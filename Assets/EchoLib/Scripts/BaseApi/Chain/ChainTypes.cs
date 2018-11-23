@@ -55,7 +55,8 @@ namespace Base.Config
             _todo_object_2_16/*                       */= 16,
             _todo_object_2_17/*                       */= 17,
             _todo_object_2_18/*                       */= 18,
-            ContractTransactionHistory/*              */= 19
+            ContractTransactionHistory/*              */= 19,
+            ContractStatistics/*                      */= 20
         }
 
 
@@ -113,11 +114,11 @@ namespace Base.Config
             TransferFromBlind/*                       */= 41,
             AssetSettleCancel/*                       */= 42,
             AssetClaimFees/*                          */= 43,
-            // 44 skip
-            ContractTransfer/*                        */= 45,
-            // 46 skip
+            FbaDistribute/*                           */= 44,
+            BidCollateral/*                           */= 45,
+            ExecuteBid/*                              */= 46,
             Contract/*                                */= 47,
-            // 48 ?
+            ContractTransfer/*                        */= 48
         }
 
 

@@ -35,7 +35,8 @@ namespace Base.Data.Json
                 //case ChainTypes.Operation.AssetUpdate:
                 //case ChainTypes.Operation.AssetUpdateBitasset:
                 //case ChainTypes.Operation.AssetUpdateFeedProducers:
-                //case ChainTypes.Operation.AssetIssue:
+                case ChainTypes.Operation.AssetIssue:
+                    return AssetIssueOperationData.Create(value.Last as JObject);
                 //case ChainTypes.Operation.AssetReserve:
                 //case ChainTypes.Operation.AssetFundFeePool:
                 //case ChainTypes.Operation.AssetSettle:
@@ -66,13 +67,13 @@ namespace Base.Data.Json
                 //case ChainTypes.Operation.TransferFromBlind:
                 //case ChainTypes.Operation.AssetSettleCancel:
                 //case ChainTypes.Operation.AssetClaimFees:
-                // Operation 44 skip
-                case ChainTypes.Operation.ContractTransfer:
-                    return ContractTransferOperationData.Create(value.Last as JObject);
-                // Operation 46 skip
+                //case ChainTypes.Operation.FbaDistribute
+                //case ChainTypes.Operation.BidCollateral
+                //case ChainTypes.Operation.ExecuteBid
                 case ChainTypes.Operation.Contract:
                     return ContractOperationData.Create(value.Last as JObject);
-                // Operation 48 skip
+                case ChainTypes.Operation.ContractTransfer:
+                    return ContractTransferOperationData.Create(value.Last as JObject);
                 default:
                     CustomTools.Console.Error("Unexpected operation type:", type, '\n', value);
                     return null;

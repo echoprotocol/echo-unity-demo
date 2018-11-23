@@ -48,7 +48,8 @@ namespace Base.Data
         _todo_object_2_16,
         _todo_object_2_17,
         _todo_object_2_18,
-        ContractTransactionHistory
+        ContractTransactionHistory,
+        ContractStatistics
     }
 
 
