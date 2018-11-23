@@ -75,7 +75,7 @@ public sealed class AuthorizationContainer
     {
         return EchoApiManager.Instance.Database.GetFullAccount(userName.Trim(), true).Then(result =>
         {
-            var validKeys = Keys.FromSeed(userName, password).CheckAuthorization(result.FullAccount.Account);
+            var validKeys = Keys.FromSeed(userName, password, false).CheckAuthorization(result.FullAccount.Account);
             if (!validKeys.IsNull())
             {
                 if (!Current.IsNull())

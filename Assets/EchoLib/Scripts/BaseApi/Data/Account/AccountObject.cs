@@ -67,7 +67,7 @@ namespace Base.Data.Accounts
                                 CustomTools.Console.Log(CustomTools.Console.SetGreenColor("Owner->", key.Public, "\nOwner<-", keyAuth.PublicKey));
                                 return true;
                             }
-                            CustomTools.Console.Log(CustomTools.Console.SetRedColor("Owner->", key.Public, "\nOwner<-", keyAuth.PublicKey));
+                            CustomTools.Console.Log(CustomTools.Console.SetRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.PublicKey));
                         }
                     }
                     return false;
@@ -81,7 +81,7 @@ namespace Base.Data.Accounts
                                 CustomTools.Console.Log(CustomTools.Console.SetGreenColor("Active->", key.Public, "\nActive<-", keyAuth.PublicKey));
                                 return true;
                             }
-                            CustomTools.Console.Log(CustomTools.Console.SetRedColor("Active->", key.Public, "\nActive<-", keyAuth.PublicKey));
+                            CustomTools.Console.Log(CustomTools.Console.SetRedColor("generated_key Active->", key.Public, "\ngetted_key        Active<-", keyAuth.PublicKey));
                         }
                     }
                     return false;
@@ -93,7 +93,7 @@ namespace Base.Data.Accounts
                             CustomTools.Console.Log(CustomTools.Console.SetGreenColor("Memo->", key.Public, "\nMemo<-", Options.MemoKey));
                             return true;
                         }
-                        CustomTools.Console.Log(CustomTools.Console.SetRedColor("Memo->", key.Public, "\nMemo<-", Options.MemoKey));
+                        CustomTools.Console.Log(CustomTools.Console.SetRedColor("generated_key Memo->", key.Public, "\ngetted_key        Memo<-", Options.MemoKey));
                     }
                     return false;
                 default:

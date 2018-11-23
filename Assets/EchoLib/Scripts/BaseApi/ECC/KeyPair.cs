@@ -14,7 +14,7 @@ namespace Base.ECC
 
         public KeyPair(string role, string userName, string password)
         {
-            privateKey = PrivateKey.FromSeed(password.Trim() + userName.Trim() + role.Trim());
+            privateKey = PrivateKey.FromSeed(userName.Trim() + role.Trim() + password.Trim()); // args order very important!
         }
 
         public KeyPair(PrivateKey privateKey, string associatePublicKey = null)
