@@ -85,7 +85,7 @@ namespace Tools.HexBinDec
             return builder.ToString();
         }
 
-        public static byte[] FromHex2Data(this string hexString)
+        public static byte[] FromHex2Data(this string hexString, uint? fixedSize = null)
         {
             if (hexString.IsNullOrEmpty())
             {
@@ -99,6 +99,17 @@ namespace Tools.HexBinDec
             for (var i = 0; i < hexString.Length; i += 2)
             {
                 result.Add(HexLibrary[hexString.Substring(i, 2)]);
+            }
+            if (fixedSize.HasValue && !result.Count.Equals(fixedSize.Value))
+            {
+                while (result.Count > fixedSize.Value)
+                {
+                    result.RemoveAt(0);
+                }
+                while (result.Count < fixedSize.Value)
+                {
+                    result.Insert(0, 0x00);
+                }
             }
             return result.ToArray();
         }

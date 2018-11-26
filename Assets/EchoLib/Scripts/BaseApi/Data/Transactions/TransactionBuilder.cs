@@ -68,7 +68,7 @@ namespace Base.Data.Transactions
             }
             if (operation.Fee.IsNull())
             {
-                operation.Fee = AssetData.EMPTY;
+                operation.Fee = new AssetData(0, SpaceTypeId.CreateOne(SpaceType.Asset));
             }
             if (operation.Type.Equals(ChainTypes.Operation.ProposalCreate))
             {
@@ -335,7 +335,7 @@ namespace Base.Data.Transactions
 
         public bool IsFinalized => !buffer.IsNullOrEmpty();
 
-        public IPromise Broadcast(Action<JToken[]> resultCallback = null)
+        public IPromise Broadcast(Action<TransactionConfirmation> resultCallback = null)
         {
             if (IsFinalized)
             {
@@ -361,7 +361,7 @@ namespace Base.Data.Transactions
             }
         }
 
-        private static IPromise BroadcastTransaction(TransactionBuilder transactionBuilder, Action<JToken[]> resultCallback = null)
+        private static IPromise BroadcastTransaction(TransactionBuilder transactionBuilder, Action<TransactionConfirmation> resultCallback = null)
         {
             return new Promise((resolve, reject) =>
             {
@@ -381,7 +381,10 @@ namespace Base.Data.Transactions
                 {
                     throw new InvalidOperationException("No operations");
                 }
-                EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(transactionBuilder), resultCallback).Then(resolve).Catch(reject);
+                EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(transactionBuilder), result =>
+                {
+                    resultCallback?.Invoke(result.IsNullOrEmpty() ? null : result.First().ToObject<TransactionConfirmation>());
+                }).Then(resolve).Catch(reject);
             });
         }
     }

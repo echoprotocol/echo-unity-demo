@@ -86,21 +86,7 @@ namespace Base.Storage
             return Promise.All(
                 api.GetDynamicGlobalProperties().Then(AddInPromise),
                 api.GetGlobalProperties().Then(AddInPromise),
-                api.GetAsset().Then(AddInPromise),
-
-                api.CallContractNoChangingState(2544, 41, 0, "f39ec1f74175677572000000000000000000000000000000000000000000000000000000").Then(d =>
-                {
-                    return Promise.Resolved();
-                })
-
-
-            //api.GetContractInfo(1880).Then(d => {
-            //    return Promise.Resolved();
-            //}),
-            //api.GetContractResult(1066).Then(d => {
-            //    return Promise.Resolved();
-            //})
-
+                api.GetAsset().Then(AddInPromise)
             );
         }
 

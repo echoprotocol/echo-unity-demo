@@ -14,6 +14,7 @@ using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json.Linq;
 using Promises;
+using Tools.HexBinDec;
 using WebSocketSharp;
 
 
@@ -118,7 +119,40 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         crypto = null;
     }
 
-    private void InitializeDone() => OnAllApiInitialized.SafeInvoke();
+    private void InitializeDone()
+    {
+        Authorization.AuthorizationBy(
+            "m-mikhno",
+            "P5KaiZRa3Yrb2pbnMkvGxwTK2umzF9mhVY7eUVZkbecN7"
+        ).Then(result =>
+        {
+            CustomTools.Console.Warning("IsAuthorized:", CustomTools.Console.SetCyanColor(result));
+
+            var account = Authorization.Current.UserNameData.FullAccount.Account.Id;
+            var contract = SpaceTypeId.Create("1.16.4003");
+            var bytecode =
+                "eb5c23e5" +
+                "20".FromHex2Data(32).ToHexString() +
+                "02".FromHex2Data(32).ToHexString() +
+                "01".FromHex2Data(32).ToHexString() +
+                "02".FromHex2Data(32).ToHexString();
+            CustomTools.Console.Warning(
+                "eb5c23e5", '\n',
+                "20".FromHex2Data(32).ToHexString(), '\n',
+                "02".FromHex2Data(32).ToHexString(), '\n',
+                "01".FromHex2Data(32).ToHexString(), '\n',
+                "02".FromHex2Data(32).ToHexString()
+            );
+            CallContract(account.Id, contract.Id, bytecode, 0, 0, 10000000, 0, confirmation =>
+            {
+                CustomTools.Console.Warning(confirmation);
+            });
+        });
+
+
+
+        OnAllApiInitialized.SafeInvoke();
+    }
 
     private void InitializeApi(LoginApi api)
     {
@@ -205,7 +239,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         ChainConfig.SetChainId(newChainId);
     }
 
-    public IPromise CallContract(uint accountId, uint contractId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<JToken[]> resultCallback = null)
+    public IPromise CallContract(uint accountId, uint contractId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmation> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {
@@ -221,10 +255,10 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
             GasPrice = gasPrice,
             Gas = gas
         };
-        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), resultCallback);
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Asset, resultCallback);
     }
 
-    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<JToken[]> resultCallback = null)
+    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmation> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {
@@ -240,6 +274,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
             GasPrice = gasPrice,
             Gas = gas
         };
-        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), resultCallback);
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Asset, resultCallback);
     }
 }

@@ -14,17 +14,4 @@ namespace Base.Data.Transactions
             OperationResults = new OperationResultData[0];
         }
     }
-
-
-    public class TransactionConfirmation : SerializableObject
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-        [JsonProperty("block_num")]
-        public uint BlockNumber { get; set; }
-        [JsonProperty("trx_num")]
-        public uint TransactionNumber { get; set; }
-        [JsonProperty("trx")]
-        public ProcessedTransactionData Transaction { get; set; }
-    }
 }

@@ -100,14 +100,14 @@ public sealed class AuthorizationContainer
 
     }
 
-    public IPromise ProcessTransaction(TransactionBuilder builder, Action<JToken[]> resultCallback = null)
+    public IPromise ProcessTransaction(TransactionBuilder builder, SpaceTypeId asset = null, Action<TransactionConfirmation> resultCallback = null)
     {
         if (!IsAuthorized)
         {
             return Promise.Rejected(new InvalidOperationException("Isn't Authorized!"));
         }
         var existPublicKeys = Current.Keys.PublicKeys;
-        return new Promise((resolve, reject) => TransactionBuilder.SetRequiredFees(builder).Then(b => b.GetPotentialSignatures().Then(signatures =>
+        return new Promise((resolve, reject) => TransactionBuilder.SetRequiredFees(builder, asset).Then(b => b.GetPotentialSignatures().Then(signatures =>
         {
             var availableKeys = new List<PublicKey>();
             foreach (var existPublicKey in existPublicKeys)
