@@ -128,10 +128,13 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         ).Then(result =>
         {
             CustomTools.Console.Warning("IsAuthorized:", CustomTools.Console.SetCyanColor(result));
-
             var account = Authorization.Current.UserNameData.FullAccount.Account.Id;
             var contract = SpaceTypeId.Create("1.16.4003");
-            var bytecode = "d504ea1d";
+            var bytecode = "12e905b0";   // method = selfAddress()
+            //var bytecode = "8da5cb5b";   // method = owner()
+            //var bytecode = "1f7b6d32";   // method = length()
+            //var bytecode = "d504ea1d";   // method = getArray()
+            //var bytecode =               // method = setArray(uint32[])
             //    "eb5c23e5" +
             //    "20".FromHex2Data(32).ToHexString() +
             //    "02".FromHex2Data(32).ToHexString() +
@@ -145,14 +148,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
                     CustomTools.Console.Warning(contractResult);
                 });
             });
-
-
-
-
-
-
-
-
         });
 
 
