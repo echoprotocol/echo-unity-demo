@@ -9,7 +9,6 @@ using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using CustomTools.Extensions.Core.Array;
-using Newtonsoft.Json.Linq;
 using Promises;
 
 
@@ -88,6 +87,11 @@ public sealed class AuthorizationContainer
             }
             return Promise<bool>.Resolved(false);
         });
+    }
+
+    public void AuthorizationBy(string userName, string password, Action<bool> onSuccess, Action<Exception> onFailed)
+    {
+        AuthorizationBy(userName, password).Then(onSuccess).Catch(onFailed);
     }
 
     public void ResetAuthorization()

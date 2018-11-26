@@ -12,6 +12,7 @@ using Base.Responses;
 using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
+using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json.Linq;
 using Promises;
 using Tools.HexBinDec;
@@ -130,23 +131,28 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
 
             var account = Authorization.Current.UserNameData.FullAccount.Account.Id;
             var contract = SpaceTypeId.Create("1.16.4003");
-            var bytecode =
-                "eb5c23e5" +
-                "20".FromHex2Data(32).ToHexString() +
-                "02".FromHex2Data(32).ToHexString() +
-                "01".FromHex2Data(32).ToHexString() +
-                "02".FromHex2Data(32).ToHexString();
-            CustomTools.Console.Warning(
-                "eb5c23e5", '\n',
-                "20".FromHex2Data(32).ToHexString(), '\n',
-                "02".FromHex2Data(32).ToHexString(), '\n',
-                "01".FromHex2Data(32).ToHexString(), '\n',
-                "02".FromHex2Data(32).ToHexString()
-            );
+            var bytecode = "d504ea1d";
+            //    "eb5c23e5" +
+            //    "20".FromHex2Data(32).ToHexString() +
+            //    "02".FromHex2Data(32).ToHexString() +
+            //    "01".FromHex2Data(32).ToHexString() +
+            //    "02".FromHex2Data(32).ToHexString();
             CallContract(account.Id, contract.Id, bytecode, 0, 0, 10000000, 0, confirmation =>
             {
                 CustomTools.Console.Warning(confirmation);
+                Database.GetContractResult((confirmation.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
+                {
+                    CustomTools.Console.Warning(contractResult);
+                });
             });
+
+
+
+
+
+
+
+
         });
 
 
