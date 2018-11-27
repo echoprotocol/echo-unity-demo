@@ -122,45 +122,45 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
 
     private void InitializeDone()
     {
-        Authorization.Registration("new_folder", "qwerqwerqwe").Then(result => {
-            CustomTools.Console.Warning("Registration:", CustomTools.Console.LogCyanColor(result));
-        });
-
-        //Authorization.AuthorizationBy(
-        //    "m-mikhno",
-        //    "P5KaiZRa3Yrb2pbnMkvGxwTK2umzF9mhVY7eUVZkbecN7"
-        //).Then(result =>
-        //{
-
-
-        //    CustomTools.Console.Warning("IsAuthorized:", CustomTools.Console.LogCyanColor(result));
-        //    //var account = Authorization.Current.UserNameData.FullAccount.Account.Id;
-        //    //var contract = SpaceTypeId.Create("1.16.4003");
-        //    //var bytecode = "12e905b0";   // method = selfAddress()
-        //    //var bytecode = "8da5cb5b";   // method = owner()
-        //    //var bytecode = "1f7b6d32";   // method = length()
-        //    //var bytecode = "d504ea1d";   // method = getArray()
-        //    //var bytecode =               // method = setArray(uint32[])
-        //    //    "eb5c23e5" +
-        //    //    "20".FromHex2Data(32).ToHexString() +
-        //    //    "02".FromHex2Data(32).ToHexString() +
-        //    //    "01".FromHex2Data(32).ToHexString() +
-        //    //    "02".FromHex2Data(32).ToHexString();
-
-        //    //CallContract(account.Id, contract.Id, bytecode, 0, 0, 10000000, 0, confirmation =>
-        //    //{
-        //    //    CustomTools.Console.Warning(confirmation);
-        //    //    Database.GetContractResult((confirmation.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
-        //    //    {
-        //    //        CustomTools.Console.Warning(contractResult.Result.Output.ToHexString());
-        //    //    });
-        //    //});
-
-        //    //Database.CallContractNoChangingState(contract.Id, account.Id, 0, bytecode).Then(output =>
-        //    //{
-        //    //    CustomTools.Console.Warning(output);
-        //    //});
+        //Authorization.Registration("new_folder", "qwerqwerqwe").Then(result => {
+        //    CustomTools.Console.Warning("Registration:", CustomTools.Console.LogCyanColor(result));
         //});
+
+        Authorization.AuthorizationBy(
+            "m-mikhno",
+            "P5KaiZRa3Yrb2pbnMkvGxwTK2umzF9mhVY7eUVZkbecN7"
+        ).Then(result =>
+        {
+
+
+            CustomTools.Console.Warning("IsAuthorized:", CustomTools.Console.LogCyanColor(result));
+            var account = Authorization.Current.UserNameData.FullAccount.Account.Id;
+            var contract = SpaceTypeId.Create("1.16.4003");
+            //var bytecode = "12e905b0";   // method = selfAddress()
+            //var bytecode = "8da5cb5b";   // method = owner()
+            //var bytecode = "1f7b6d32";   // method = length()
+            //var bytecode = "d504ea1d";   // method = getArray()
+            var bytecode =               // method = setArray(uint32[])
+                "eb5c23e5" +
+                "20".FromHex2Data(32).ToHexString() +
+                "02".FromHex2Data(32).ToHexString() +
+                "01".FromHex2Data(32).ToHexString() +
+                "02".FromHex2Data(32).ToHexString();
+
+            CallContract(account.Id, contract.Id, bytecode, 0, 0, 10000000, 0, confirmation =>
+            {
+                CustomTools.Console.Warning(confirmation);
+                Database.GetContractResult((confirmation.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
+                {
+                    CustomTools.Console.Warning(contractResult.Result.Output.ToHexString());
+                });
+            });
+
+            //Database.CallContractNoChangingState(contract.Id, account.Id, 0, bytecode).Then(output =>
+            //{
+            //    CustomTools.Console.Warning(output);
+            //});
+        });
 
         OnAllApiInitialized.SafeInvoke();
     }
