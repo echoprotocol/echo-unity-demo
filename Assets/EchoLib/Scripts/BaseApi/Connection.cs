@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using Base.Eventing;
+using Base.Queues;
 using Base.Requests;
 using Base.Responses;
 using CustomTools.Extensions.Core;
@@ -17,8 +17,8 @@ namespace Base
         public event Action<Connection> ConnectionClosed;
         public event Action<Connection, Response> MessageReceived;
 
-        private Queue<string> sendingQueue;
-        private Queue<Response> receivedQueue;
+        private LockedQueue<Request> sendingQueue;
+        private LockedQueue<Response> receivedQueue;
         private Uri uri;
         private WebSocket webSocket;
         private CallbackControl callbackManager;
@@ -38,10 +38,10 @@ namespace Base
         {
             uri = new Uri(url);
             callbackManager = new CallbackControl();
-            receivedQueue = new Queue<Response>();
+            receivedQueue = new LockedQueue<Response>();
             if (sendFromThread)
             {
-                new Thread(ThreadDequeuSendMessages).Start(sendingQueue = new Queue<string>());
+                new Thread(ThreadDequeuSendMessages).Start(sendingQueue = new LockedQueue<Request>());
             }
         }
 
@@ -86,18 +86,18 @@ namespace Base
         {
             if (SendFromThread)
             {
-                if (request is RequestCallback)
+                if (request is RequestAction)
                 {
-                    callbackManager.SetRequestCallback(request as RequestCallback);
+                    callbackManager.SetRequestCallback(request as RequestAction);
                 }
-                sendingQueue.Enqueue(request.ToString());
+                sendingQueue.Enqueue(request);
                 return true;
             }
             if (IsConnected)
             {
-                if (request is RequestCallback)
+                if (request is RequestAction)
                 {
-                    callbackManager.SetRequestCallback(request as RequestCallback);
+                    callbackManager.SetRequestCallback(request as RequestAction);
                 }
                 webSocket.Send(request.ToString());
                 return true;
@@ -107,25 +107,18 @@ namespace Base
 
         private void ThreadDequeuSendMessages(object parameter)
         {
-            var queue = parameter as Queue<string>;
+            var queue = parameter as LockedQueue<Request>;
             while (SendFromThread)
             {
                 if (IsConnected)
                 {
-                    try
+                    if (!queue.IsEmpty)
                     {
-                        if (queue.Count > 0)
+                        var message = queue.Dequeue();
+                        if (!message.IsNull())
                         {
-                            var message = queue.Dequeue();
-                            if (!message.IsNull())
-                            {
-                                webSocket.Send(message);
-                            }
+                            webSocket?.Send(message.ToString());
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        CustomTools.Console.DebugError("Client::ThreadDequeuSendMessages() Exception:", ex.Message);
                     }
                 }
                 else
@@ -133,7 +126,7 @@ namespace Base
                     connectionOpenEvent.WaitOne(2000); // wait connect signal or wait 2 sec
                 }
             }
-            CustomTools.Console.DebugError("Client::ThreadDequeuSendMessages() Thread done");
+            CustomTools.Console.DebugLog("Client::ThreadDequeuSendMessages() Thread done");
         }
         #endregion
 
@@ -234,7 +227,6 @@ namespace Base
         {
             if (disposing)
             {
-                connectionOpenEvent.Close();
                 CloseWebSocket();
                 uri = null;
                 if (!callbackManager.IsNull())
@@ -247,12 +239,13 @@ namespace Base
                     sendingQueue.Clear();
                     sendingQueue = null;
                 }
+                connectionOpenEvent.Reset();
+                connectionOpenEvent.Close();
                 if (!receivedQueue.IsNull())
                 {
                     receivedQueue.Clear();
                     receivedQueue = null;
                 }
-                connectionOpenEvent.Close();
             }
         }
         #endregion
@@ -317,8 +310,10 @@ namespace Base
 
         private void WebSocketMessageReceived(object sender, MessageEventArgs e)
         {
-            //CustomTools.Console.DebugLog("Client::WebSocketMessageReceived() Message:", CustomTools.Console.SetWhiteColor(e.Data));
-            receivedQueue.Enqueue(Response.Parse(e.Data));
+            //CustomTools.Console.DebugLog("Client::WebSocketMessageReceived() Message:", CustomTools.Console.LogWhiteColor(e.Data));
+            var message = Response.Parse(e.Data);
+            callbackManager.InvokeInitializer(message);
+            receivedQueue.Enqueue(message);
         }
 
         private void WebSocketError(object sender, ErrorEventArgs e)

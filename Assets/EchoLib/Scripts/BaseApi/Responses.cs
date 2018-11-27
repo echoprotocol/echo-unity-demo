@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Base.Data.Json;
+﻿using Base.Data.Json;
 using Base.Requests;
 using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
@@ -24,12 +23,16 @@ namespace Base.Responses
             [JsonProperty(RESULT_FIELD_KEY)]
             private JToken result;
 
+            private object data;
+
 
             public int ForRequestId => id;
 
             public string JsonRPC => jsonrpc;
 
-            public T GetData<T>() => result.ToObject<T>();
+            public T GetData<T>() => (T)(data ?? (data = result.ToObject<T>()));
+
+            public void Initialize<T>() => data = result.ToObject<T>();
 
             internal static Result Open(string url) => new Result { id = RequestIdentificator.OPEN_ID, result = JToken.FromObject(url) };
 
@@ -167,17 +170,32 @@ namespace Base.Responses
 
 
         private readonly string rawData;
-        private readonly JObject jsonObject;
-
-        private bool? isError = null;
-        private bool? isResult = null;
-        private bool? isNotice = null;
+        private readonly bool isError = false;
+        private readonly bool isResult = false;
+        private readonly bool isNotice = false;
+        private readonly Error error;
+        private readonly Result result;
+        private readonly Notice notice;
 
 
         private Response(string rawData)
         {
-            jsonObject = JObject.Parse(rawData ?? string.Empty);
+            var jsonObject = JObject.Parse(rawData ?? string.Empty);
             this.rawData = rawData;
+            if (isError = Error.IsInstance(jsonObject))
+            {
+                error = jsonObject.ToObject<Error>();
+            }
+            else
+            if (isResult = Result.IsInstance(jsonObject))
+            {
+                result = jsonObject.ToObject<Result>();
+            }
+            else
+            if (isNotice = Notice.IsInstance(jsonObject))
+            {
+                notice = jsonObject.ToObject<Notice>();
+            }
         }
 
         public static Response Parse(string data) => data.IsNullOrEmpty() ? null : new Response(data);
@@ -186,48 +204,50 @@ namespace Base.Responses
 
         public void SendResultData<T>(System.Action<T> resolve, System.Action<System.Exception> reject = null, bool isProcessed = true)
         {
-            if (!resolve.IsNull() && IsResult)
+            if (!resolve.IsNull() && isResult)
             {
-                resolve.Invoke(jsonObject.ToObject<Result>().GetData<T>());
+                resolve.Invoke(result.GetData<T>());
             }
             else
-            if (!reject.IsNull() && IsError)
+            if (!reject.IsNull() && isError)
             {
-                reject.Invoke(jsonObject.ToObject<Error>().ToException());
+                reject.Invoke(error.ToException());
             }
             IsProcessed = isProcessed;
+        }
+
+        public void Initialize<T>()
+        {
+            if (isResult)
+            {
+                result.Initialize<T>();
+            }
         }
 
         public void SendNoticeData(System.Action<JToken[]> callback, bool isProcessed = true)
         {
-            if (!callback.IsNull() && IsNotice)
+            if (!callback.IsNull() && isNotice)
             {
-                callback.Invoke(jsonObject.ToObject<Notice>().Results);
+                callback.Invoke(notice.Results);
             }
             IsProcessed = isProcessed;
         }
-
-        private bool IsError => isError ?? (isError = Error.IsInstance(jsonObject)).Value;
-
-        private bool IsResult => isResult ?? (isResult = Result.IsInstance(jsonObject)).Value;
-
-        private bool IsNotice => isNotice ?? (isNotice = Notice.IsInstance(jsonObject)).Value;
 
         public int RequestId
         {
             get
             {
-                if (IsError)
+                if (isError)
                 {
-                    return jsonObject.ToObject<Error>().ForRequestId;
+                    return error.ForRequestId;
                 }
-                if (IsResult)
+                if (isResult)
                 {
-                    return jsonObject.ToObject<Result>().ForRequestId;
+                    return result.ForRequestId;
                 }
-                if (IsNotice)
+                if (isNotice)
                 {
-                    return jsonObject.ToObject<Notice>().SubscribeId;
+                    return notice.SubscribeId;
                 }
                 return RequestIdentificator.INVALID_ID;
             }
@@ -239,17 +259,17 @@ namespace Base.Responses
 
         public void PrintDebugLog(string title)
         {
-            if (IsError)
+            if (isError)
             {
                 CustomTools.Console.DebugError(CustomTools.Console.LogYellowColor(title), CustomTools.Console.LogRedColor("<<<---"), CustomTools.Console.LogWhiteColor(ToString()));
             }
             else
-            if (IsResult)
+            if (isResult)
             {
                 CustomTools.Console.DebugLog(CustomTools.Console.LogYellowColor(title), CustomTools.Console.LogRedColor("<<<---"), CustomTools.Console.LogWhiteColor(ToString()));
             }
             else
-            if (IsNotice)
+            if (isNotice)
             {
                 CustomTools.Console.DebugLog(CustomTools.Console.LogCyanColor(title), CustomTools.Console.LogRedColor("<<<---"), CustomTools.Console.LogWhiteColor(ToString()));
             }

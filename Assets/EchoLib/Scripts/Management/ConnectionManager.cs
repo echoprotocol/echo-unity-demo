@@ -44,7 +44,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
 
     public static string PingUrl => HTTP + "www.google.com/";
 
-    private void Update() =>openConnection?.DequeuReceivedMessages(MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE);
+    private void Update() => openConnection?.DequeuReceivedMessages(MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE);
 
     private void OnApplicationQuit()
     {
@@ -100,6 +100,10 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
 
     public static void DoAll(List<Request> requests)
     {
+        if (requests.IsEmpty())
+        {
+            return;
+        }
         var notSended = new List<Request>(requests);
         foreach (var request in requests)
         {

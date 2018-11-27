@@ -92,7 +92,7 @@ namespace Base.Storage
 
         public static IPromise SubscribeToNotice(DatabaseApi api)
         {
-            return api.SubscribeNotice(ChangeNotify);//.Then(() => Init(api));
+            return api.SubscribeNotice(ChangeNotify).Then(() => Init(api));
         }
 
         public static bool IsExist(SpaceTypeId spaceTypeId)

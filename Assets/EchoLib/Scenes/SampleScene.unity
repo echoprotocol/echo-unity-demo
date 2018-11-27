@@ -159,7 +159,7 @@ MonoBehaviour:
   pingHostBeforeConnecting: 1
   delayBetweenTryConnect: 5
   tryConnectCount: 5
-  sendFromIndividualThread: 0
+  sendFromIndividualThread: 1
 --- !u!4 &44429451
 Transform:
   m_ObjectHideFlags: 0

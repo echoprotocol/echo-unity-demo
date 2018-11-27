@@ -34,6 +34,8 @@ namespace Base.Api
             };
         }
 
+        private Action<Response> GenerateRequestInitializer<T>() => response => response.Initialize<T>();
+
         protected void DoRequestVoid(int requestId, Parameters parameters, Action resolve, Action<Exception> reject, string title, bool debug)
         {
             DoRequest(requestId, parameters, resolve.IsNull() ? (Action<object>)null : result => resolve(), reject, title, debug);
@@ -41,7 +43,7 @@ namespace Base.Api
 
         protected void DoRequest<T>(int requestId, Parameters parameters, Action<T> resolve, Action<Exception> reject, string title, bool debug)
         {
-            sender.Send((!resolve.IsNull() || !reject.IsNull()) ? new RequestCallback(requestId, parameters, GenerateRequestCallback(resolve, reject, title, debug), title, debug) : new Request(requestId, parameters, title, debug));
+            sender.Send((!resolve.IsNull() || !reject.IsNull()) ? new RequestAction(requestId, parameters, GenerateRequestCallback(resolve, reject, title, debug), GenerateRequestInitializer<T>(), title, debug) : new Request(requestId, parameters, title, debug));
         }
 
         protected int GenerateNewId() => sender.Identificators.GenerateNewId();

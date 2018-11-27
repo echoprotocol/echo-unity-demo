@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Base.Data;
 using Base.Data.Accounts;
 using Base.Data.Pairs;
@@ -86,42 +87,44 @@ public sealed class AuthorizationContainer
                 }
                 return new Promise<bool>((resolve, reject) =>
                 {
-                    try
+                    new Task(() =>
                     {
-                        var keys = Keys.FromSeed(userName, password, false);
-                        var request = (HttpWebRequest)WebRequest.Create(NodeManager.Instance.RegistrationUrl);
-                        request.ContentType = "application/json";
-                        request.Method = "POST";
-                        using (var writer = new StreamWriter(request.GetRequestStream()))
+                        try
                         {
-                            writer.Write(new JsonBuilder(new JsonDictionary {
-                            { "name",          userName },
-                            { "owner_key",     keys[AccountRole.Owner].ToString() },
-                            { "active_key",    keys[AccountRole.Active].ToString() },
-                            { "memo_key",      keys[AccountRole.Memo].ToString() }
-                        }).Build());
-                            writer.Flush();
-                            writer.Close();
+                            var keys = Keys.FromSeed(userName, password, false);
+                            var request = (HttpWebRequest)WebRequest.Create(NodeManager.Instance.RegistrationUrl);
+                            request.ContentType = "application/json";
+                            request.Method = "POST";
+                            using (var writer = new StreamWriter(request.GetRequestStream()))
+                            {
+                                writer.Write(new JsonBuilder(new JsonDictionary {
+                                    { "name",          userName },
+                                    { "owner_key",     keys[AccountRole.Owner].ToString() },
+                                    { "active_key",    keys[AccountRole.Active].ToString() },
+                                    { "memo_key",      keys[AccountRole.Memo].ToString() }
+                                }).Build());
+                                writer.Flush();
+                                writer.Close();
+                            }
+                            var jsonResponse = string.Empty;
+                            using (var reader = new StreamReader((request.GetResponse() as HttpWebResponse).GetResponseStream()))
+                            {
+                                jsonResponse = reader.ReadToEnd();
+                                reader.Close();
+                            }
+                            if (jsonResponse.IsNullOrEmpty())
+                            {
+                                throw new InvalidOperationException();
+                            }
+                            var confirmation = JToken.Parse(jsonResponse).First.ToObject<TransactionConfirmation>();
+                            var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
+                            (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
                         }
-                        var jsonResponse = string.Empty;
-                        using (var reader = new StreamReader(((HttpWebResponse)request.GetResponse()).GetResponseStream()))
+                        catch (Exception ex)
                         {
-                            jsonResponse = reader.ReadToEnd();
-                            reader.Close();
+                            reject(ex);
                         }
-                        if (jsonResponse.IsNullOrEmpty())
-                        {
-                            throw new InvalidOperationException();
-                        }
-
-                        var confirmation = JToken.Parse(jsonResponse).First.ToObject<TransactionConfirmation>();
-                        var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
-                        (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
-                    }
-                    catch (Exception ex)
-                    {
-                        reject(ex);
-                    }
+                    }).Start();
                 });
             }
             return AuthorizationBy(result, password);
@@ -138,18 +141,34 @@ public sealed class AuthorizationContainer
 
     private IPromise<bool> AuthorizationBy(UserNameFullAccountDataPair dataPair, string password)
     {
-        var validKeys = Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorization(dataPair.FullAccount.Account);
-        if (!validKeys.IsNull())
+        return new Promise<bool>((resolve, reject) =>
         {
-            if (!Current.IsNull())
+            new Task(() =>
             {
-                Repository.OnGetObject -= Current.UpdateAccountData;
-            }
-            Current = new AuthorizationData(validKeys, dataPair);
-            Repository.OnGetObject += Current.UpdateAccountData;
-            return Promise<bool>.Resolved(true);
-        }
-        return Promise<bool>.Resolved(false);
+                try
+                {
+                    var validKeys = Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorization(dataPair.FullAccount.Account);
+                    if (!validKeys.IsNull())
+                    {
+                        if (!Current.IsNull())
+                        {
+                            Repository.OnGetObject -= Current.UpdateAccountData;
+                        }
+                        Current = new AuthorizationData(validKeys, dataPair);
+                        Repository.OnGetObject += Current.UpdateAccountData;
+                        resolve(true);
+                    }
+                    else
+                    {
+                        resolve(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    reject(ex);
+                }
+            }).Start();
+        });
     }
 
     public IPromise<bool> AuthorizationBy(string userName, string password)

@@ -69,14 +69,17 @@ namespace Base.Requests
     }
 
 
-    public sealed class RequestCallback : Request
+    public class RequestAction : Request
     {
         [JsonIgnore]
         public Action<Response> Callback { get; private set; }
+        [JsonIgnore]
+        public Action<Response> Initializer { get; private set; }
 
-        public RequestCallback(int requestId, Parameters parameters, Action<Response> callback, string title, bool debug) : base(requestId, parameters, title, debug)
+        public RequestAction(int requestId, Parameters parameters, Action<Response> callback, Action<Response> initializer, string title, bool debug) : base(requestId, parameters, title, debug)
         {
             Callback = callback;
+            Initializer = initializer;
         }
     }
 
