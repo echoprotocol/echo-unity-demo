@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using Base.Data;
 using Base.Data.Accounts;
 using Base.Data.Pairs;
@@ -9,7 +11,9 @@ using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using CustomTools.Extensions.Core.Array;
+using Newtonsoft.Json.Linq;
 using Promises;
+using Tools.Json;
 
 
 public sealed class AuthorizationContainer
@@ -70,22 +74,89 @@ public sealed class AuthorizationContainer
         }
     }
 
+    public IPromise<bool> Registration(string userName, string password)
+    {
+        return EchoApiManager.Instance.Database.GetFullAccount(userName.Trim(), true).Then(result =>
+        {
+            if (result.IsNull())
+            {
+                if (!NodeManager.IsInstanceExist || NodeManager.Instance.RegistrationUrl.IsNullOrEmpty())
+                {
+                    return Promise<bool>.Rejected(new InvalidOperationException("Registration url incorrect."));
+                }
+                return new Promise<bool>((resolve, reject) =>
+                {
+                    try
+                    {
+                        var keys = Keys.FromSeed(userName, password, false);
+                        var request = (HttpWebRequest)WebRequest.Create(NodeManager.Instance.RegistrationUrl);
+                        request.ContentType = "application/json";
+                        request.Method = "POST";
+                        using (var writer = new StreamWriter(request.GetRequestStream()))
+                        {
+                            writer.Write(new JsonBuilder(new JsonDictionary {
+                            { "name",          userName },
+                            { "owner_key",     keys[AccountRole.Owner].ToString() },
+                            { "active_key",    keys[AccountRole.Active].ToString() },
+                            { "memo_key",      keys[AccountRole.Memo].ToString() }
+                        }).Build());
+                            writer.Flush();
+                            writer.Close();
+                        }
+                        var jsonResponse = string.Empty;
+                        using (var reader = new StreamReader(((HttpWebResponse)request.GetResponse()).GetResponseStream()))
+                        {
+                            jsonResponse = reader.ReadToEnd();
+                            reader.Close();
+                        }
+                        if (jsonResponse.IsNullOrEmpty())
+                        {
+                            throw new InvalidOperationException();
+                        }
+
+                        var confirmation = JToken.Parse(jsonResponse).First.ToObject<TransactionConfirmation>();
+                        var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
+                        (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
+                    }
+                    catch (Exception ex)
+                    {
+                        reject(ex);
+                    }
+                });
+            }
+            return AuthorizationBy(result, password);
+        });
+    }
+
+    private IPromise<bool> AuthorizationBy(uint id, string password)
+    {
+        return EchoApiManager.Instance.Database.GetFullAccount(SpaceTypeId.ToString(SpaceType.Account, id), true).Then(result =>
+        {
+            return AuthorizationBy(result, password);
+        });
+    }
+
+    private IPromise<bool> AuthorizationBy(UserNameFullAccountDataPair dataPair, string password)
+    {
+        var validKeys = Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorization(dataPair.FullAccount.Account);
+        if (!validKeys.IsNull())
+        {
+            if (!Current.IsNull())
+            {
+                Repository.OnGetObject -= Current.UpdateAccountData;
+            }
+            Current = new AuthorizationData(validKeys, dataPair);
+            Repository.OnGetObject += Current.UpdateAccountData;
+            return Promise<bool>.Resolved(true);
+        }
+        return Promise<bool>.Resolved(false);
+    }
+
     public IPromise<bool> AuthorizationBy(string userName, string password)
     {
         return EchoApiManager.Instance.Database.GetFullAccount(userName.Trim(), true).Then(result =>
         {
-            var validKeys = Keys.FromSeed(userName, password, false).CheckAuthorization(result.FullAccount.Account);
-            if (!validKeys.IsNull())
-            {
-                if (!Current.IsNull())
-                {
-                    Repository.OnGetObject -= Current.UpdateAccountData;
-                }
-                Current = new AuthorizationData(validKeys, result);
-                Repository.OnGetObject += Current.UpdateAccountData;
-                return Promise<bool>.Resolved(true);
-            }
-            return Promise<bool>.Resolved(false);
+            return AuthorizationBy(result, password);
         });
     }
 

@@ -52,11 +52,11 @@ namespace Base.Config
                 {
                     coreAsset = network.CoreAsset;
                     addressPrefix = network.AddressPrefix;
-                    CustomTools.Console.DebugLog(CustomTools.Console.SetWhiteColor("Address prefix:", addressPrefix));
+                    CustomTools.Console.DebugLog(CustomTools.Console.LogWhiteColor("Address prefix:", addressPrefix));
                     return;
                 }
             }
-            CustomTools.Console.DebugError(CustomTools.Console.SetRedColor("Unknown chain id:", chainId));
+            CustomTools.Console.DebugError(CustomTools.Console.LogRedColor("Unknown chain id:", chainId));
         }
 
         public static void Reset()

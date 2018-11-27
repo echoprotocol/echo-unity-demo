@@ -16,7 +16,11 @@ namespace Base.Api.Database
         {
             return new Promise<bool>((resolve, reject) =>
             {
+#if DEBUG
                 var debug = false;
+#else
+                var debug = false;
+#endif
                 var methodName = "login";
                 var parameters = new Parameters { Id.Value, methodName, new object[] { userName, password } };
                 DoRequest(GenerateNewId(), parameters, resolve, reject, methodName, debug);

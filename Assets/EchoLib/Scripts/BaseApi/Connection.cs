@@ -323,7 +323,7 @@ namespace Base
 
         private void WebSocketError(object sender, ErrorEventArgs e)
         {
-            CustomTools.Console.DebugError("Client::WebSocketError() Exception:", CustomTools.Console.SetRedColor(e.Message), e.Exception.Message);
+            CustomTools.Console.DebugError("Client::WebSocketError() Exception:", CustomTools.Console.LogRedColor(e.Message), e.Exception.Message);
             Close();
         }
 

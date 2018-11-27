@@ -100,14 +100,14 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     #region Initialization
     private void ConnectionOpened(Response response)
     {
-        CustomTools.Console.DebugLog("EchoApiManager class", CustomTools.Console.SetMagentaColor("Regular Callback:"), "ConnectionOpened()");
+        CustomTools.Console.DebugLog("EchoApiManager class", CustomTools.Console.LogMagentaColor("Regular Callback:"), "ConnectionOpened()");
         InitializeApi(LoginApi.Create(this));
         response.SendResultData<string>(url => OnConnectionOpened.SafeInvoke(url));
     }
 
     private void ConnectionClosed(Response response)
     {
-        CustomTools.Console.DebugLog("EchoApiManager class", CustomTools.Console.SetMagentaColor("Regular Callback:"), "ConnectionClosed()");
+        CustomTools.Console.DebugLog("EchoApiManager class", CustomTools.Console.LogMagentaColor("Regular Callback:"), "ConnectionClosed()");
         ResetApi();
         response.SendResultData<string>(reason => OnConnectionClosed.SafeInvoke(reason));
     }
@@ -170,7 +170,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
             }
             else
             {
-                CustomTools.Console.DebugLog("RequestManager class", CustomTools.Console.SetRedColor("Login Failed!"), "Login()");
+                CustomTools.Console.DebugLog("RequestManager class", CustomTools.Console.LogRedColor("Login Failed!"), "Login()");
             }
         });
     }

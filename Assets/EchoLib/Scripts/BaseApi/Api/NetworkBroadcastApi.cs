@@ -18,7 +18,11 @@ namespace Base.Api.Database
         {
             return new Promise<int>((resolve, reject) =>
             {
+#if DEBUG
                 var debug = false;
+#else
+                var debug = false;
+#endif
                 var methodName = "network_broadcast";
                 var parameters = new Parameters { LoginApi.ID, methodName, new object[0] };
                 DoRequest(GenerateNewId(), parameters, resolve, reject, methodName, debug);
@@ -31,7 +35,11 @@ namespace Base.Api.Database
             {
                 return new Promise((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "broadcast_transaction_with_callback";
                     var title = methodName + " " + requestId;

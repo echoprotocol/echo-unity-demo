@@ -1,5 +1,6 @@
 using Base.Data.Accounts;
 using Base.Data.Json;
+using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
 
 
@@ -15,6 +16,10 @@ namespace Base.Data.Pairs
         {
             UserName = userName;
             FullAccount = fullAccount;
+            if (!fullAccount.Account.Name.IsNullOrEmpty() && !fullAccount.Account.Name.Equals(userName))
+            {
+                UserName = fullAccount.Account.Name;
+            }
         }
     }
 }

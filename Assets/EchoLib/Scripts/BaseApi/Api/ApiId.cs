@@ -27,7 +27,7 @@ namespace Base.Api
                 preProcessorCallback.SafeInvoke(response);
                 if (debug)
                 {
-                    response.PrintLog(responseTitle);
+                    response.PrintDebugLog(responseTitle);
                 }
                 response.SendResultData(resolve, reject);
                 postProcessorCallback.SafeInvoke(response);

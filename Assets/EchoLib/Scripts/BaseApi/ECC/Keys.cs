@@ -55,6 +55,8 @@ namespace Base.ECC
             }
         }
 
+        public PublicKey this[AccountRole role] => keys.ContainsKey(role) ? keys[role].Public : null;
+
         public int Count => keys.Count;
 
         public PublicKey[] PublicKeys

@@ -47,17 +47,17 @@ namespace Base.Storage
                     }
                     Add(idObject);
                     notifyObjectList.Add(idObject);
-                    CustomTools.Console.Log("Update object:", CustomTools.Console.SetGreenColor(idObject.SpaceType), idObject.Id, '\n', CustomTools.Console.SetWhiteColor(idObject));
+                    CustomTools.Console.DebugLog("Update object:", CustomTools.Console.LogGreenColor(idObject.SpaceType), idObject.Id, '\n', CustomTools.Console.LogWhiteColor(idObject));
                 }
                 else
                 if (item.Type.Equals(JTokenType.String))
                 {
                     notifyStringList.Add(item.ToString());
-                    CustomTools.Console.Log("Get string:", CustomTools.Console.SetCyanColor(item));
+                    CustomTools.Console.DebugLog("Get string:", CustomTools.Console.LogCyanColor(item));
                 }
                 else
                 {
-                    CustomTools.Console.Warning("Get unexpected json type:", CustomTools.Console.SetYellowColor(item.Type), CustomTools.Console.SetCyanColor(item));
+                    CustomTools.Console.DebugWarning("Get unexpected json type:", CustomTools.Console.LogYellowColor(item.Type), CustomTools.Console.LogCyanColor(item));
                 }
             }
             foreach (var newObject in notifyObjectList)
@@ -92,7 +92,7 @@ namespace Base.Storage
 
         public static IPromise SubscribeToNotice(DatabaseApi api)
         {
-            return api.SubscribeNotice(ChangeNotify).Then(() => Init(api));
+            return api.SubscribeNotice(ChangeNotify);//.Then(() => Init(api));
         }
 
         public static bool IsExist(SpaceTypeId spaceTypeId)
@@ -131,7 +131,7 @@ namespace Base.Storage
             var sample = source.ToObject<IdObject>();
             if (sample.Id.IsNullOrEmpty())
             {
-                CustomTools.Console.Warning("Get unexpected object:", source.ToString());
+                CustomTools.Console.DebugWarning("Get unexpected object:", source.ToString());
                 return null;
             }
             switch (sample.SpaceType)
@@ -175,7 +175,7 @@ namespace Base.Storage
                 case SpaceType.ContractTransactionHistory:/*    */return source.ToObject<ContractTransactionHistoryObject>();
                 case SpaceType.ContractStatistics:/*            */return source.ToObject<ContractStatisticsObject>();
                 default:
-                    CustomTools.Console.Warning("Get unexpected SpaceType:", CustomTools.Console.SetCyanColor(sample.SpaceType), sample.Id, '\n', source);
+                    CustomTools.Console.DebugWarning("Get unexpected SpaceType:", CustomTools.Console.LogCyanColor(sample.SpaceType), sample.Id, '\n', source);
                     return null;
             }
         }

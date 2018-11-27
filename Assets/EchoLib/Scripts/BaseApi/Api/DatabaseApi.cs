@@ -28,7 +28,11 @@ namespace Base.Api.Database
         {
             return new Promise<int>((resolve, reject) =>
             {
+#if DEBUG
                 var debug = false;
+#else
+                var debug = false;
+#endif
                 var methodName = "database";
                 var parameters = new Parameters { LoginApi.ID, methodName, new object[0] };
                 DoRequest(GenerateNewId(), parameters, resolve, reject, methodName, debug);
@@ -41,7 +45,11 @@ namespace Base.Api.Database
             {
                 return new Promise<string>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = false;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_chain_id";
                     var title = methodName + " " + requestId;
@@ -58,7 +66,11 @@ namespace Base.Api.Database
             {
                 return new Promise<DynamicGlobalPropertiesObject>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_dynamic_global_properties";
                     var title = methodName + " " + requestId;
@@ -80,7 +92,11 @@ namespace Base.Api.Database
             {
                 return new Promise<GlobalPropertiesObject>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_global_properties";
                     var title = methodName + " " + requestId;
@@ -102,7 +118,11 @@ namespace Base.Api.Database
             {
                 return new Promise<SignedBlockData>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_block";
                     var title = methodName + " " + requestId;
@@ -124,7 +144,11 @@ namespace Base.Api.Database
             {
                 return new Promise<T[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_objects";
                     var title = methodName + " " + requestId;
@@ -202,7 +226,11 @@ namespace Base.Api.Database
             {
                 return new Promise<UserNameFullAccountDataPair[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_full_accounts";
                     var title = methodName + " " + requestId;
@@ -234,7 +262,11 @@ namespace Base.Api.Database
             {
                 return new Promise<UserNameAccountIdPair[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "lookup_accounts";
                     var title = methodName + " " + requestId;
@@ -258,7 +290,11 @@ namespace Base.Api.Database
             {
                 return new Promise<AssetData[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_required_fees";
                     var title = methodName + " " + requestId;
@@ -280,7 +316,11 @@ namespace Base.Api.Database
             {
                 return new Promise<PublicKey[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_required_signatures";
                     var title = methodName + " " + requestId;
@@ -297,7 +337,11 @@ namespace Base.Api.Database
             {
                 return new Promise<PublicKey[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_potential_signatures";
                     var title = methodName + " " + requestId;
@@ -314,7 +358,11 @@ namespace Base.Api.Database
             {
                 return new Promise<Address[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_potential_address_signatures";
                     var title = methodName + " " + requestId;
@@ -331,7 +379,11 @@ namespace Base.Api.Database
             {
                 return new Promise((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "set_subscribe_callback";
                     var title = methodName + " " + requestId;
@@ -352,7 +404,11 @@ namespace Base.Api.Database
             {
                 return new Promise<AssetData[]>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_account_balances";
                     var title = methodName + " " + requestId;
@@ -390,7 +446,11 @@ namespace Base.Api.Database
             {
                 return new Promise<ContractResultData>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_contract_result";
                     var title = methodName + " " + requestId;
@@ -412,7 +472,11 @@ namespace Base.Api.Database
             {
                 return new Promise<ContractInfoData>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "get_contract";
                     var title = methodName + " " + requestId;
@@ -434,7 +498,11 @@ namespace Base.Api.Database
             {
                 return new Promise<string>((resolve, reject) =>
                 {
+#if DEBUG
                     var debug = true;
+#else
+                    var debug = false;
+#endif
                     var requestId = GenerateNewId();
                     var methodName = "call_contract_no_changing_state";
                     var title = methodName + " " + requestId;
@@ -456,6 +524,18 @@ namespace Base.Api.Database
         public void CallContractNoChangingState(uint contractId, uint accountId, uint assetId, string bytecode, Action<string> onSuccess, Action<Exception> onFailed)
         {
             CallContractNoChangingState(contractId, accountId, assetId, bytecode).Then(onSuccess).Catch(onFailed);
+        }
+
+        public IPromise<string> GetContractBalance(uint contractId, uint accountId, uint assetId)
+        {
+            var methodName = "70a08231"; // balanceOf(address)
+            return CallContractNoChangingState(contractId, accountId, assetId, methodName);
+        }
+
+        public void GetContractBalance(uint contractId, uint accountId, uint assetId, Action<string> onSuccess, Action<Exception> onFailed)
+        {
+            var methodName = "70a08231"; // balanceOf(address)
+            CallContractNoChangingState(contractId, accountId, assetId, methodName).Then(onSuccess).Catch(onFailed);
         }
     }
 }

@@ -62,9 +62,9 @@ namespace Base.Requests
 
         public override string ToString() => JsonConvert.SerializeObject(this);
 
-        public void PrintLog()
+        public void PrintDebugLog()
         {
-            CustomTools.Console.DebugLog(CustomTools.Console.SetYellowColor(Title), CustomTools.Console.SetGreenColor("--->>>"), CustomTools.Console.SetWhiteColor(ToString()));
+            CustomTools.Console.DebugLog(CustomTools.Console.LogYellowColor(Title), CustomTools.Console.LogGreenColor("--->>>"), CustomTools.Console.LogWhiteColor(ToString()));
         }
     }
 

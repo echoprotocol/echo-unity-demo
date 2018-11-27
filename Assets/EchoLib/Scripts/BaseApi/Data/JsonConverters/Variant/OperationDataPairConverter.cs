@@ -75,7 +75,7 @@ namespace Base.Data.Json
                 case ChainTypes.Operation.ContractTransfer:
                     return ContractTransferOperationData.Create(value.Last as JObject);
                 default:
-                    CustomTools.Console.Error("Unexpected operation type:", type, '\n', value);
+                    CustomTools.Console.DebugError("Unexpected operation type:", type, '\n', value);
                     return null;
             }
         }

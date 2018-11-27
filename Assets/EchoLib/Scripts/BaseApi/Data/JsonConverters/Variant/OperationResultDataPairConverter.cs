@@ -26,7 +26,7 @@ namespace Base.Data.Json
                 case ChainTypes.OperationResult.Asset:
                     return AssetOperationResultData.Create(JToken.FromObject(value.Last));
                 default:
-                    CustomTools.Console.Error("Unexpected operation result type:", type);
+                    CustomTools.Console.DebugError("Unexpected operation result type:", type);
                     return null;
             }
         }
