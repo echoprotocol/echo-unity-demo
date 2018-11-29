@@ -62,19 +62,19 @@ namespace Base.Requests
 
         public override string ToString() => JsonConvert.SerializeObject(this);
 
-        public void PrintLog()
+        public void PrintDebugLog()
         {
-            CustomTools.Console.DebugLog(CustomTools.Console.SetYellowColor(Title), CustomTools.Console.SetGreenColor("--->>>"), CustomTools.Console.SetWhiteColor(ToString()));
+            CustomTools.Console.DebugLog(CustomTools.Console.LogYellowColor(Title), CustomTools.Console.LogGreenColor("--->>>"), CustomTools.Console.LogWhiteColor(ToString()));
         }
     }
 
 
-    public sealed class RequestCallback : Request
+    public class RequestAction : Request
     {
         [JsonIgnore]
         public Action<Response> Callback { get; private set; }
 
-        public RequestCallback(int requestId, Parameters parameters, Action<Response> callback, string title, bool debug) : base(requestId, parameters, title, debug)
+        public RequestAction(int requestId, Parameters parameters, Action<Response> callback, string title, bool debug) : base(requestId, parameters, title, debug)
         {
             Callback = callback;
         }

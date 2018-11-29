@@ -64,10 +64,10 @@ namespace Base.Data.Accounts
                         {
                             if (keyAuth.IsEquelKey(key))
                             {
-                                CustomTools.Console.Log(CustomTools.Console.SetGreenColor("Owner->", key.Public, "\nOwner<-", keyAuth.PublicKey));
+                                CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Owner->", key.Public, "\n            Owner<-", keyAuth.PublicKey));
                                 return true;
                             }
-                            CustomTools.Console.Log(CustomTools.Console.SetRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.PublicKey));
+                            CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.PublicKey));
                         }
                     }
                     return false;
@@ -78,10 +78,10 @@ namespace Base.Data.Accounts
                         {
                             if (keyAuth.IsEquelKey(key))
                             {
-                                CustomTools.Console.Log(CustomTools.Console.SetGreenColor("Active->", key.Public, "\nActive<-", keyAuth.PublicKey));
+                                CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Active->", key.Public, "\n            Active<-", keyAuth.PublicKey));
                                 return true;
                             }
-                            CustomTools.Console.Log(CustomTools.Console.SetRedColor("generated_key Active->", key.Public, "\ngetted_key        Active<-", keyAuth.PublicKey));
+                            CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Active->", key.Public, "\ngetted_key        Active<-", keyAuth.PublicKey));
                         }
                     }
                     return false;
@@ -90,10 +90,10 @@ namespace Base.Data.Accounts
                     {
                         if (Options.IsEquelKey(key))
                         {
-                            CustomTools.Console.Log(CustomTools.Console.SetGreenColor("Memo->", key.Public, "\nMemo<-", Options.MemoKey));
+                            CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Memo->", key.Public, "\n            Memo<-", Options.MemoKey));
                             return true;
                         }
-                        CustomTools.Console.Log(CustomTools.Console.SetRedColor("generated_key Memo->", key.Public, "\ngetted_key        Memo<-", Options.MemoKey));
+                        CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Memo->", key.Public, "\ngetted_key        Memo<-", Options.MemoKey));
                     }
                     return false;
                 default:

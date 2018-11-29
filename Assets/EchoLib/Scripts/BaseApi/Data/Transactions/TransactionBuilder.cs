@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Base.Config;
 using Base.Data.Assets;
 using Base.Data.Operations;
@@ -11,10 +12,10 @@ using Base.ECC;
 using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
-using Newtonsoft.Json.Linq;
 using Promises;
 using Tools.Hash;
 using Tools.HexBinDec;
+using Tools.Json;
 using Tools.Time;
 
 
@@ -95,20 +96,33 @@ namespace Base.Data.Transactions
 
         private IPromise FinalizeInPromise(DynamicGlobalPropertiesObject dynamicGlobalProperty)
         {
-            headBlockTime = dynamicGlobalProperty.Time;
-            if (expiration.IsZero())
+            return new Promise((resolve, reject) =>
             {
-                expiration = TimeTool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSeconds);
-            }
-            referenceBlockNumber = (ushort)dynamicGlobalProperty.HeadBlockNumber;
-            var prefix = dynamicGlobalProperty.HeadBlockId.FromHex2Data();
-            if (!BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(prefix);
-            }
-            referenceBlockPrefix = BitConverter.ToUInt32(prefix, 4);
-            buffer = new TransactionData(this).ToBuffer().ToArray();
-            return Promise.Resolved();
+                new Task(() =>
+                {
+                    try
+                    {
+                        headBlockTime = dynamicGlobalProperty.Time;
+                        if (expiration.IsZero())
+                        {
+                            expiration = TimeTool.ZeroTime().AddSeconds(BaseExpirationSeconds + ChainConfig.ExpireInSeconds);
+                        }
+                        referenceBlockNumber = (ushort)dynamicGlobalProperty.HeadBlockNumber;
+                        var prefix = dynamicGlobalProperty.HeadBlockId.FromHex2Data();
+                        if (!BitConverter.IsLittleEndian)
+                        {
+                            Array.Reverse(prefix);
+                        }
+                        referenceBlockPrefix = BitConverter.ToUInt32(prefix, 4);
+                        buffer = new TransactionData(this).ToBuffer().ToArray();
+                        resolve();
+                    }
+                    catch (Exception ex)
+                    {
+                        reject(ex);
+                    }
+                }).Start();
+            });
         }
 
         public string Id
@@ -361,31 +375,38 @@ namespace Base.Data.Transactions
             }
         }
 
-        private static IPromise BroadcastTransaction(TransactionBuilder transactionBuilder, Action<TransactionConfirmation> resultCallback = null)
+        private static IPromise BroadcastTransaction(TransactionBuilder builder, Action<TransactionConfirmation> resultCallback = null)
         {
-            return new Promise((resolve, reject) =>
+            return new Promise((resolve, reject) => new Task(() =>
             {
-                if (!transactionBuilder.signed)
+                try
                 {
-                    transactionBuilder.Sign();
+                    if (!builder.signed)
+                    {
+                        builder.Sign();
+                    }
+                    if (!builder.IsFinalized)
+                    {
+                        throw new InvalidOperationException("Not finalized");
+                    }
+                    if (builder.signatures.IsNullOrEmpty())
+                    {
+                        throw new InvalidOperationException("Not signed");
+                    }
+                    if (builder.operations.IsNullOrEmpty())
+                    {
+                        throw new InvalidOperationException("No operations");
+                    }
+                    EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(builder), async result =>
+                    {
+                        resultCallback?.Invoke(result.IsNullOrEmpty() ? null : await result.First().ToObjectAsync<TransactionConfirmation>());
+                    }).Then(resolve).Catch(reject);
                 }
-                if (!transactionBuilder.IsFinalized)
+                catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Not finalized");
+                    reject(ex);
                 }
-                if (transactionBuilder.signatures.IsNullOrEmpty())
-                {
-                    throw new InvalidOperationException("Not signed");
-                }
-                if (transactionBuilder.operations.IsNullOrEmpty())
-                {
-                    throw new InvalidOperationException("No operations");
-                }
-                EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(transactionBuilder), result =>
-                {
-                    resultCallback?.Invoke(result.IsNullOrEmpty() ? null : result.First().ToObject<TransactionConfirmation>());
-                }).Then(resolve).Catch(reject);
-            });
+            }).Start());
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Base.Data;
 using Base.Data.Accounts;
 
@@ -54,6 +55,8 @@ namespace Base.ECC
                 return null;
             }
         }
+
+        public PublicKey this[AccountRole role] => keys.ContainsKey(role) ? keys[role].Public : null;
 
         public int Count => keys.Count;
 

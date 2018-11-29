@@ -108,7 +108,7 @@ namespace Base.Data.Json
                 case ChainTypes.FeeParameters.AssetClaimFeesOperation:
                     return AssetClaimFeesOperationFeeParametersData.Create(value.Last as JObject);
                 default:
-                    CustomTools.Console.Error("Unexpected fee parameters type:", type);
+                    CustomTools.Console.DebugError("Unexpected fee parameters type:", type);
                     return null;
             }
         }

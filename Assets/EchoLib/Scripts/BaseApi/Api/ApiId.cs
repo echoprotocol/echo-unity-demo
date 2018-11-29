@@ -2,7 +2,6 @@ using System;
 using Base.Requests;
 using Base.Responses;
 using CustomTools.Extensions.Core;
-using CustomTools.Extensions.Core.Action;
 
 
 namespace Base.Api
@@ -20,17 +19,27 @@ namespace Base.Api
             Id = id;
         }
 
-        private Action<Response> GenerateRequestCallback<T>(Action<T> resolve, Action<Exception> reject, string responseTitle, bool debug, Action<Response> preProcessorCallback = null, Action<Response> postProcessorCallback = null)
+        private Action<Response> GenerateRequestCallback<T>(Action<T> resolve, Action<Exception> reject, string responseTitle, bool debug)
         {
             return response =>
             {
-                preProcessorCallback.SafeInvoke(response);
                 if (debug)
                 {
-                    response.PrintLog(responseTitle);
+                    response.PrintDebugLog(responseTitle);
                 }
                 response.SendResultData(resolve, reject);
-                postProcessorCallback.SafeInvoke(response);
+            };
+        }
+
+        private Action<Response> GenerateRequestCallbackAsync<T>(Action<T> resolve, Action<Exception> reject, string responseTitle, bool debug)
+        {
+            return async response =>
+            {
+                if (debug)
+                {
+                    response.PrintDebugLog(responseTitle);
+                }
+                await response.SendResultDataAsync(resolve, reject);
             };
         }
 
@@ -41,7 +50,7 @@ namespace Base.Api
 
         protected void DoRequest<T>(int requestId, Parameters parameters, Action<T> resolve, Action<Exception> reject, string title, bool debug)
         {
-            sender.Send((!resolve.IsNull() || !reject.IsNull()) ? new RequestCallback(requestId, parameters, GenerateRequestCallback(resolve, reject, title, debug), title, debug) : new Request(requestId, parameters, title, debug));
+            sender.Send((!resolve.IsNull() || !reject.IsNull()) ? new RequestAction(requestId, parameters, GenerateRequestCallbackAsync(resolve, reject, title, debug), title, debug) : new Request(requestId, parameters, title, debug));
         }
 
         protected int GenerateNewId() => sender.Identificators.GenerateNewId();

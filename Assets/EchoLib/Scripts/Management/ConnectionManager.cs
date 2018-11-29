@@ -44,7 +44,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
 
     public static string PingUrl => HTTP + "www.google.com/";
 
-    private void Update() =>openConnection?.DequeuReceivedMessages(MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE);
+    private void Update() => openConnection?.DequeuReceivedMessages(MAX_PROCESSING_RECEIVED_MESSAGE_PER_UPDATE);
 
     private void OnApplicationQuit()
     {
@@ -85,7 +85,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
     // call if received message not find event for processing
     private static void MessageReceived(Connection connection, Response msg)
     {
-        CustomTools.Console.DebugLog(CustomTools.Console.SetYellowColor("Received unbinding message:"), CustomTools.Console.SetWhiteColor(msg));
+        CustomTools.Console.DebugLog(CustomTools.Console.LogYellowColor("Received unbinding message:"), CustomTools.Console.LogWhiteColor(msg));
         OnMessageReceived.SafeInvoke(connection, msg);
     }
 
@@ -100,6 +100,10 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
 
     public static void DoAll(List<Request> requests)
     {
+        if (requests.IsEmpty())
+        {
+            return;
+        }
         var notSended = new List<Request>(requests);
         foreach (var request in requests)
         {
@@ -107,7 +111,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
             {
                 if (request.Debug)
                 {
-                    request.PrintLog();
+                    request.PrintDebugLog();
                 }
                 notSended.Remove(request);
             }
@@ -126,7 +130,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
                 {
                     if (debug)
                     {
-                        response.PrintLog(responseTitle);
+                        response.PrintDebugLog(responseTitle);
                     }
                     response.SendNoticeData(subscribeCallback);
                     Unsubscribe(response.RequestId);
@@ -138,7 +142,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
                 {
                     if (debug)
                     {
-                        response.PrintLog(responseTitle);
+                        response.PrintDebugLog(responseTitle);
                     }
                     response.SendNoticeData(subscribeCallback);
                 });
@@ -218,7 +222,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
         var host = parts.Last();
         var pindHostRequest = new WWW(HTTP + host);
         yield return pindHostRequest;
-        if ((lastServerAvaliableFlag = pindHostRequest.error.IsNull()))
+        if (lastServerAvaliableFlag = pindHostRequest.error.IsNull())
         {
             Connect(scheme + SEPARATOR + host);
         }

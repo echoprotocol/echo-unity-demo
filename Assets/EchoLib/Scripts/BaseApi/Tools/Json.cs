@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json;
@@ -84,5 +85,7 @@ namespace Tools.Json
         public static bool IsNullOrEmpty(this JContainer jC) => jC.IsNull() || jC.Count == 0;
 
         public static T ToNullableObject<T>(this JObject jO) where T : class => jO.IsNull() ? null : jO.ToObject<T>();
+
+        public static async Task<T> ToObjectAsync<T>(this JToken jT) => await Task.Run(() => jT.ToObject<T>());
     }
 }

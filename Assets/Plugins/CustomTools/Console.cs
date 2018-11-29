@@ -1,6 +1,8 @@
-using UnityEngine;
 using System.Text;
+using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
+using UnityEngine;
+
 
 namespace CustomTools {
 
@@ -14,8 +16,56 @@ namespace CustomTools {
 
     public sealed class Console : ILogHandler {
 
-		#region class
-		ILogHandler defaultLogHandler = Debug.unityLogger.logHandler;
+        const string NULL_TAG = "null";
+
+
+        public class ColoredLog : System.IDisposable {
+
+            const string COLOR_TAG_PREFIX = "<color={0}>";
+            const string COLOR_TAG_POSTFIX = "</color>";
+            const string HEX_FORMAT = "X2";
+            const string COLOR_FORMAT = "#{0}{1}{2}";
+
+            Color color;
+            char separator;
+            object[] messages;
+
+
+            internal ColoredLog( Color color, char separator, params object[] messages ) {
+                this.color = color;
+                this.separator = separator;
+                this.messages = messages;
+            }
+
+            public void Dispose() {
+                messages = null;
+            }
+
+            public StringBuilder Build( StringBuilder builder = null ) {
+                builder = builder ?? new StringBuilder();
+                if ( !messages.IsNullOrEmpty() ) {
+#if UNITY_EDITOR
+                    builder.Append( string.Format( COLOR_TAG_PREFIX, ColorToHex( color ) ) );
+#endif
+                    var times = messages.Length;
+                    ArrayTools.DoTimes( () => times, index => {
+                        ((index > 0) ? builder.Append( separator ) : builder).Append( messages[ index ].IsNull() ? NULL_TAG : messages[ index ].ToString() );
+                    } );
+#if UNITY_EDITOR
+                    builder.Append( COLOR_TAG_POSTFIX );
+#endif
+                }
+                return builder;
+            }
+
+            static string ColorToHex( Color32 color ) {
+                return string.Format( COLOR_FORMAT, color.r.ToString( HEX_FORMAT ), color.g.ToString( HEX_FORMAT ), color.b.ToString( HEX_FORMAT ) );
+            }
+        }
+
+
+        #region class
+        ILogHandler defaultLogHandler = Debug.unityLogger.logHandler;
 
 		Console() { }
 
@@ -44,78 +94,64 @@ namespace CustomTools {
 			}
 		}
 
-		static string ColorToHex( Color32 color ) {
-			return "#" + color.r.ToString( "X2" ) + color.g.ToString( "X2" ) + color.b.ToString( "X2" );
+		public static ColoredLog LogRedColor( params object[] source ) {
+			return new ColoredLog( Color.red, ' ', source );
 		}
 
-		public static string SetRedColor( params object[] source ) {
-			return SetColor( Color.red, ' ', source );
+		public static ColoredLog LogGreenColor( params object[] source ) {
+			return new ColoredLog( Color.green, ' ', source );
 		}
 
-		public static string SetGreenColor( params object[] source ) {
-			return SetColor( Color.green, ' ', source );
+		public static ColoredLog LogBlueColor( params object[] source ) {
+			return new ColoredLog( Color.blue, ' ', source );
 		}
 
-		public static string SetBlueColor( params object[] source ) {
-			return SetColor( Color.blue, ' ', source );
+		public static ColoredLog LogCyanColor( params object[] source ) {
+			return new ColoredLog( Color.cyan, ' ', source );
 		}
 
-		public static string SetCyanColor( params object[] source ) {
-			return SetColor( Color.cyan, ' ', source );
+		public static ColoredLog LogMagentaColor( params object[] source ) {
+			return new ColoredLog( Color.magenta, ' ', source );
 		}
 
-		public static string SetMagentaColor( params object[] source ) {
-			return SetColor( Color.magenta, ' ', source );
+		public static ColoredLog LogYellowColor( params object[] source ) {
+			return new ColoredLog( Color.yellow, ' ', source );
 		}
 
-		public static string SetYellowColor( params object[] source ) {
-			return SetColor( Color.yellow, ' ', source );
+		public static ColoredLog LogWhiteColor( params object[] source ) {
+			return new ColoredLog( Color.white, ' ', source );
 		}
 
-		public static string SetWhiteColor( params object[] source ) {
-			return SetColor( Color.white, ' ', source );
+		public static ColoredLog LogBlackColor( params object[] source ) {
+			return new ColoredLog( Color.black, ' ', source );
 		}
 
-		public static string SetBlackColor( params object[] source ) {
-			return SetColor( Color.black, ' ', source );
+		public static ColoredLog LogGrayColor( params object[] source ) {
+			return new ColoredLog( Color.gray, ' ', source );
 		}
 
-		public static string SetGrayColor( params object[] source ) {
-			return SetColor( Color.gray, ' ', source );
-		}
+		public static void DebugLog( params object[] messages ) => DebugLog( LogEnum.Message, ' ', messages );
 
-		public static string SetColor( Color color, char separator, params object[] messages ) {
-			var builder = new StringBuilder();
-            ArrayTools.DoTimes( () => messages.Length, index => {
-                ((index > 0) ? builder.Append( separator ) : builder).Append( (messages[ index ] ?? "null").ToString() );
-            } );
-#if UNITY_EDITOR
-			if ( builder.Length > 0 ) {
-				builder.Insert( 0, string.Format( "<color={0}>", ColorToHex( color ) ) );
-				builder.Append( "</color>" );
-			}
-#endif
-			return builder.ToString();
-		}
+		public static void DebugWarning( params object[] messages ) => DebugLog( LogEnum.Warning, ' ', messages );
 
-		public static void DebugLog( params object[] messages ) {
-			DebugLog( LogEnum.Message, ' ', messages );
-		}
-
-		public static void DebugWarning( params object[] messages ) {
-			DebugLog( LogEnum.Warning, ' ', messages );
-		}
-
-		public static void DebugError( params object[] messages ) {
-			DebugLog( LogEnum.Error, ' ', messages );
-		}
+		public static void DebugError( params object[] messages ) => DebugLog( LogEnum.Error, ' ', messages );
 
 		static void DebugLog( LogEnum type, char separator, params object[] messages ) {
-#if DEBUG
+#if ECHO_DEBUG
 			var builder = new StringBuilder();
 			builder.Append( "DEBUG:" );
-            ArrayTools.DoTimes( () => messages.Length, index => {
-                builder.Append( separator ).Append( (messages[ index ] ?? "null").ToString() );
+            var times = messages.Length;
+            ArrayTools.DoTimes( () => times, index => {
+                var message = messages[ index ];
+                if ( message.IsNull() ) {
+                    builder.Append( separator ).Append( NULL_TAG );
+                } else if ( message is ColoredLog ) {
+                    var coloredMessage = message as ColoredLog;
+                    coloredMessage.Build( builder.Append( separator ) );
+                    coloredMessage.Dispose();
+                } else {
+                    builder.Append( separator ).Append( message.ToString() );
+                }
             } );
 			switch ( type ) {
 			case LogEnum.Message:
@@ -128,10 +164,11 @@ namespace CustomTools {
 				Debug.LogError( builder.ToString() );
 				break;
 			}
+            builder.Clear();
 #endif
-		}
+        }
 
-		public static void Log( params object[] messages ) {
+        public static void Log( params object[] messages ) {
 			Log( LogEnum.Message, ' ', messages );
 		}
 
@@ -149,8 +186,18 @@ namespace CustomTools {
 
 		static void Log( LogEnum type, char separator, params object[] messages ) {
 			var builder = new StringBuilder();
-            ArrayTools.DoTimes( () => messages.Length, index => {
-                ((index > 0) ? builder.Append( separator ) : builder).Append( (messages[ index ] ?? "null").ToString() );
+            var times = messages.Length;
+            ArrayTools.DoTimes( () => times, index => {
+                var message = messages[ index ];
+                if ( message.IsNull() ) {
+                    ((index > 0) ? builder.Append( separator ) : builder).Append( NULL_TAG );
+                } else if ( message is ColoredLog ) {
+                    var coloredMessage = message as ColoredLog;
+                    coloredMessage.Build( (index > 0) ? builder.Append( separator ) : builder );
+                    coloredMessage.Dispose();
+                } else {
+                    ((index > 0) ? builder.Append( separator ) : builder).Append( message.ToString() );
+                }
             } );
 			switch ( type ) {
 			case LogEnum.Message:
@@ -163,6 +210,7 @@ namespace CustomTools {
 				Debug.LogError( builder.ToString() );
 				break;
 			}
-		}
+            builder.Clear();
+        }
 	}
 }

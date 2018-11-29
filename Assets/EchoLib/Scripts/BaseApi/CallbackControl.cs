@@ -28,7 +28,7 @@ namespace Base.Eventing
             regularCallbacks.Remove(eventId);
         }
 
-        public void SetRequestCallback(RequestCallback request)
+        public void SetRequestCallback(RequestAction request)
         {
             requestCallbacks[request.RequestId] = request.Callback;
         }

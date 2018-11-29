@@ -14,7 +14,11 @@ namespace Base.Api.Database
         {
             return new Promise<int>((resolve, reject) =>
             {
+#if ECHO_DEBUG
                 var debug = false;
+#else
+                var debug = false;
+#endif
                 var methodName = "crypto";
                 var parameters = new Parameters { LoginApi.ID, methodName, new object[0] };
                 DoRequest(GenerateNewId(), parameters, resolve, reject, methodName, debug);

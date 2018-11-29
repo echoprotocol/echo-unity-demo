@@ -96,7 +96,7 @@ namespace Base.ECC
                 }
                 if (nonce % 10 == 0)
                 {
-                    CustomTools.Console.Warning(nonce, "attempts to find canonical signature");
+                    CustomTools.Console.DebugWarning(nonce, "attempts to find canonical signature");
                 }
             }
             return new Signature(ecSignature.R, ecSignature.S, i);
