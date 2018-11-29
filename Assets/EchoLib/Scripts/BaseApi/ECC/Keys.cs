@@ -73,7 +73,7 @@ namespace Base.ECC
             }
         }
 
-        public Keys CheckAuthorization(AccountObject account)
+        private Keys CheckAuthorization(AccountObject account)
         {
             if (account == null)
             {
@@ -88,6 +88,11 @@ namespace Base.ECC
                 }
             }
             return (result.Count > 0) ? new Keys(result) : null;
+        }
+
+        public async Task<Keys> CheckAuthorizationAsync(AccountObject account)
+        {
+            return await Task.Run(() => CheckAuthorization(account));
         }
 
         public void Dispose() => keys.Clear();

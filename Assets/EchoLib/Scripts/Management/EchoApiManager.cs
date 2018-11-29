@@ -16,7 +16,6 @@ using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json.Linq;
 using Promises;
 using Tools.HexBinDec;
-using UnityEngine;
 using WebSocketSharp;
 
 
