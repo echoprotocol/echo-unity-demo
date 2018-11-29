@@ -1,4 +1,5 @@
 ﻿using System;
+using Buffers;
 using CustomTools.Extensions.Core.Array;
 using Tools.HexBinDec;
 
@@ -7,6 +8,9 @@ namespace Base.Data.Json
 {
     public sealed class AddressToSpaceTypeIdConverter : JsonCustomConverter<SpaceTypeId, string>
     {
+        public const bool IS_LITTLE_ENDING = true;
+
+
         protected override SpaceTypeId Deserialize(string value, Type objectType) => ConvertFrom(value);
 
         protected override string Serialize(SpaceTypeId value) => ConvertTo(value);
@@ -22,7 +26,11 @@ namespace Base.Data.Json
             {
                 data[0] = 0x01;
             }
-            return data.Concat(BitConverter.GetBytes(value.Id)).ToHexString();
+            if (IS_LITTLE_ENDING)
+            {
+                return data.Concat(new ByteBuffer(IS_LITTLE_ENDING).WriteUInt32(value.Id).ToArray().Reverse()).ToHexString();
+            }
+            return data.Concat(new ByteBuffer(IS_LITTLE_ENDING).WriteUInt32(value.Id).ToArray()).ToHexString();
         }
 
         private static SpaceTypeId ConvertFrom(string value)
@@ -45,7 +53,12 @@ namespace Base.Data.Json
             {
                 return SpaceTypeId.EMPTY;
             }
-            return SpaceTypeId.CreateOne(type, BitConverter.ToUInt32(data, 2));
+            data = data.Slice(16);
+            if (IS_LITTLE_ENDING)
+            {
+                Array.Reverse(data);
+            }
+            return SpaceTypeId.CreateOne(type, new ByteBuffer(IS_LITTLE_ENDING).WriteBytes(data, false).ReadUInt32());
         }
     }
 }

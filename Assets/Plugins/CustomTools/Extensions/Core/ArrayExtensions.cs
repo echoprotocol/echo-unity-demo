@@ -329,6 +329,14 @@ namespace CustomTools.Extensions.Core.Array {
 			return a;
 		}
 
+        public static T[] Reverse<T>( this T[] a ) {
+            if ( a.IsNull() ) {
+                throw new System.NullReferenceException();
+            }
+            System.Array.Reverse( a );
+            return a;
+        }
+
 		public static T[] Concat<T>( this T[] a, params T[][] b ) {
 			if ( a.IsNull() ) {
 				throw new System.NullReferenceException();
