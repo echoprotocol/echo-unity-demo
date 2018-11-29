@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using Base.Data;
 using Base.Data.Accounts;
 using Base.Data.Pairs;
@@ -85,7 +84,7 @@ public sealed class AuthorizationContainer
                 {
                     return Promise<bool>.Rejected(new InvalidOperationException("Registration url incorrect."));
                 }
-                return new Promise<bool>((resolve, reject) => new Task(() =>
+                return new Promise<bool>(async (resolve, reject) =>
                 {
                     try
                     {
@@ -93,7 +92,7 @@ public sealed class AuthorizationContainer
                         var request = WebRequest.CreateHttp(NodeManager.Instance.RegistrationUrl);
                         request.ContentType = "application/json";
                         request.Method = "POST";
-                        using (var writer = new StreamWriter(request.GetRequestStream()))
+                        using (var writer = new StreamWriter(await request.GetRequestStreamAsync()))
                         {
                             writer.Write(new JsonBuilder(new JsonDictionary {
                                 { "name",          userName },
@@ -101,14 +100,14 @@ public sealed class AuthorizationContainer
                                 { "active_key",    keys[AccountRole.Active].ToString() },
                                 { "memo_key",      keys[AccountRole.Memo].ToString() }
                             }).Build());
-                            writer.Flush();
+                            await writer.FlushAsync();
                             writer.Close();
                         }
                         var jsonResponse = string.Empty;
-                        var response = request.GetResponse() as HttpWebResponse;
+                        var response = await request.GetResponseAsync() as HttpWebResponse;
                         using (var reader = new StreamReader(response.GetResponseStream()))
                         {
-                            jsonResponse = reader.ReadToEnd();
+                            jsonResponse = await reader.ReadToEndAsync();
                             reader.Close();
                         }
                         response.Close();
@@ -116,7 +115,7 @@ public sealed class AuthorizationContainer
                         {
                             throw new InvalidOperationException();
                         }
-                        var confirmation = JToken.Parse(jsonResponse).First.ToObject<TransactionConfirmation>();
+                        var confirmation = await JToken.Parse(jsonResponse).First.ToObjectAsync<TransactionConfirmation>();
                         var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
                         (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
                     }
@@ -124,7 +123,7 @@ public sealed class AuthorizationContainer
                     {
                         reject(ex);
                     }
-                }).Start());
+                });
             }
             return AuthorizationBy(result, password);
         });
@@ -140,11 +139,11 @@ public sealed class AuthorizationContainer
 
     private IPromise<bool> AuthorizationBy(UserNameFullAccountDataPair dataPair, string password)
     {
-        return new Promise<bool>((resolve, reject) => new Task(() =>
+        return new Promise<bool>(async (resolve, reject) =>
         {
             try
             {
-                var validKeys = Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorization(dataPair.FullAccount.Account);
+                var validKeys = await Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorizationAsync(dataPair.FullAccount.Account);
                 if (!validKeys.IsNull())
                 {
                     if (!Current.IsNull())
@@ -164,7 +163,7 @@ public sealed class AuthorizationContainer
             {
                 reject(ex);
             }
-        }).Start());
+        });
     }
 
     public IPromise<bool> AuthorizationBy(string userName, string password)
