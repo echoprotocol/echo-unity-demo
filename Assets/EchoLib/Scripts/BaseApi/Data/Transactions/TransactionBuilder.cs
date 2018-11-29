@@ -287,7 +287,7 @@ namespace Base.Data.Transactions
             }).Then(results => Promise<TransactionBuilder>.Resolved(builder));
         }
 
-        public IPromise<SignaturesContainer> GetPotentialSignatures() // todo
+        public IPromise<SignaturesContainer> GetPotentialSignatures()
         {
             var signedTransaction = new SignedTransactionData(this);
             return Promise<object[]>.All(
