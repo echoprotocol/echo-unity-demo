@@ -10,7 +10,6 @@ using Base.Data.Properties;
 using Base.Data.Transactions;
 using Base.ECC;
 using Base.Requests;
-using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json.Linq;
 using Promises;
@@ -28,7 +27,7 @@ namespace Base.Api.Database
         {
             return new Promise<int>((resolve, reject) =>
             {
-#if DEBUG
+#if ECHO_DEBUG
                 var debug = false;
 #else
                 var debug = false;
@@ -45,7 +44,7 @@ namespace Base.Api.Database
             {
                 return new Promise<string>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = false;
 #else
                     var debug = false;
@@ -66,7 +65,7 @@ namespace Base.Api.Database
             {
                 return new Promise<DynamicGlobalPropertiesObject>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -92,7 +91,7 @@ namespace Base.Api.Database
             {
                 return new Promise<GlobalPropertiesObject>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -118,7 +117,7 @@ namespace Base.Api.Database
             {
                 return new Promise<SignedBlockData>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -144,7 +143,7 @@ namespace Base.Api.Database
             {
                 return new Promise<T[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -226,7 +225,7 @@ namespace Base.Api.Database
             {
                 return new Promise<UserNameFullAccountDataPair[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -262,7 +261,7 @@ namespace Base.Api.Database
             {
                 return new Promise<UserNameAccountIdPair[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -290,7 +289,7 @@ namespace Base.Api.Database
             {
                 return new Promise<AssetData[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -316,7 +315,7 @@ namespace Base.Api.Database
             {
                 return new Promise<PublicKey[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -337,7 +336,7 @@ namespace Base.Api.Database
             {
                 return new Promise<PublicKey[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -358,7 +357,7 @@ namespace Base.Api.Database
             {
                 return new Promise<Address[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -379,7 +378,7 @@ namespace Base.Api.Database
             {
                 return new Promise((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -404,7 +403,7 @@ namespace Base.Api.Database
             {
                 return new Promise<AssetData[]>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -446,7 +445,7 @@ namespace Base.Api.Database
             {
                 return new Promise<ContractResultData>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -472,7 +471,7 @@ namespace Base.Api.Database
             {
                 return new Promise<ContractInfoData>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;
@@ -498,7 +497,7 @@ namespace Base.Api.Database
             {
                 return new Promise<string>((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;

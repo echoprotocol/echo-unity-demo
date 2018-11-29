@@ -16,7 +16,7 @@ namespace Base.Api.Database
         {
             return new Promise<bool>((resolve, reject) =>
             {
-#if DEBUG
+#if ECHO_DEBUG
                 var debug = false;
 #else
                 var debug = false;

@@ -1,4 +1,5 @@
-﻿using Base.Data.Json;
+﻿using System.Threading.Tasks;
+using Base.Data.Json;
 using Base.Requests;
 using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
@@ -23,16 +24,14 @@ namespace Base.Responses
             [JsonProperty(RESULT_FIELD_KEY)]
             private JToken result;
 
-            private object data;
-
 
             public int ForRequestId => id;
 
             public string JsonRPC => jsonrpc;
 
-            public T GetData<T>() => (T)(data ?? (data = result.ToObject<T>()));
+            public T GetData<T>() => result.ToObject<T>();
 
-            public void Initialize<T>() => data = result.ToObject<T>();
+            public async Task<T> GetDataAsync<T>() => await result.ToObjectAsync<T>();
 
             internal static Result Open(string url) => new Result { id = RequestIdentificator.OPEN_ID, result = JToken.FromObject(url) };
 
@@ -200,9 +199,21 @@ namespace Base.Responses
 
         public static Response Parse(string data) => data.IsNullOrEmpty() ? null : new Response(data);
 
-        public void SendResultData<T>(System.Action<T> resolve, System.Action<System.Exception> reject) => SendResultData(resolve, reject, true);
+        public async Task SendResultDataAsync<T>(System.Action<T> resolve, System.Action<System.Exception> reject, bool isProcessed = true)
+        {
+            if (!resolve.IsNull() && isResult)
+            {
+                resolve.Invoke(await result.GetDataAsync<T>());
+            }
+            else
+            if (!reject.IsNull() && isError)
+            {
+                reject.Invoke(error.ToException());
+            }
+            IsProcessed = isProcessed;
+        }
 
-        public void SendResultData<T>(System.Action<T> resolve, System.Action<System.Exception> reject = null, bool isProcessed = true)
+        public void SendResultData<T>(System.Action<T> resolve, System.Action<System.Exception> reject, bool isProcessed = true)
         {
             if (!resolve.IsNull() && isResult)
             {
@@ -214,14 +225,6 @@ namespace Base.Responses
                 reject.Invoke(error.ToException());
             }
             IsProcessed = isProcessed;
-        }
-
-        public void Initialize<T>()
-        {
-            if (isResult)
-            {
-                result.Initialize<T>();
-            }
         }
 
         public void SendNoticeData(System.Action<JToken[]> callback, bool isProcessed = true)

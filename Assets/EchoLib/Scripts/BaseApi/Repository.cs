@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Base.Api.Database;
 using Base.Data;
 using Base.Data.Accounts;
@@ -15,6 +16,7 @@ using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json.Linq;
 using Promises;
+using Tools.Json;
 using IdObjectDictionary = System.Collections.Generic.Dictionary<Base.Data.SpaceTypeId, Base.Data.IdObject>;
 
 
@@ -26,14 +28,17 @@ namespace Base.Storage
         public static event Action<string> OnGetString;
 
         private readonly static Dictionary<SpaceType, IdObjectDictionary> root = new Dictionary<SpaceType, IdObjectDictionary>();
+        private readonly static object rootLocler = new object();
 
 
         private static void GetObject(IdObject idObject) => OnGetObject.SafeInvoke(idObject);
 
         private static void GetString(string value) => OnGetString.SafeInvoke(value);
 
+        private static async void ChangeNotifyAsync(JToken[] list) => await Task.Run(() => ChangeNotify(list));
+
         private static void ChangeNotify(JToken[] list)
-        {  
+        {
             var notifyObjectList = new List<IdObject>();
             var notifyStringList = new List<string>();
             foreach (var item in list)
@@ -72,7 +77,10 @@ namespace Base.Storage
 
         private static void Add(IdObject idObject)
         {
-            (root.ContainsKey(idObject.SpaceType) ? root[idObject.SpaceType] : (root[idObject.SpaceType] = new IdObjectDictionary()))[idObject.Id] = idObject;
+            lock (rootLocler)
+            {
+                (root.ContainsKey(idObject.SpaceType) ? root[idObject.SpaceType] : (root[idObject.SpaceType] = new IdObjectDictionary()))[idObject.Id] = idObject;
+            }
         }
 
         private static IPromise AddInPromise(IdObject idObject)
@@ -90,27 +98,26 @@ namespace Base.Storage
             );
         }
 
-        public static IPromise SubscribeToNotice(DatabaseApi api)
-        {
-            return api.SubscribeNotice(ChangeNotify).Then(() => Init(api));
-        }
+        public static IPromise SubscribeToNotice(DatabaseApi api) => api.SubscribeNotice(ChangeNotifyAsync).Then(() => Init(api));
 
         public static bool IsExist(SpaceTypeId spaceTypeId)
         {
-            return root.ContainsKey(spaceTypeId.SpaceType) && root[spaceTypeId.SpaceType].ContainsKey(spaceTypeId);
+            lock (rootLocler)
+            {
+                return root.ContainsKey(spaceTypeId.SpaceType) && root[spaceTypeId.SpaceType].ContainsKey(spaceTypeId);
+            }
         }
 
         public static IPromise<T> GetInPromise<T>(SpaceTypeId key, Func<IPromise<T>> getter = null) where T : IdObject
         {
-            if (IsExist(key))
+            lock (rootLocler)
             {
-                return Promise<T>.Resolved((T)root[key.SpaceType][key]);
+                if (root.ContainsKey(key.SpaceType) && root[key.SpaceType].ContainsKey(key))
+                {
+                    return Promise<T>.Resolved((T)root[key.SpaceType][key]);
+                }
             }
-            if (getter.IsNull())
-            {
-                return Promise<T>.Resolved(null);
-            }
-            return getter.Invoke().Then(idObject =>
+            return getter.IsNull() ? Promise<T>.Resolved(null) : getter.Invoke().Then(idObject =>
             {
                 Add(idObject);
                 return Promise<T>.Resolved(idObject);
@@ -119,7 +126,10 @@ namespace Base.Storage
 
         public static IdObject[] GetAll(SpaceType spaceType)
         {
-            return root.ContainsKey(spaceType) ? new List<IdObject>(root[spaceType].Values).ToArray() : new IdObject[0];
+            lock (rootLocler)
+            {
+                return root.ContainsKey(spaceType) ? new List<IdObject>(root[spaceType].Values).ToArray() : new IdObject[0];
+            }
         }
     }
 

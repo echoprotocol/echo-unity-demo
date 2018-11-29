@@ -73,13 +73,10 @@ namespace Base.Requests
     {
         [JsonIgnore]
         public Action<Response> Callback { get; private set; }
-        [JsonIgnore]
-        public Action<Response> Initializer { get; private set; }
 
-        public RequestAction(int requestId, Parameters parameters, Action<Response> callback, Action<Response> initializer, string title, bool debug) : base(requestId, parameters, title, debug)
+        public RequestAction(int requestId, Parameters parameters, Action<Response> callback, string title, bool debug) : base(requestId, parameters, title, debug)
         {
             Callback = callback;
-            Initializer = initializer;
         }
     }
 

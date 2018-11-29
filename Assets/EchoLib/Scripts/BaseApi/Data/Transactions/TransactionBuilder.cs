@@ -15,6 +15,7 @@ using CustomTools.Extensions.Core.Array;
 using Promises;
 using Tools.Hash;
 using Tools.HexBinDec;
+using Tools.Json;
 using Tools.Time;
 
 
@@ -376,39 +377,36 @@ namespace Base.Data.Transactions
 
         private static IPromise BroadcastTransaction(TransactionBuilder builder, Action<TransactionConfirmation> resultCallback = null)
         {
-            return new Promise((resolve, reject) =>
+            return new Promise((resolve, reject) => new Task(() =>
             {
-                new Task(() =>
+                try
                 {
-                    try
+                    if (!builder.signed)
                     {
-                        if (!builder.signed)
-                        {
-                            builder.Sign();
-                        }
-                        if (!builder.IsFinalized)
-                        {
-                            throw new InvalidOperationException("Not finalized");
-                        }
-                        if (builder.signatures.IsNullOrEmpty())
-                        {
-                            throw new InvalidOperationException("Not signed");
-                        }
-                        if (builder.operations.IsNullOrEmpty())
-                        {
-                            throw new InvalidOperationException("No operations");
-                        }
-                        EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(builder), result =>
-                        {
-                            resultCallback?.Invoke(result.IsNullOrEmpty() ? null : result.First().ToObject<TransactionConfirmation>());
-                        }).Then(resolve).Catch(reject);
+                        builder.Sign();
                     }
-                    catch (Exception ex)
+                    if (!builder.IsFinalized)
                     {
-                        reject(ex);
+                        throw new InvalidOperationException("Not finalized");
                     }
-                }).Start();
-            });
+                    if (builder.signatures.IsNullOrEmpty())
+                    {
+                        throw new InvalidOperationException("Not signed");
+                    }
+                    if (builder.operations.IsNullOrEmpty())
+                    {
+                        throw new InvalidOperationException("No operations");
+                    }
+                    EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(builder), async result =>
+                    {
+                        resultCallback?.Invoke(result.IsNullOrEmpty() ? null : await result.First().ToObjectAsync<TransactionConfirmation>());
+                    }).Then(resolve).Catch(reject);
+                }
+                catch (Exception ex)
+                {
+                    reject(ex);
+                }
+            }).Start());
         }
     }
 }

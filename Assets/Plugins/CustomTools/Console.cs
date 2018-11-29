@@ -137,7 +137,7 @@ namespace CustomTools {
 		public static void DebugError( params object[] messages ) => DebugLog( LogEnum.Error, ' ', messages );
 
 		static void DebugLog( LogEnum type, char separator, params object[] messages ) {
-#if DEBUG
+#if ECHO_DEBUG
 			var builder = new StringBuilder();
 			builder.Append( "DEBUG:" );
             var times = messages.Length;

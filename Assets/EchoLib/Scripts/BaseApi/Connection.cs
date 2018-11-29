@@ -311,9 +311,7 @@ namespace Base
         private void WebSocketMessageReceived(object sender, MessageEventArgs e)
         {
             //CustomTools.Console.DebugLog("Client::WebSocketMessageReceived() Message:", CustomTools.Console.LogWhiteColor(e.Data));
-            var message = Response.Parse(e.Data);
-            callbackManager.InvokeInitializer(message);
-            receivedQueue.Enqueue(message);
+            receivedQueue.Enqueue(Response.Parse(e.Data));
         }
 
         private void WebSocketError(object sender, ErrorEventArgs e)

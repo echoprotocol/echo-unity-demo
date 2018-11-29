@@ -18,7 +18,7 @@ namespace Base.Api.Database
         {
             return new Promise<int>((resolve, reject) =>
             {
-#if DEBUG
+#if ECHO_DEBUG
                 var debug = false;
 #else
                 var debug = false;
@@ -35,7 +35,7 @@ namespace Base.Api.Database
             {
                 return new Promise((resolve, reject) =>
                 {
-#if DEBUG
+#if ECHO_DEBUG
                     var debug = true;
 #else
                     var debug = false;

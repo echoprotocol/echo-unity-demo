@@ -85,47 +85,46 @@ public sealed class AuthorizationContainer
                 {
                     return Promise<bool>.Rejected(new InvalidOperationException("Registration url incorrect."));
                 }
-                return new Promise<bool>((resolve, reject) =>
+                return new Promise<bool>((resolve, reject) => new Task(() =>
                 {
-                    new Task(() =>
+                    try
                     {
-                        try
+                        var keys = Keys.FromSeed(userName, password, false);
+                        var request = WebRequest.CreateHttp(NodeManager.Instance.RegistrationUrl);
+                        request.ContentType = "application/json";
+                        request.Method = "POST";
+                        using (var writer = new StreamWriter(request.GetRequestStream()))
                         {
-                            var keys = Keys.FromSeed(userName, password, false);
-                            var request = (HttpWebRequest)WebRequest.Create(NodeManager.Instance.RegistrationUrl);
-                            request.ContentType = "application/json";
-                            request.Method = "POST";
-                            using (var writer = new StreamWriter(request.GetRequestStream()))
-                            {
-                                writer.Write(new JsonBuilder(new JsonDictionary {
-                                    { "name",          userName },
-                                    { "owner_key",     keys[AccountRole.Owner].ToString() },
-                                    { "active_key",    keys[AccountRole.Active].ToString() },
-                                    { "memo_key",      keys[AccountRole.Memo].ToString() }
-                                }).Build());
-                                writer.Flush();
-                                writer.Close();
-                            }
-                            var jsonResponse = string.Empty;
-                            using (var reader = new StreamReader((request.GetResponse() as HttpWebResponse).GetResponseStream()))
-                            {
-                                jsonResponse = reader.ReadToEnd();
-                                reader.Close();
-                            }
-                            if (jsonResponse.IsNullOrEmpty())
-                            {
-                                throw new InvalidOperationException();
-                            }
-                            var confirmation = JToken.Parse(jsonResponse).First.ToObject<TransactionConfirmation>();
-                            var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
-                            (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
+                            writer.Write(new JsonBuilder(new JsonDictionary {
+                                { "name",          userName },
+                                { "owner_key",     keys[AccountRole.Owner].ToString() },
+                                { "active_key",    keys[AccountRole.Active].ToString() },
+                                { "memo_key",      keys[AccountRole.Memo].ToString() }
+                            }).Build());
+                            writer.Flush();
+                            writer.Close();
                         }
-                        catch (Exception ex)
+                        var jsonResponse = string.Empty;
+                        var response = request.GetResponse() as HttpWebResponse;
+                        using (var reader = new StreamReader(response.GetResponseStream()))
                         {
-                            reject(ex);
+                            jsonResponse = reader.ReadToEnd();
+                            reader.Close();
                         }
-                    }).Start();
-                });
+                        response.Close();
+                        if (jsonResponse.IsNullOrEmpty())
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        var confirmation = JToken.Parse(jsonResponse).First.ToObject<TransactionConfirmation>();
+                        var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
+                        (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
+                    }
+                    catch (Exception ex)
+                    {
+                        reject(ex);
+                    }
+                }).Start());
             }
             return AuthorizationBy(result, password);
         });
@@ -141,34 +140,31 @@ public sealed class AuthorizationContainer
 
     private IPromise<bool> AuthorizationBy(UserNameFullAccountDataPair dataPair, string password)
     {
-        return new Promise<bool>((resolve, reject) =>
+        return new Promise<bool>((resolve, reject) => new Task(() =>
         {
-            new Task(() =>
+            try
             {
-                try
+                var validKeys = Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorization(dataPair.FullAccount.Account);
+                if (!validKeys.IsNull())
                 {
-                    var validKeys = Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorization(dataPair.FullAccount.Account);
-                    if (!validKeys.IsNull())
+                    if (!Current.IsNull())
                     {
-                        if (!Current.IsNull())
-                        {
-                            Repository.OnGetObject -= Current.UpdateAccountData;
-                        }
-                        Current = new AuthorizationData(validKeys, dataPair);
-                        Repository.OnGetObject += Current.UpdateAccountData;
-                        resolve(true);
+                        Repository.OnGetObject -= Current.UpdateAccountData;
                     }
-                    else
-                    {
-                        resolve(false);
-                    }
+                    Current = new AuthorizationData(validKeys, dataPair);
+                    Repository.OnGetObject += Current.UpdateAccountData;
+                    resolve(true);
                 }
-                catch (Exception ex)
+                else
                 {
-                    reject(ex);
+                    resolve(false);
                 }
-            }).Start();
-        });
+            }
+            catch (Exception ex)
+            {
+                reject(ex);
+            }
+        }).Start());
     }
 
     public IPromise<bool> AuthorizationBy(string userName, string password)
@@ -191,7 +187,6 @@ public sealed class AuthorizationContainer
             Repository.OnGetObject -= Current.UpdateAccountData;
         }
         Current = null;
-
     }
 
     public IPromise ProcessTransaction(TransactionBuilder builder, SpaceTypeId asset = null, Action<TransactionConfirmation> resultCallback = null)
