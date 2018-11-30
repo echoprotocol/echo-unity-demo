@@ -351,11 +351,11 @@ namespace Base.Api.Database
             return Init().Then(api => api.GetPotentialSignatures(transaction));
         }
 
-        public IPromise<Address[]> GetPotentialAddressSignatures(SignedTransactionData transaction)
+        public IPromise<string[]> GetPotentialAddressSignatures(SignedTransactionData transaction)
         {
             if (IsInitialized)
             {
-                return new Promise<Address[]>((resolve, reject) =>
+                return new Promise<string[]>((resolve, reject) =>
                 {
 #if ECHO_DEBUG
                     var debug = true;

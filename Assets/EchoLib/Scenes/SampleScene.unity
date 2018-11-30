@@ -804,13 +804,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 2
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Regex
+  m_Text: 
 --- !u!222 &300171630
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -893,7 +893,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 29610604}
   m_HandleRect: {fileID: 29610603}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1400,7 +1400,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1.16.7403
+  m_Text: 1.16.7583
 --- !u!222 &568655869
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1771,7 +1771,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 769269371}
   m_TextComponent: {fileID: 1120305868}
-  m_Placeholder: {fileID: 300171629}
+  m_Placeholder: {fileID: 0}
   m_ContentType: 0
   m_InputType: 0
   m_AsteriskChar: 42
@@ -2160,7 +2160,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 1.16.7403
+  m_Text: 1.16.7583
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2769,7 +2769,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000033198667}
+  m_AnchoredPosition: {x: 0, y: -0.000012018701}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1769488857
@@ -2941,7 +2941,9 @@ MonoBehaviour:
   bytecodeInputField: {fileID: 439663649}
   deployButton: {fileID: 662740002}
   regexInputField: {fileID: 769269370}
+  regexResultText: {fileID: 300171629}
   calculateButton: {fileID: 2113048883}
+  historyText: {fileID: 1769488858}
 --- !u!1 &1983356432
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,8 +1,7 @@
-﻿using Base.ECC;
+﻿using Base.Data.Json;
 using Newtonsoft.Json;
 using CodeDeposit = Base.Config.ChainTypes.CodeDeposit;
 using TransactionException = Base.Config.ChainTypes.TransactionException;
-using Base.Data.Json;
 
 
 namespace Base.Data.Contract
@@ -20,8 +19,8 @@ namespace Base.Data.Contract
     {
         [JsonProperty("excepted")]
         public TransactionException Excepted { get; private set; }
-        [JsonProperty("new_address")]
-        public Address NewAddress { get; private set; }
+        [JsonProperty("new_address"), JsonConverter(typeof(AddressToSpaceTypeIdConverter))]
+        public SpaceTypeId NewAddress { get; private set; }
         [JsonProperty("output"), JsonConverter(typeof(ByteArrayConverter))]
         public byte[] Output { get; private set; }
         [JsonProperty("code_deposit")]
@@ -51,7 +50,7 @@ namespace Base.Data.Contract
     public sealed class LogEntryData : SerializableObject
     {
         [JsonProperty("address")]
-        public Address Address { get; private set; }
+        public string Address { get; private set; }
         [JsonProperty("log")]
         public string[] Logs { get; private set; }
         [JsonProperty("data"), JsonConverter(typeof(ByteArrayConverter))]

@@ -28,7 +28,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     public static event Action<DatabaseApi> OnDatabaseApiInitialized;
     public static event Action<NetworkBroadcastApi> OnNetworkBroadcastApiInitialized;
     public static event Action<HistoryApi> OnHistoryApiInitialized;
-    public static event Action<CryptoApi> OnCryptoApiInitialized;
 
     private static string chainId = string.Empty;
     private static RequestIdentificator identificators;
@@ -41,7 +40,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     private DatabaseApi database;
     private NetworkBroadcastApi networkBroadcast;
     private HistoryApi history;
-    private CryptoApi crypto;
     private AuthorizationContainer authorizationContainer;
 
 
@@ -54,8 +52,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     public NetworkBroadcastApi NetworkBroadcast => networkBroadcast ?? (networkBroadcast = NetworkBroadcastApi.Create(this));
 
     public HistoryApi History => history ?? (history = HistoryApi.Create(this));
-
-    public CryptoApi Crypto => crypto ?? (crypto = CryptoApi.Create(this));
 
     public AuthorizationContainer Authorization => authorizationContainer ?? (authorizationContainer = new AuthorizationContainer());
 
@@ -117,7 +113,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         database = null;
         networkBroadcast = null;
         history = null;
-        crypto = null;
     }
 
     private void InitializeDone()
@@ -135,12 +130,14 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
                     Database.Init().Then(DatabaseApiInitialized),
                     NetworkBroadcast.Init().Then(NetworkBroadcastApiInitialized),
                     History.Init().Then(HistoryApiInitialized)
-                    //Crypto.Init().Then(CryptoApiInitialized)
-                ).Then((Action)InitializeDone);
+                ).Then((Action)InitializeDone).Catch(ex =>
+                {
+                    CustomTools.Console.DebugError("EchoApiManager class", CustomTools.Console.LogRedColor(ex.Message), "Initialize all api");
+                });
             }
             else
             {
-                CustomTools.Console.DebugLog("RequestManager class", CustomTools.Console.LogRedColor("Login Failed!"), "Login()");
+                CustomTools.Console.DebugLog("EchoApiManager class", CustomTools.Console.LogRedColor("Login Failed!"), "Login()");
             }
         });
     }
@@ -168,15 +165,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         return new Promise((resolved, rejected) =>
         {
             OnHistoryApiInitialized.SafeInvoke(api);
-            resolved();
-        });
-    }
-
-    private IPromise CryptoApiInitialized(CryptoApi api)
-    {
-        return new Promise((resolved, rejected) =>
-        {
-            OnCryptoApiInitialized.SafeInvoke(api);
             resolved();
         });
     }

@@ -10,7 +10,7 @@ namespace Base.Data.Json
     {
         protected override AddressWeightPair ConvertFrom(JToken key, JToken value)
         {
-            return new AddressWeightPair(key.ToObject<Address>(), Convert.ToUInt16(value));
+            return new AddressWeightPair(key.ToString(), Convert.ToUInt16(value));
         }
 
         protected override JArray ConvertTo(AddressWeightPair pair)
