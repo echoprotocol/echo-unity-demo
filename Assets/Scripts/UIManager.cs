@@ -1,5 +1,7 @@
 ﻿using Base.Data;
 using CustomTools.Extensions.Core.Array;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +29,8 @@ public class UIManager : MonoBehaviour
 
         loginButton.interactable = false;
         loginButton.onClick.AddListener(Login);
+
+        calculateButton.interactable = false;
 
         deployButton.onClick.AddListener(DeployContract);
 
@@ -58,7 +62,7 @@ public class UIManager : MonoBehaviour
         login.SetActive(false);
         work.SetActive(true);
 
-        contractAddressInputField.text = $"{PlayerPrefs.GetString("contract_address", "1.16.4318")}";
+        //contractAddressInputField.text = $"{PlayerPrefs.GetString("contract_address", "1.16.7186")}";
     }
 
     private void DeployContract()
@@ -77,21 +81,86 @@ public class UIManager : MonoBehaviour
         });
     }
 
+    public void CheckInput(string input)
+    {
+        calculateButton.interactable = false;
+
+        MatchCollection matches = Regex.Matches(regexInputField.text, @"([0-9]+|[-+*/])");
+
+        string res = string.Empty;
+
+        if (matches.Count > 0 && Regex.IsMatch(matches[0].Value, @"[0-9]+"))
+        {
+            res += matches[0].Value;
+        }
+
+        if(matches.Count > 1 && Regex.IsMatch(matches[1].Value, @"[-+*/]"))
+        {
+            res += " " + matches[1].Value;
+        }
+
+        if (matches.Count > 2 && Regex.IsMatch(matches[2].Value, @"[0-9]+"))
+        {
+            res += " " + matches[2].Value;
+            calculateButton.interactable = true;
+        }
+
+        regexInputField.text = res;
+        regexInputField.caretPosition = res.Length;
+    }
+
     private void Calculate()
     {
         calculateButton.interactable = false;
 
         var accountId = EchoApiManager.Instance.Authorization.Current.UserNameData.FullAccount.Account.Id.Id;
-        var contractId = uint.Parse(regexInputField.text.Split('.')[2]);
+        var contractId = uint.Parse(contractAddressInputField.text.Split('.')[2]);
+        var values = regexInputField.text.Split(' ');
 
-        EchoApiManager.Instance.CallContract(accountId, contractId, "9acd39fe", 0, 0, 10000000, 0, res =>
+        string bytecode = "1eba86cc";
+        Parser.SerializeInts(ref bytecode, RegexToInts(regexInputField.text));
+
+        Debug.Log(bytecode);
+
+        EchoApiManager.Instance.CallContract(accountId, contractId, bytecode, 0, 0, 10000000, 0, res =>
         {
             calculateButton.interactable = true;
+            CustomTools.Console.Warning(res);
 
             EchoApiManager.Instance.Database.GetContractResult((res.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
             {
                 CustomTools.Console.Warning(contractResult);
             });
         });
+    }
+
+    private int[] RegexToInts(string regex)
+    {
+        int[] res = new int[3];
+        string[] values = regex.Split(' ');
+
+        res[0] = int.Parse(values[0]);
+        res[1] = int.Parse(values[2]);
+
+        switch (values[1])
+        {
+            case "+":
+                res[2] = 1;
+                break;
+
+            case "-":
+                res[2] = 2;
+                break;
+
+            case "*":
+                res[2] = 3;
+                break;
+
+            case "/":
+                res[2] = 4;
+                break;
+        }
+
+        return res;
     }
 }

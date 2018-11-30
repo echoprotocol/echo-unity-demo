@@ -1,15 +1,19 @@
-﻿public static class Parser
-{
-    private const int BLOCK_SIZE = 20;
+﻿using UnityEngine;
 
-    public static void Serialize(int[] array, ref string res)
+public static class Parser
+{
+    private const int BLOCK_SIZE = 32;
+
+    public static void SerializeInts(ref string res, params int[] ints)
     {
-        res += BLOCK_SIZE.ToString("X32");
-        res += array.Length.ToString("X32");
-        
-        for(int i = 0; i < array.Length; i++)
+        for (int i = 0; i < ints.Length; i++)
         {
-            res += array[i].ToString("X32");
+            res += ints[i].ToString("X64");
         }
+    }
+
+    public static int DeserializeInt(string res)
+    {
+        return int.Parse(res, System.Globalization.NumberStyles.HexNumber);
     }
 }

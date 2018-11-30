@@ -134,8 +134,8 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
                 Promise.All(
                     Database.Init().Then(DatabaseApiInitialized),
                     NetworkBroadcast.Init().Then(NetworkBroadcastApiInitialized),
-                    History.Init().Then(HistoryApiInitialized),
-                    Crypto.Init().Then(CryptoApiInitialized)
+                    History.Init().Then(HistoryApiInitialized)
+                    //Crypto.Init().Then(CryptoApiInitialized)
                 ).Then((Action)InitializeDone);
             }
             else
