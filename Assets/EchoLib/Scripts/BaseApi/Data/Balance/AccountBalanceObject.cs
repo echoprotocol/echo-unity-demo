@@ -9,7 +9,7 @@ namespace Base.Data.Accounts
         [JsonProperty("owner")]
         public SpaceTypeId Owner { get; private set; }
         [JsonProperty("asset_type")]
-        public SpaceTypeId AssetType { get; private set; }
+        public SpaceTypeId Asset { get; private set; }
         [JsonProperty("balance")]
         public long Balance { get; private set; }
     }

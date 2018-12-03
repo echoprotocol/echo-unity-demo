@@ -10,8 +10,10 @@ using Base.Data.Contract;
 using Base.Data.Operations;
 using Base.Data.Order;
 using Base.Data.Properties;
+using Base.Data.SpecialAuthorities;
 using Base.Data.Transactions;
 using Base.Data.Witnesses;
+using Base.Data.Workers;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using Newtonsoft.Json.Linq;
@@ -162,7 +164,7 @@ namespace Base.Storage
                 case SpaceType.Worker:/*                        */return source.ToObject<WorkerObject>();
                 case SpaceType.Balance:/*                       */return source.ToObject<BalanceObject>();
                 case SpaceType.Contract:/*                      */return source.ToObject<ContractObject>();
-                case SpaceType.ResultExecute:/*                 */return source.ToObject<ResultExecuteObject>();
+                case SpaceType.ResultContract:/*                */return source.ToObject<ResultContractObject>();
                 case SpaceType.BlockResult:/*                   */return source.ToObject<BlockResultObject>();
                 case SpaceType.GlobalProperties:/*              */return source.ToObject<GlobalPropertiesObject>();
                 case SpaceType.DynamicGlobalProperties:/*       */return source.ToObject<DynamicGlobalPropertiesObject>();
@@ -177,12 +179,12 @@ namespace Base.Storage
                 case SpaceType.ChainProperty:/*                 */return source.ToObject<ChainPropertyObject>();
                 case SpaceType.WitnessSchedule:/*               */return source.ToObject<WitnessScheduleObject>();
                 case SpaceType.BudgetRecord:/*                  */return source.ToObject<BudgetRecordObject>();
-                case SpaceType._todo_object_2_14:/*             */return source.ToObject<Object_2_14>();
-                case SpaceType._todo_object_2_15:/*             */return source.ToObject<Object_2_15>();
-                case SpaceType._todo_object_2_16:/*             */return source.ToObject<Object_2_16>();
-                case SpaceType._todo_object_2_17:/*             */return source.ToObject<Object_2_17>();
-                case SpaceType._todo_object_2_18:/*             */return source.ToObject<Object_2_18>();
-                case SpaceType.ContractTransactionHistory:/*    */return source.ToObject<ContractTransactionHistoryObject>();
+                case SpaceType.SpecialAuthority:/*              */return source.ToObject<SpecialAuthorityObject>();
+                case SpaceType.Buyback:/*                       */return source.ToObject<BuybackObject>();
+                case SpaceType.FbaAccumulator:/*                */return source.ToObject<FbaAccumulatorObject>();
+                case SpaceType.CollateralBid:/*                 */return source.ToObject<CollateralBidObject>();
+                case SpaceType.ContractBalance:/*               */return source.ToObject<ContractBalanceObject>();
+                case SpaceType.ContractHistory:/*               */return source.ToObject<ContractHistoryObject>();
                 case SpaceType.ContractStatistics:/*            */return source.ToObject<ContractStatisticsObject>();
                 default:
                     CustomTools.Console.DebugWarning("Get unexpected SpaceType:", CustomTools.Console.LogCyanColor(sample.SpaceType), sample.Id, '\n', source);

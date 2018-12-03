@@ -28,7 +28,7 @@ namespace Base.Data
         Worker,
         Balance,
         Contract,
-        ResultExecute,
+        ResultContract,
         BlockResult,
         GlobalProperties,
         DynamicGlobalProperties,
@@ -43,12 +43,12 @@ namespace Base.Data
         ChainProperty,
         WitnessSchedule,
         BudgetRecord,
-        _todo_object_2_14,
-        _todo_object_2_15,
-        _todo_object_2_16,
-        _todo_object_2_17,
-        _todo_object_2_18,
-        ContractTransactionHistory,
+        SpecialAuthority,
+        Buyback,
+        FbaAccumulator,
+        CollateralBid,
+        ContractBalance,
+        ContractHistory,
         ContractStatistics
     }
 

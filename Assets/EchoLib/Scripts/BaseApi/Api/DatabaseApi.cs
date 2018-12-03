@@ -439,11 +439,11 @@ namespace Base.Api.Database
             GetAccountBalance(accountId, assetId).Then(onSuccess).Catch(onFailed);
         }
 
-        public IPromise<ContractResultData> GetContractResult(uint resultId)
+        public IPromise<ResultExecuteData> GetContractResult(uint resultId)
         {
             if (IsInitialized)
             {
-                return new Promise<ContractResultData>((resolve, reject) =>
+                return new Promise<ResultExecuteData>((resolve, reject) =>
                 {
 #if ECHO_DEBUG
                     var debug = true;
@@ -453,14 +453,14 @@ namespace Base.Api.Database
                     var requestId = GenerateNewId();
                     var methodName = "get_contract_result";
                     var title = methodName + " " + requestId;
-                    var parameters = new Parameters { Id.Value, methodName, new object[] { SpaceTypeId.ToString(SpaceType.ResultExecute, resultId) } };
+                    var parameters = new Parameters { Id.Value, methodName, new object[] { SpaceTypeId.ToString(SpaceType.ResultContract, resultId) } };
                     DoRequest(requestId, parameters, resolve, reject, title, debug);
                 });
             }
             return Init().Then(api => api.GetContractResult(resultId));
         }
 
-        public void GetContractResult(uint resultId, Action<ContractResultData> onSuccess, Action<Exception> onFailed)
+        public void GetContractResult(uint resultId, Action<ResultExecuteData> onSuccess, Action<Exception> onFailed)
         {
             GetContractResult(resultId).Then(onSuccess).Catch(onFailed);
         }

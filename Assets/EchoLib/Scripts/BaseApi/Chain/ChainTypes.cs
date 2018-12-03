@@ -29,7 +29,7 @@ namespace Base.Config
             Worker/*               */= 14,
             Balance/*              */= 15,
             Contract/*             */= 16,
-            ResultExecute/*        */= 17,
+            ResultContract/*       */= 17,
             BlockResult/*          */= 18
         }
 
@@ -50,12 +50,12 @@ namespace Base.Config
             ChainProperty/*                           */= 11,
             WitnessSchedule/*                         */= 12,
             BudgetRecord/*                            */= 13,
-            _todo_object_2_14/*                       */= 14,
-            _todo_object_2_15/*                       */= 15,
-            _todo_object_2_16/*                       */= 16,
-            _todo_object_2_17/*                       */= 17,
-            _todo_object_2_18/*                       */= 18,
-            ContractTransactionHistory/*              */= 19,
+            SpecialAuthority/*                        */= 14,
+            Buyback/*                                 */= 15,
+            FbaAccumulator/*                          */= 16,
+            CollateralBid/*                           */= 17,
+            ContractBalance/*                         */= 18,
+            ContractHistory/*                         */= 19,
             ContractStatistics/*                      */= 20
         }
 
@@ -168,12 +168,11 @@ namespace Base.Config
             TransferFromBlindOperation/*                      */= 41,
             AssetSettleCancelOperation/*                      */= 42,
             AssetClaimFeesOperation/*                         */= 43,
-
-            // 44
-            // 45
-            // 46
-            // 47
-            // 48
+            FbaDistributeOperation/*                          */= 44,
+            BidCollateralOperation/*                          */= 45,
+            ExecuteBidOperation/*                             */= 46,
+            ContractOperation/*                               */= 47,
+            ContractTransferOperation/*                       */= 48
         }
 
 
@@ -185,14 +184,21 @@ namespace Base.Config
         }
 
 
-        public enum VestingPolicyInitializer : int
+        public enum SpecialAuthority : int
+        {
+            No/*              */= 0,
+            TopHolders/*      */= 1
+        }
+
+
+        public enum VestingPolicy : int
         {
             Linear/*          */= 0,
             Cdd/*             */= 1
         }
 
 
-        public enum WorkerInitializer : int
+        public enum Worker : int
         {
             Refund/*          */= 0,
             VestingBalance/*  */= 1,

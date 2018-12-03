@@ -198,7 +198,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         ChainConfig.SetChainId(newChainId);
     }
 
-    public IPromise CallContract(uint accountId, uint contractId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmation> resultCallback = null)
+    public IPromise CallContract(uint contractId, uint accountId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmation> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {

@@ -19,7 +19,7 @@ namespace Base.Data.Accounts
         [JsonProperty("votes")]
         public VoteId[] Votes { get; private set; }
         [JsonProperty("extensions")]
-        public object[] Extensions { get; private set; }        // todo
+        public object[] Extensions { get; private set; }
 
         public bool IsEquelKey(KeyPair key) => key.Equals(MemoKey);
 
@@ -43,7 +43,7 @@ namespace Base.Data.Accounts
                 {
                     ;
                 }
-            }); // todo
+            });
             return buffer;
         }
     }

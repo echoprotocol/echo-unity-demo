@@ -107,6 +107,16 @@ namespace Base.Data.Json
                     return AssetSettleCancelOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.AssetClaimFeesOperation:
                     return AssetClaimFeesOperationFeeParametersData.Create(value.Last as JObject);
+                case ChainTypes.FeeParameters.FbaDistributeOperation:
+                    return FbaDistributeOperationFeeParametersData.Create(value.Last as JObject);
+                case ChainTypes.FeeParameters.BidCollateralOperation:
+                    return BidCollateralOperationFeeParametersData.Create(value.Last as JObject);
+                case ChainTypes.FeeParameters.ExecuteBidOperation:
+                    return ExecuteBidOperationFeeParametersData.Create(value.Last as JObject);
+                case ChainTypes.FeeParameters.ContractOperation:
+                    return ContractOperationFeeParametersData.Create(value.Last as JObject);
+                case ChainTypes.FeeParameters.ContractTransferOperation:
+                    return ContractTransferOperationFeeParametersData.Create(value.Last as JObject);
                 default:
                     CustomTools.Console.DebugError("Unexpected fee parameters type:", type);
                     return null;

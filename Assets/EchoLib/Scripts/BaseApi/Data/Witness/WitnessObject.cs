@@ -13,10 +13,6 @@ namespace Base.Data.Witnesses
         public ulong LastAslot { get; private set; }
         [JsonProperty("signing_key")]
         public PublicKey SigningKey { get; private set; }
-        [JsonProperty("next_secret_hash")]
-        public string NextSecretHash { get; private set; }
-        [JsonProperty("previous_secret")]
-        public string PreviousSecret { get; private set; }
         [JsonProperty("pay_vb", NullValueHandling = NullValueHandling.Ignore)]
         public SpaceTypeId PayVestingBalance { get; private set; }
         [JsonProperty("vote_id")]

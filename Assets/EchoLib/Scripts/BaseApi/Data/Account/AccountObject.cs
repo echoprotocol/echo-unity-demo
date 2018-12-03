@@ -1,5 +1,6 @@
 using System;
 using Base.Data.Json;
+using Base.Data.SpecialAuthorities;
 using Base.ECC;
 using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
@@ -45,9 +46,9 @@ namespace Base.Data.Accounts
         [JsonProperty("cashback_vb", NullValueHandling = NullValueHandling.Ignore)]
         public SpaceTypeId CashbackVestingBalance { get; private set; }
         [JsonProperty("owner_special_authority")]
-        public object[] OwnerSpecialAuthority { get; private set; }         // todo
+        public SpecialAuthorityData OwnerSpecialAuthority { get; private set; }
         [JsonProperty("active_special_authority")]
-        public object[] ActiveSpecialAuthority { get; private set; }        // todo
+        public SpecialAuthorityData ActiveSpecialAuthority { get; private set; }
         [JsonProperty("top_n_control_flags")]
         public byte TopNControlFlags { get; private set; }
         [JsonProperty("allowed_assets", NullValueHandling = NullValueHandling.Ignore)]
@@ -100,36 +101,5 @@ namespace Base.Data.Accounts
                     return false;
             }
         }
-    }
-
-
-    public sealed class FullAccountData : SerializableObject
-    {
-        [JsonProperty("account")]
-        public AccountObject Account { get; set; }
-        [JsonProperty("statistics")]
-        public AccountStatisticsObject Statistics { get; set; }
-        [JsonProperty("registrar_name")]
-        public string RegistrarName { get; set; }
-        [JsonProperty("referrer_name")]
-        public string ReferrerName { get; set; }
-        [JsonProperty("lifetime_referrer_name")]
-        public string LifetimeReferrerName { get; set; }
-        [JsonProperty("votes")]
-        public object[] Votes { get; set; }                         // todo
-        [JsonProperty("cashback_balance", NullValueHandling = NullValueHandling.Ignore)]
-        public object CashbackBalance { get; set; }                 // todo
-        [JsonProperty("balances")]
-        public AccountBalanceObject[] Balances { get; set; }
-        [JsonProperty("vesting_balances")]
-        public object[] VestingBalances { get; set; }               // todo
-        [JsonProperty("limit_orders")]
-        public object[] LimitOrders { get; set; }                   // todo
-        [JsonProperty("call_orders")]
-        public object[] CallOrders { get; set; }                    // todo
-        [JsonProperty("proposals")]
-        public object[] Proposals { get; set; }                     // todo
-        [JsonProperty("pending_dividend_payments")]
-        public object[] PendingDividendPayments { get; set; }       // todo
     }
 }

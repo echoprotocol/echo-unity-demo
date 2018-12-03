@@ -9,8 +9,8 @@ namespace Base.Data.Contract
         [JsonProperty("owner")]
         public SpaceTypeId Owner { get; private set; }
         [JsonProperty("most_recent_op")]
-        public SpaceTypeId MostRecentOp { get; private set; }
+        public SpaceTypeId MostRecentOperation { get; private set; }
         [JsonProperty("total_ops")]
-        public uint TotalOps { get; private set; }
+        public uint TotalOperations { get; private set; }
     }
 }

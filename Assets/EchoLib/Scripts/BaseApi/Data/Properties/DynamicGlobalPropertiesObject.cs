@@ -8,8 +8,6 @@ namespace Base.Data.Properties
     // id "2.1.x"
     public sealed class DynamicGlobalPropertiesObject : IdObject
     {
-        [JsonProperty("random")] // deprecated? 
-        public string Random { get; private set; }
         [JsonProperty("head_block_number")]
         public uint HeadBlockNumber { get; private set; }
         [JsonProperty("head_block_id")]
@@ -36,5 +34,7 @@ namespace Base.Data.Properties
         public uint DynamicFlags { get; private set; }
         [JsonProperty("last_irreversible_block_num")]
         public uint LastIrreversibleBlockNum { get; private set; }
+        [JsonProperty("last_rand_quantity")]
+        public string LastRandQuantity { get; private set; }
     }
 }
