@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
     {
         deployButton.interactable = false;
 
-        EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.FullAccount.Account.Id.Id, bytecodeInputField.text, 0, 10000000, 0, res =>
+        EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, 0, 10000000, 0, res =>
         {
             deployButton.interactable = true;
             CustomTools.Console.Warning(res);
@@ -119,7 +119,7 @@ public class UIManager : MonoBehaviour
     {
         calculateButton.interactable = false;
 
-        var accountId = EchoApiManager.Instance.Authorization.Current.UserNameData.FullAccount.Account.Id.Id;
+        var accountId = EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id;
         var contractId = uint.Parse(contractAddressInputField.text.Split('.')[2]);
         var values = regexInputField.text.Split(' ');
 
@@ -128,7 +128,7 @@ public class UIManager : MonoBehaviour
 
         Debug.Log(bytecode);
 
-        EchoApiManager.Instance.CallContract(accountId, contractId, bytecode, 0, 0, 10000000, 0, res =>
+        EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, 10000000, 0, res =>
         {
             calculateButton.interactable = true;
             CustomTools.Console.Warning(res);
@@ -145,7 +145,7 @@ public class UIManager : MonoBehaviour
 
     private void GetHistory()
     {
-        var accountId = EchoApiManager.Instance.Authorization.Current.UserNameData.FullAccount.Account.Id.Id;
+        var accountId = EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id;
         var contractId = uint.Parse(contractAddressInputField.text.Split('.')[2]);
         var bytecode = "5fe36f0a";
 

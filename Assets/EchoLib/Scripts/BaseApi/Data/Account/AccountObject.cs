@@ -65,10 +65,10 @@ namespace Base.Data.Accounts
                         {
                             if (keyAuth.IsEquelKey(key))
                             {
-                                CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Owner->", key.Public, "\n            Owner<-", keyAuth.PublicKey));
+                                CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Owner->", key.Public, "\n            Owner<-", keyAuth.Key));
                                 return true;
                             }
-                            CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.PublicKey));
+                            CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.Key));
                         }
                     }
                     return false;
@@ -79,10 +79,10 @@ namespace Base.Data.Accounts
                         {
                             if (keyAuth.IsEquelKey(key))
                             {
-                                CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Active->", key.Public, "\n            Active<-", keyAuth.PublicKey));
+                                CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Active->", key.Public, "\n            Active<-", keyAuth.Key));
                                 return true;
                             }
-                            CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Active->", key.Public, "\ngetted_key        Active<-", keyAuth.PublicKey));
+                            CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Active->", key.Public, "\ngetted_key        Active<-", keyAuth.Key));
                         }
                     }
                     return false;

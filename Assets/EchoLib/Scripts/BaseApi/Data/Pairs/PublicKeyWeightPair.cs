@@ -6,20 +6,10 @@ using Newtonsoft.Json;
 namespace Base.Data.Pairs
 {
     [JsonConverter(typeof(PublicKeyWeightPairConverter))]
-    public class PublicKeyWeightPair
+    public sealed class PublicKeyWeightPair : Pair<PublicKey, ushort>
     {
-        public PublicKey PublicKey { get; private set; }
-        public ushort Weight { get; private set; }
-
-        public PublicKeyWeightPair(PublicKey publicKey, ushort weight)
-        {
-            PublicKey = publicKey;
-            Weight = weight;
-        }
-
-        public bool IsEquelKey(KeyPair key)
-        {
-            return key.Equals(PublicKey);
-        }
+        public PublicKeyWeightPair(PublicKey publicKey, ushort weight) : base(publicKey, weight) { }
+   
+        public bool IsEquelKey(KeyPair key) => key.Equals(Key);
     }
 }

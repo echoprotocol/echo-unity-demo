@@ -14,7 +14,7 @@ namespace Base.Data
         [JsonProperty("balance")]
         public AssetData Balance { get; private set; }
         [JsonProperty("vesting_policy", NullValueHandling = NullValueHandling.Ignore)]
-        public VestingPolicyData VestingPolicy { get; private set; }             // LinearVestingPolicyData
+        public VestingPolicyData VestingPolicy { get; private set; } // LinearVestingPolicyData ?
         [JsonProperty("last_claim_date"), JsonConverter(typeof(DateTimeConverter))]
         public DateTime LastClaimDate { get; private set; }
     }

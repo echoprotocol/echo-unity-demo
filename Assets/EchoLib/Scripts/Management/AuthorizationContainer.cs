@@ -31,23 +31,23 @@ public sealed class AuthorizationContainer
 
         public void UpdateAccountData(IdObject idObject)
         {
-            if (idObject.Id.Equals(UserNameData.FullAccount.Account.Id))
+            if (idObject.Id.Equals(UserNameData.Value.Account.Id))
             {
-                UserNameData.FullAccount.Account = (AccountObject)idObject;
+                UserNameData.Value.Account = (AccountObject)idObject;
             }
             else
-            if (idObject.Id.Equals(UserNameData.FullAccount.Statistics.Id))
+            if (idObject.Id.Equals(UserNameData.Value.Statistics.Id))
             {
-                UserNameData.FullAccount.Statistics = (AccountStatisticsObject)idObject;
+                UserNameData.Value.Statistics = (AccountStatisticsObject)idObject;
             }
             else
             if (idObject.Id.SpaceType.Equals(SpaceType.AccountBalance))
             {
-                for (var i = 0; i < UserNameData.FullAccount.Balances.OrEmpty().Length; i++)
+                for (var i = 0; i < UserNameData.Value.Balances.OrEmpty().Length; i++)
                 {
-                    if (idObject.Id.Equals(UserNameData.FullAccount.Balances[i].Id))
+                    if (idObject.Id.Equals(UserNameData.Value.Balances[i].Id))
                     {
-                        UserNameData.FullAccount.Balances[i] = (AccountBalanceObject)idObject;
+                        UserNameData.Value.Balances[i] = (AccountBalanceObject)idObject;
                         break;
                     }
                 }
@@ -129,6 +129,11 @@ public sealed class AuthorizationContainer
         });
     }
 
+    public void Registration(string userName, string password, Action<bool> onSuccess, Action<Exception> onFailed)
+    {
+        Registration(userName, password).Then(onSuccess).Catch(onFailed);
+    }
+
     private IPromise<bool> AuthorizationBy(uint id, string password)
     {
         return EchoApiManager.Instance.Database.GetFullAccount(SpaceTypeId.ToString(SpaceType.Account, id), true).Then(result =>
@@ -143,7 +148,7 @@ public sealed class AuthorizationContainer
         {
             try
             {
-                var validKeys = await Keys.FromSeed(dataPair.UserName, password, false).CheckAuthorizationAsync(dataPair.FullAccount.Account);
+                var validKeys = await Keys.FromSeed(dataPair.Key, password, false).CheckAuthorizationAsync(dataPair.Value.Account);
                 if (!validKeys.IsNull())
                 {
                     if (!Current.IsNull())

@@ -5,15 +5,8 @@ using Newtonsoft.Json;
 namespace Base.Data.Pairs
 {
     [JsonConverter(typeof(PayerAmountPairConverter))]
-    public class PayerAmountPair
+    public sealed class PayerAmountPair : Pair<SpaceTypeId, long>
     {
-        public SpaceTypeId Payer { get; private set; }
-        public long Amount { get; private set; }
-
-        public PayerAmountPair(SpaceTypeId payer, long amount)
-        {
-            Payer = payer;
-            Amount = amount;
-        }
+        public PayerAmountPair(SpaceTypeId payer, long amount) : base(payer, amount) { }
     }
 }

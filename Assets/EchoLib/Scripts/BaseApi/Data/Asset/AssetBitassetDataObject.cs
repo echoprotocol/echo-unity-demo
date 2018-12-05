@@ -1,5 +1,6 @@
 using System;
 using Base.Data.Json;
+using Base.Data.Pairs;
 using Newtonsoft.Json;
 
 
@@ -11,7 +12,7 @@ namespace Base.Data.Assets
         [JsonProperty("options")]
         public BitassetOptionsData Options { get; private set; }
         [JsonProperty("feeds")]
-        public object[] Feeds { get; private set; }                        // flat_map<account_id_type, pair<time_point_sec, price_feed>>
+        public AccountIdDateTimePriceFeedDataPair[] Feeds { get; private set; }
         [JsonProperty("current_feed")]
         public PriceFeedData CurrentFeed { get; private set; }
         [JsonProperty("current_feed_publication_time"), JsonConverter(typeof(DateTimeConverter))]

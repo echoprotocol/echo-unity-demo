@@ -5,15 +5,8 @@ using Newtonsoft.Json;
 namespace Base.Data.Pairs
 {
     [JsonConverter(typeof(UserNameAccountIdPairConverter))]
-    public class UserNameAccountIdPair
+    public sealed class UserNameAccountIdPair : Pair<string, SpaceTypeId>
     {
-        public string UserName { get; private set; }
-        public SpaceTypeId Id { get; private set; }
-
-        public UserNameAccountIdPair(string userName, SpaceTypeId id)
-        {
-            UserName = userName;
-            Id = id;
-        }
+        public UserNameAccountIdPair(string userName, SpaceTypeId id) : base(userName, id) { }
     }
 }
