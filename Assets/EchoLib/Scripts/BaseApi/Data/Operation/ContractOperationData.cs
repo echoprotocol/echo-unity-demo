@@ -1,5 +1,5 @@
-using System;
 using Base.Config;
+using Base.Data.Assets;
 using Buffers;
 using Newtonsoft.Json.Linq;
 using Tools.Json;
@@ -66,9 +66,9 @@ namespace Base.Data.Operations
             instance.Registrar = value.TryGetValue(REGISTRAR_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : SpaceTypeId.EMPTY;
             instance.Receiver = value.TryGetValue(RECEIVER_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : null;  // optional
             instance.Asset = value.TryGetValue(ASSET_ID_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : SpaceTypeId.EMPTY;
-            instance.Value = Convert.ToUInt64(value.TryGetValue(VALUE_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
-            instance.GasPrice = Convert.ToUInt64(value.TryGetValue(GAS_PRICE_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
-            instance.Gas = Convert.ToUInt64(value.TryGetValue(GAS_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
+            instance.Value = value.TryGetValue(VALUE_FIELD_KEY, out token) ? token.ToObject<ulong>() : 0;
+            instance.GasPrice = value.TryGetValue(GAS_PRICE_FIELD_KEY, out token) ? token.ToObject<ulong>() : 0;
+            instance.Gas = value.TryGetValue(GAS_FIELD_KEY, out token) ? token.ToObject<ulong>() : 0;
             instance.Code = value.TryGetValue(CODE_FIELD_KEY, out token) ? token.ToObject<string>() : string.Empty;
             return instance;
         }

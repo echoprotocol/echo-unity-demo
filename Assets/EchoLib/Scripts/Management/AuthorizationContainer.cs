@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using Base.Data;
 using Base.Data.Accounts;
+using Base.Data.Balances;
 using Base.Data.Pairs;
 using Base.Data.Transactions;
 using Base.ECC;

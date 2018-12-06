@@ -1,10 +1,11 @@
 ﻿using System;
+using Base.Data.Assets;
 using Base.Data.Json;
 using Base.Data.VestingPolicies;
 using Newtonsoft.Json;
 
 
-namespace Base.Data
+namespace Base.Data.Balances
 {
     // id "1.15.x"
     public sealed class BalanceObject : IdObject

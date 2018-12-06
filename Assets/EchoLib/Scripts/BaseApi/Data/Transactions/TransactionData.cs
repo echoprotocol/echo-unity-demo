@@ -56,7 +56,7 @@ namespace Base.Data.Transactions
                 {
                     ;
                 }
-            }); // todo
+            });
             return buffer;
         }
     }

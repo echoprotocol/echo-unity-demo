@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 
 
-namespace Base.Data.Order
+namespace Base.Data.Orders
 {
     // id "1.8.x"
     public sealed class CallOrderObject : IdObject

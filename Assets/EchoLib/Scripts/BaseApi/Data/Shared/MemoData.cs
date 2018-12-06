@@ -1,4 +1,3 @@
-using System;
 using Base.Data.Json;
 using Base.ECC;
 using Buffers;
@@ -51,7 +50,7 @@ namespace Base.Data
             var instance = new MemoData();
             instance.From = value.TryGetValue(FROM_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
             instance.To = value.TryGetValue(TO_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
-            instance.Nonce = Convert.ToUInt64(value.TryGetValue(NONCE_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
+            instance.Nonce = value.TryGetValue(NONCE_FIELD_KEY, out token) ? token.ToObject<ulong>() : 0;
             instance.Message = value.TryGetValue(MESSAGE_FIELD_KEY, out token) ? token.ToObject<byte[]>(new ByteArrayConverter().GetSerializer()) : new byte[0];
             return instance;
         }

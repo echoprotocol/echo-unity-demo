@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 
 
-namespace Base.Data.Accounts
+namespace Base.Data.Balances
 {
-    // id "2.5.x"
-    public sealed class AccountBalanceObject : IdObject
+    // id "2.18.x"
+    public sealed class ContractBalanceObject : IdObject
     {
         [JsonProperty("owner")]
         public SpaceTypeId Owner { get; private set; }

@@ -190,8 +190,6 @@ namespace Buffers
 
         #region long
         // Writes a 64bit signed integer.
-        public ByteBuffer WriteInt64(string value) => WriteInt64(Convert.ToInt64(value));
-
         public ByteBuffer WriteInt64(long value)
         {
             // -9223372036854775808 >= value <= 9223372036854775807
@@ -218,8 +216,6 @@ namespace Buffers
         }
 
         // Writes a 64bit unsigned integer.
-        public ByteBuffer WriteUInt64(string value) => WriteUInt64(Convert.ToUInt64(value));
-
         public ByteBuffer WriteUInt64(ulong value)
         {
             // 0 >= value <= 18446744073709551615

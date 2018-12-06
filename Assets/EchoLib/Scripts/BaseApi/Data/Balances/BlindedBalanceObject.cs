@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 
-namespace Base.Data.Accounts
+namespace Base.Data.Balances
 {
     // id "2.10.x"
     public sealed class BlindedBalanceObject : IdObject

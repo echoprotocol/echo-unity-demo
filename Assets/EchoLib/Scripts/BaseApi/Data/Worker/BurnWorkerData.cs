@@ -1,4 +1,3 @@
-using System;
 using Base.Config;
 using Buffers;
 using Newtonsoft.Json.Linq;
@@ -34,7 +33,7 @@ namespace Base.Data.Workers
         {
             var token = value.Root;
             var instance = new BurnWorkerData();
-            instance.TotalBurned = Convert.ToInt64(value.TryGetValue(TOTAL_BURNED_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
+            instance.TotalBurned = value.TryGetValue(TOTAL_BURNED_FIELD_KEY, out token) ? token.ToObject<long>() : 0;
             return instance;
         }
     }

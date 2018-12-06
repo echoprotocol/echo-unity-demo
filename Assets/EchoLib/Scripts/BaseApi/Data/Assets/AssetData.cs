@@ -1,12 +1,11 @@
-﻿using System;
-using Base.Data.Json;
+﻿using Base.Data.Json;
 using Buffers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tools.Json;
 
 
-namespace Base.Data
+namespace Base.Data.Assets
 {
     [JsonConverter(typeof(AssetDataConverter))]
     public sealed class AssetData : SerializableObject, ISerializeToBuffer
@@ -29,7 +28,7 @@ namespace Base.Data
         public AssetData(JObject value)
         {
             var token = value.Root;
-            Amount = Convert.ToInt64(value.TryGetValue(AMOUNT_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
+            Amount = value.TryGetValue(AMOUNT_FIELD_KEY, out token) ? token.ToObject<long>() : 0;
             Asset = value.TryGetValue(ASSET_ID_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : SpaceTypeId.EMPTY;
         }
 

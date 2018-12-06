@@ -1,3 +1,6 @@
+using Base.Data.Balances;
+using Base.Data.Json;
+using Base.Data.Orders;
 using Newtonsoft.Json;
 
 
@@ -15,21 +18,25 @@ namespace Base.Data.Accounts
         public string ReferrerName { get; set; }
         [JsonProperty("lifetime_referrer_name")]
         public string LifetimeReferrerName { get; set; }
-        [JsonProperty("votes")]
-        public object[] Votes { get; set; }                         // todo
+        [JsonProperty("votes"), JsonConverter(typeof(VotesConverter))]
+        public IdObject[] Votes { get; set; }
         [JsonProperty("cashback_balance", NullValueHandling = NullValueHandling.Ignore)]
-        public object CashbackBalance { get; set; }                 // todo
+        public VestingBalanceObject CashbackBalance { get; set; }
         [JsonProperty("balances")]
         public AccountBalanceObject[] Balances { get; set; }
         [JsonProperty("vesting_balances")]
-        public object[] VestingBalances { get; set; }               // todo
+        public VestingBalanceObject[] VestingBalances { get; set; }
         [JsonProperty("limit_orders")]
-        public object[] LimitOrders { get; set; }                   // todo
+        public LimitOrderObject[] LimitOrders { get; set; }
         [JsonProperty("call_orders")]
-        public object[] CallOrders { get; set; }                    // todo
+        public CallOrderObject[] CallOrders { get; set; }
+        [JsonProperty("settle_orders")]
+        public ForceSettlementObject[] SettleOrders { get; set; }
         [JsonProperty("proposals")]
-        public object[] Proposals { get; set; }                     // todo
-        [JsonProperty("pending_dividend_payments")]
-        public object[] PendingDividendPayments { get; set; }       // todo
+        public ProposalObject[] Proposals { get; set; }
+        [JsonProperty("assets")]
+        public SpaceTypeId[] Assets { get; set; }
+        [JsonProperty("withdraws")]
+        public WithdrawPermissionObject[] Withdraws { get; set; }
     }
 }

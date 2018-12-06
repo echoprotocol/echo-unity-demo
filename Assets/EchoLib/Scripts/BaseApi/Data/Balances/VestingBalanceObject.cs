@@ -1,8 +1,9 @@
-﻿using Base.Data.VestingPolicies;
+﻿using Base.Data.Assets;
+using Base.Data.VestingPolicies;
 using Newtonsoft.Json;
 
 
-namespace Base.Data
+namespace Base.Data.Balances
 {
     // id "1.13.x"
     public sealed class VestingBalanceObject : IdObject

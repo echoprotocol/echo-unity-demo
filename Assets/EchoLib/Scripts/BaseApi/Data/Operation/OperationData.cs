@@ -1,4 +1,5 @@
 using Base.Config;
+using Base.Data.Assets;
 using Base.Data.Json;
 using Buffers;
 using Newtonsoft.Json;

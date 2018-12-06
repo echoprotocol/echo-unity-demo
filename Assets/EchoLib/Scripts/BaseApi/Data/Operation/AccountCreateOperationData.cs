@@ -1,6 +1,7 @@
 using System;
 using Base.Config;
 using Base.Data.Accounts;
+using Base.Data.Assets;
 using Base.ECC;
 using Buffers;
 using Newtonsoft.Json.Linq;

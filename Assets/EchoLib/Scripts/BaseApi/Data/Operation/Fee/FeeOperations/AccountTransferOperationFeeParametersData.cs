@@ -1,4 +1,3 @@
-using System;
 using Buffers;
 using Base.Config;
 using Newtonsoft.Json.Linq;
@@ -34,7 +33,7 @@ namespace Base.Data.Operations.Fee
         {
             var token = value.Root;
             var instance = new AccountTransferOperationFeeParametersData();
-            instance.Fee = Convert.ToUInt64(value.TryGetValue(FEE_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
+            instance.Fee = value.TryGetValue(FEE_FIELD_KEY, out token) ? token.ToObject<ulong>() : 0;
             return instance;
         }
     }

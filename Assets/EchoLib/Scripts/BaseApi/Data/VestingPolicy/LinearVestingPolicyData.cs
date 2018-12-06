@@ -51,7 +51,7 @@ namespace Base.Data.VestingPolicies
             instance.BeginTimestamp = value.TryGetValue(BEGIN_TIMESTAMP_FIELD_KEY, out token) ? token.ToObject<DateTime>(new DateTimeConverter().GetSerializer()) : TimeTool.ZeroTime();
             instance.VestingCliffSeconds = value.TryGetValue(VESTING_CLIFF_SECONDS_FIELD_KEY, out token) ? token.ToObject<uint>() : uint.MinValue;
             instance.VestingDurationSeconds = value.TryGetValue(VESTING_DURATION_SECONDS_FIELD_KEY, out token) ? token.ToObject<uint>() : uint.MinValue;
-            instance.BeginBalance = Convert.ToInt64(value.TryGetValue(BEGIN_BALANCE_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
+            instance.BeginBalance = value.TryGetValue(BEGIN_BALANCE_FIELD_KEY, out token) ? token.ToObject<long>() : 0;
             return instance;
         }
     }

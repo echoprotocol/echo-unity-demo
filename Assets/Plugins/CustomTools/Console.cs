@@ -71,7 +71,6 @@ namespace CustomTools {
 
 
 		public void LogFormat( LogType logType, Object context, string format, params object[] args ) {
-			// todo
 			defaultLogHandler.LogFormat( logType, context, format, args );
 		}
 

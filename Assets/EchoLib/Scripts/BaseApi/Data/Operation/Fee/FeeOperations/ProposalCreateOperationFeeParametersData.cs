@@ -1,4 +1,3 @@
-using System;
 using Base.Config;
 using Buffers;
 using Newtonsoft.Json.Linq;
@@ -38,7 +37,7 @@ namespace Base.Data.Operations.Fee
         {
             var token = value.Root;
             var instance = new ProposalCreateOperationFeeParametersData();
-            instance.Fee = Convert.ToUInt64(value.TryGetValue(FEE_FIELD_KEY, out token) ? token.ToObject<object>() : 0);
+            instance.Fee = value.TryGetValue(FEE_FIELD_KEY, out token) ? token.ToObject<ulong>() : 0;
             instance.PricePerKByte = value.TryGetValue(PRICE_PER_KBYTE_FIELD_KEY, out token) ? token.ToObject<uint>() : uint.MinValue;
             return instance;
         }
