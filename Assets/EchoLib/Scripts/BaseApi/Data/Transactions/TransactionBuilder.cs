@@ -23,19 +23,6 @@ namespace Base.Data.Transactions
 {
     public class TransactionBuilder : SerializableObject
     {
-        public class SignaturesContainer
-        {
-            public PublicKey[] PublicKeys { get; private set; }
-            public object[] Addys { get; private set; }
-
-            public SignaturesContainer(PublicKey[] publicKeys, object[] addys)
-            {
-                PublicKeys = publicKeys;
-                Addys = addys;
-            }
-        }
-
-
         protected static DateTime headBlockTime = TimeTool.ZeroTime();
 
         private ushort referenceBlockNumber = ushort.MinValue;
@@ -287,16 +274,9 @@ namespace Base.Data.Transactions
             }).Then(results => Promise<TransactionBuilder>.Resolved(builder));
         }
 
-        public IPromise<SignaturesContainer> GetPotentialSignatures()
+        public IPromise<PublicKey[]> GetPotentialSignatures()
         {
-            var signedTransaction = new SignedTransactionData(this);
-            return Promise<object[]>.All(
-                EchoApiManager.Instance.Database.GetPotentialSignatures(signedTransaction).Then<object[]>(keys => keys),
-                EchoApiManager.Instance.Database.GetPotentialAddressSignatures(signedTransaction).Then<object[]>(addresses => addresses)
-            ).Then(results =>
-            {
-                return new SignaturesContainer(results.First() as PublicKey[], results.Last() as object[]);
-            });
+            return EchoApiManager.Instance.Database.GetPotentialSignatures(new SignedTransactionData(this));
         }
 
         public IPromise<PublicKey[]> GetRequiredSignatures(PublicKey[] availableKeys)
@@ -305,8 +285,7 @@ namespace Base.Data.Transactions
             {
                 return Promise<PublicKey[]>.Resolved(new PublicKey[0]);
             }
-            var signedTransaction = new SignedTransactionData(this);
-            return EchoApiManager.Instance.Database.GetRequiredSignatures(signedTransaction, availableKeys);
+            return EchoApiManager.Instance.Database.GetRequiredSignatures(new SignedTransactionData(this), availableKeys);
         }
 
         public TransactionBuilder AddSigner(KeyPair key)
@@ -349,7 +328,7 @@ namespace Base.Data.Transactions
 
         public bool IsFinalized => !buffer.IsNullOrEmpty();
 
-        public IPromise Broadcast(Action<TransactionConfirmation> resultCallback = null)
+        public IPromise Broadcast(Action<TransactionConfirmationData> resultCallback = null)
         {
             if (IsFinalized)
             {
@@ -375,7 +354,7 @@ namespace Base.Data.Transactions
             }
         }
 
-        private static IPromise BroadcastTransaction(TransactionBuilder builder, Action<TransactionConfirmation> resultCallback = null)
+        private static IPromise BroadcastTransaction(TransactionBuilder builder, Action<TransactionConfirmationData> resultCallback = null)
         {
             return new Promise((resolve, reject) => new Task(() =>
             {
@@ -399,7 +378,7 @@ namespace Base.Data.Transactions
                     }
                     EchoApiManager.Instance.NetworkBroadcast.BroadcastTransactionWithCallback(new SignedTransactionData(builder), async result =>
                     {
-                        resultCallback?.Invoke(result.IsNullOrEmpty() ? null : await result.First().ToObjectAsync<TransactionConfirmation>());
+                        resultCallback?.Invoke(result.IsNullOrEmpty() ? null : await result.First().ToObjectAsync<TransactionConfirmationData>());
                     }).Then(resolve).Catch(reject);
                 }
                 catch (Exception ex)

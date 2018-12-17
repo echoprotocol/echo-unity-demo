@@ -12,6 +12,8 @@ namespace Base.Data.Accounts
         public PublicKey MemoKey { get; private set; }
         [JsonProperty("voting_account")]
         public SpaceTypeId VotingAccount { get; private set; }
+        [JsonProperty("delegating_account")]
+        public SpaceTypeId DelegatingAccount { get; private set; }
         [JsonProperty("num_witness")]
         public ushort NumWitness { get; private set; }
         [JsonProperty("num_committee")]
@@ -28,6 +30,7 @@ namespace Base.Data.Accounts
             buffer = buffer ?? new ByteBuffer(ByteBuffer.LITTLE_ENDING);
             MemoKey.ToBuffer(buffer);
             VotingAccount.ToBuffer(buffer);
+            DelegatingAccount.ToBuffer(buffer);
             buffer.WriteUInt16(NumWitness);
             buffer.WriteUInt16(NumCommittee);
             buffer.WriteArray(Votes, (b, item) =>

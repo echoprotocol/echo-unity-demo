@@ -1,4 +1,5 @@
 ﻿using System;
+using Base.Data.Block;
 using Base.Data.Transactions;
 using Base.Requests;
 using CustomTools.Extensions.Core;
@@ -27,6 +28,69 @@ namespace Base.Api.Database
                 var parameters = new Parameters { LoginApi.ID, methodName, new object[0] };
                 DoRequest(GenerateNewId(), parameters, resolve, reject, methodName, debug);
             }).Then(apiId => (NetworkBroadcastApi)Init(apiId));
+        }
+
+        public IPromise BroadcastBlock(SignedBlockData block)
+        {
+            if (IsInitialized)
+            {
+                return new Promise((resolve, reject) =>
+                {
+#if ECHO_DEBUG
+                    var debug = true;
+#else
+                    var debug = false;
+#endif
+                    var requestId = GenerateNewId();
+                    var methodName = "broadcast_block";
+                    var title = methodName + " " + requestId;
+                    var parameters = new Parameters { Id.Value, methodName, new object[] { block } };
+                    DoRequestVoid(requestId, parameters, resolve, reject, title, debug);
+                });
+            }
+            return Init().Then(api => api.BroadcastBlock(block));
+        }
+
+        public IPromise BroadcastTransaction(SignedTransactionData transaction)
+        {
+            if (IsInitialized)
+            {
+                return new Promise((resolve, reject) =>
+                {
+#if ECHO_DEBUG
+                    var debug = true;
+#else
+                    var debug = false;
+#endif
+                    var requestId = GenerateNewId();
+                    var methodName = "broadcast_transaction";
+                    var title = methodName + " " + requestId;
+                    var parameters = new Parameters { Id.Value, methodName, new object[] { transaction } };
+                    DoRequestVoid(requestId, parameters, resolve, reject, title, debug);
+                });
+            }
+            return Init().Then(api => api.BroadcastTransaction(transaction));
+        }
+
+        public IPromise<TransactionConfirmationData> BroadcastTransactionSynchronous(SignedTransactionData transaction)
+        {
+            if (IsInitialized)
+            {
+                return new Promise<TransactionConfirmationData>((resolve, reject) =>
+                {
+#if ECHO_DEBUG
+                    var debug = true;
+#else
+                    var debug = false;
+#endif
+                    var requestId = GenerateNewId();
+                    var methodName = "broadcast_transaction_synchronous";
+                    var title = methodName + " " + requestId;
+                    var parameters = new Parameters { Id.Value, methodName, new object[] { transaction } };
+                    DoRequest(requestId, parameters, resolve, reject, title, debug);
+                });
+            }
+            return Init().Then(api => api.BroadcastTransactionSynchronous(transaction));
         }
 
         public IPromise BroadcastTransactionWithCallback(SignedTransactionData transaction, Action<JToken[]> transactionResultCallback = null)

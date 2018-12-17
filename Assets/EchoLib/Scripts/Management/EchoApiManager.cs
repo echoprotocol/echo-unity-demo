@@ -28,6 +28,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     public static event Action<DatabaseApi> OnDatabaseApiInitialized;
     public static event Action<NetworkBroadcastApi> OnNetworkBroadcastApiInitialized;
     public static event Action<HistoryApi> OnHistoryApiInitialized;
+    public static event Action<RegistrationApi> OnRegistrationApiInitialized;
 
     private static string chainId = string.Empty;
     private static RequestIdentificator identificators;
@@ -40,6 +41,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     private DatabaseApi database;
     private NetworkBroadcastApi networkBroadcast;
     private HistoryApi history;
+    private RegistrationApi registration;
     private AuthorizationContainer authorizationContainer;
 
 
@@ -52,6 +54,8 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
     public NetworkBroadcastApi NetworkBroadcast => networkBroadcast ?? (networkBroadcast = NetworkBroadcastApi.Create(this));
 
     public HistoryApi History => history ?? (history = HistoryApi.Create(this));
+
+    public RegistrationApi Registration => registration ?? (registration = RegistrationApi.Create(this));
 
     public AuthorizationContainer Authorization => authorizationContainer ?? (authorizationContainer = new AuthorizationContainer());
 
@@ -129,7 +133,8 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
                 Promise.All(
                     Database.Init().Then(DatabaseApiInitialized),
                     NetworkBroadcast.Init().Then(NetworkBroadcastApiInitialized),
-                    History.Init().Then(HistoryApiInitialized)
+                    History.Init().Then(HistoryApiInitialized),
+                    Registration.Init().Then(RegistrationApiInitialized)
                 ).Then((Action)InitializeDone).Catch(ex =>
                 {
                     CustomTools.Console.DebugError("EchoApiManager class", CustomTools.Console.LogRedColor(ex.Message), "Initialize all api");
@@ -168,6 +173,15 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
             resolved();
         });
     }
+
+    private IPromise RegistrationApiInitialized(RegistrationApi api)
+    {
+        return new Promise((resolved, rejected) =>
+        {
+            OnRegistrationApiInitialized.SafeInvoke(api);
+            resolved();
+        });
+    }
     #endregion
 
 
@@ -198,7 +212,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         ChainConfig.SetChainId(newChainId);
     }
 
-    public IPromise CallContract(uint contractId, uint accountId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmation> resultCallback = null)
+    public IPromise CallContract(uint contractId, uint accountId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {
@@ -217,7 +231,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Asset, resultCallback);
     }
 
-    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmation> resultCallback = null)
+    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {

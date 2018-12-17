@@ -31,6 +31,8 @@ namespace Base.Data.Accounts
         public AuthorityData Owner { get; private set; }
         [JsonProperty("active")]
         public AuthorityData Active { get; private set; }
+        [JsonProperty("ed_key")]
+        public string EdKey { get; private set; }
         [JsonProperty("options")]
         public AccountOptionsData Options { get; private set; }
         [JsonProperty("statistics")]

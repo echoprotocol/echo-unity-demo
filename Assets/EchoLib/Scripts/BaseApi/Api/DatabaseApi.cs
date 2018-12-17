@@ -351,27 +351,6 @@ namespace Base.Api.Database
             return Init().Then(api => api.GetPotentialSignatures(transaction));
         }
 
-        public IPromise<string[]> GetPotentialAddressSignatures(SignedTransactionData transaction)
-        {
-            if (IsInitialized)
-            {
-                return new Promise<string[]>((resolve, reject) =>
-                {
-#if ECHO_DEBUG
-                    var debug = true;
-#else
-                    var debug = false;
-#endif
-                    var requestId = GenerateNewId();
-                    var methodName = "get_potential_address_signatures";
-                    var title = methodName + " " + requestId;
-                    var parameters = new Parameters { Id.Value, methodName, new object[] { transaction } };
-                    DoRequest(requestId, parameters, resolve, reject, title, debug);
-                });
-            }
-            return Init().Then(api => api.GetPotentialAddressSignatures(transaction));
-        }
-
         public IPromise SubscribeNotice(Action<JToken[]> subscribeResultCallback)
         {
             if (IsInitialized)

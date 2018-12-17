@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data.Transactions
 {
-    public sealed class TransactionConfirmation : SerializableObject
+    public sealed class TransactionConfirmationData : SerializableObject
     {
         [JsonProperty("id")]
         public string Id { get; set; }

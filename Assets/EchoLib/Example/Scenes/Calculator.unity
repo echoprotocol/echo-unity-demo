@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHosts:
+  - ws://195.201.164.54:6311
   - wss://echo-dev.io/ws
   resetAtStart: 0
   registrationUrl: https://echo-dev.io/faucet/registration
@@ -2769,7 +2770,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000025869296}
+  m_AnchoredPosition: {x: 0, y: -0.00000238862}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1769488857

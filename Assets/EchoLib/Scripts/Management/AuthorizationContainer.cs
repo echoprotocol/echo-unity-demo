@@ -116,7 +116,7 @@ public sealed class AuthorizationContainer
                         {
                             throw new InvalidOperationException();
                         }
-                        var confirmation = await JToken.Parse(jsonResponse).First.ToObjectAsync<TransactionConfirmation>();
+                        var confirmation = await JToken.Parse(jsonResponse).First.ToObjectAsync<TransactionConfirmationData>();
                         var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
                         (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
                     }
@@ -194,19 +194,19 @@ public sealed class AuthorizationContainer
         Current = null;
     }
 
-    public IPromise ProcessTransaction(TransactionBuilder builder, SpaceTypeId asset = null, Action<TransactionConfirmation> resultCallback = null)
+    public IPromise ProcessTransaction(TransactionBuilder builder, SpaceTypeId asset = null, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!IsAuthorized)
         {
             return Promise.Rejected(new InvalidOperationException("Isn't Authorized!"));
         }
         var existPublicKeys = Current.Keys.PublicKeys;
-        return new Promise((resolve, reject) => TransactionBuilder.SetRequiredFees(builder, asset).Then(b => b.GetPotentialSignatures().Then(signatures =>
+        return new Promise((resolve, reject) => TransactionBuilder.SetRequiredFees(builder, asset).Then(b => b.GetPotentialSignatures().Then(potentialPublicKeys =>
         {
             var availableKeys = new List<PublicKey>();
             foreach (var existPublicKey in existPublicKeys)
             {
-                if (!availableKeys.Contains(existPublicKey) && Array.IndexOf(signatures.PublicKeys, existPublicKey) != -1)
+                if (!availableKeys.Contains(existPublicKey) && Array.IndexOf(potentialPublicKeys, existPublicKey) != -1)
                 {
                     availableKeys.Add(existPublicKey);
                 }

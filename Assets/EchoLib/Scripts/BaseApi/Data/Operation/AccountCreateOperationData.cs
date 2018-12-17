@@ -20,6 +20,7 @@ namespace Base.Data.Operations
         private const string OWNER_FIELD_KEY = "owner";
         private const string ACTIVE_FIELD_KEY = "active";
         private const string OPTIONS_FIELD_KEY = "options";
+        private const string ED_KEY_FIELD_KEY = "ed_key";
         private const string EXTENSIONS_FIELD_KEY = "extensions";
 
 
@@ -30,6 +31,7 @@ namespace Base.Data.Operations
         public string Name { get; private set; }
         public AuthorityData Owner { get; private set; }
         public AuthorityData Active { get; private set; }
+        public PublicKey EdKey { get; private set; }
         public AccountOptionsData Options { get; private set; }
         public object Extensions { get; private set; }
 
@@ -72,9 +74,18 @@ namespace Base.Data.Operations
 
         public override ByteBuffer ToBufferRaw(ByteBuffer buffer = null)
         {
-            //buffer = buffer ?? new ByteBuffer( ByteBuffer.LITTLE_ENDING );
-            //return buffer;
-            throw new NotImplementedException();
+            buffer = buffer ?? new ByteBuffer(ByteBuffer.LITTLE_ENDING);
+            Fee.ToBuffer(buffer);
+            Registrar.ToBuffer(buffer);
+            Referrer.ToBuffer(buffer);
+            buffer.WriteUInt16(ReferrerPercent);
+            buffer.WriteString(Name);
+            Owner.ToBuffer(buffer);
+            Active.ToBuffer(buffer);
+            EdKey.ToBuffer(buffer);
+            Options.ToBuffer(buffer);
+            //Extensions.ToBuffer(buffer); // todo
+            return buffer;
         }
 
         public override string Serialize()
@@ -88,6 +99,7 @@ namespace Base.Data.Operations
                 { OWNER_FIELD_KEY,              Owner },
                 { ACTIVE_FIELD_KEY,             Active },
                 { OPTIONS_FIELD_KEY,            Options },
+                { ED_KEY_FIELD_KEY,             EdKey },
                 { EXTENSIONS_FIELD_KEY,         Extensions }
             }).Build();
         }
@@ -103,6 +115,7 @@ namespace Base.Data.Operations
             instance.Name = value.TryGetValue(NAME_FIELD_KEY, out token) ? token.ToObject<string>() : string.Empty;
             instance.Owner = value.TryGetValue(OWNER_FIELD_KEY, out token) ? token.ToObject<AuthorityData>() : null;
             instance.Active = value.TryGetValue(ACTIVE_FIELD_KEY, out token) ? token.ToObject<AuthorityData>() : null;
+            instance.EdKey = value.TryGetValue(ACTIVE_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
             instance.Options = value.TryGetValue(OPTIONS_FIELD_KEY, out token) ? token.ToObject<AccountOptionsData>() : null;
             instance.Extensions = value.TryGetValue(EXTENSIONS_FIELD_KEY, out token) ? token.ToObject<object>() : new object();
             return instance;

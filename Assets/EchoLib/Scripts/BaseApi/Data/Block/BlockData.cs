@@ -36,6 +36,38 @@ namespace Base.Data.Block
         public string EdSignature { get; private set; }
         [JsonProperty("verifications")]
         public AccountIdSignaturePair[] Verifications { get; private set; }
+        [JsonProperty("round")]
+        public ulong Round { get; private set; }
+        [JsonProperty("rand")]
+        public string Rand { get; private set; }
+        [JsonProperty("cert")]
+        public CertificateData Certificate { get; private set; }
+    }
+
+
+    public class CertificateData : SerializableObject
+    {
+        [JsonProperty("_rand")]
+        public string Rand { get; private set; }
+        [JsonProperty("_block_hash")]
+        public string BlockHash { get; private set; }
+        [JsonProperty("_producer")]
+        public ulong Producer { get; private set; }
+        [JsonProperty("_signatures")]
+        public BlockSignatureData[] Signatures { get; private set; }
+    }
+
+
+    public class BlockSignatureData : SerializableObject
+    {
+        [JsonProperty("_step")]
+        public ulong Step { get; private set; }
+        [JsonProperty("_value")]
+        public byte Value { get; private set; }
+        [JsonProperty("_signer")]
+        public ulong Signer { get; private set; }
+        [JsonProperty("_bba_sign")]
+        public string BBASign { get; private set; }
     }
 
 
