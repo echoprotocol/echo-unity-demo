@@ -73,6 +73,16 @@ namespace Base.ECC
             }
         }
 
+        public byte[] EchoRandKey(AccountRole role)
+        {
+            var key = keys.ContainsKey(role) ? keys[role].Private : null;
+            if (key == null)
+            {
+                return null;
+            }
+            return Cryptographic.Ed25519.PublicKey(key.ToBuffer());
+        }
+
         private Keys CheckAuthorization(AccountObject account)
         {
             if (account == null)
