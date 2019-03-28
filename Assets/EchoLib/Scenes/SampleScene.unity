@@ -142,9 +142,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHosts:
-  - wss://echo-dev.io/ws
+  - wss://devnet.echo-dev.io/ws
   resetAtStart: 0
-  registrationUrl: https://echo-dev.io/faucet/registration
 --- !u!114 &44429450
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -24,7 +24,6 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
 
     [SerializeField] private string[] defaultHosts = new[] { "wss://echo-dev.io/ws" };
     [SerializeField] private bool resetAtStart;
-    [SerializeField] private string registrationUrl = "https://echo-dev.io/faucet/registration";
 
 
     public string[] Urls
@@ -61,8 +60,6 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
             OnSelecteHostChanged.SafeInvoke(value);
         }
     }
-
-    public string RegistrationUrl => registrationUrl;
 
     protected override void Awake()
     {

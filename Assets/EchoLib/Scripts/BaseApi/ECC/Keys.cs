@@ -80,7 +80,8 @@ namespace Base.ECC
             {
                 return null;
             }
-            return Cryptographic.Ed25519.PublicKey(key.ToBuffer());
+            // todo: need realize ed25519 hashing
+            return new byte[0];
         }
 
         private Keys CheckAuthorization(AccountObject account)
