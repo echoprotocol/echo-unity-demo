@@ -28,19 +28,19 @@ Also, after the connection is established, EchoApiManager automatically subscrib
 4. Authorization
 EchoApiManager.Authorization contains current authorization information. You must call EchoApiManager.Authorization.AuthorizationBy (login, password) with a login and password.
 
->  
-> EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
-> {
->     if (result)
->     {
->         // Authorization successful
->     }
->     else
->     {
->         // Authorization failed
->     }
-> });
->  
+```c#
+EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
+{
+    if (result)
+    {
+        // Authorization successful
+    }
+    else
+    {
+        // Authorization failed
+    }
+});
+```
 
 5. Contract
 To work with contracts, the EchoApiManager.CallContract and EchoApiManager.DeployContract methods are used. As bytecode, the contrast code is transmitted when deploy, or the name of the method when call. The result of the execution can be obtained using EchoApiManager.Database.GetContractResult (resultId).
