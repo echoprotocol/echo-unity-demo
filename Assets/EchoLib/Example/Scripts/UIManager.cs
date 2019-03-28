@@ -10,7 +10,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject login;
     [SerializeField] private GameObject work;
     [SerializeField] private Button loginButton;
-    [SerializeField] private Button registrationButton;
     [SerializeField] private InputField loginInputField;
     [SerializeField] private InputField passwordInputField;
     [SerializeField] private InputField contractAddressInputField;
@@ -28,8 +27,6 @@ public class UIManager : MonoBehaviour
         work.SetActive(false);
         loginButton.interactable = false;
         loginButton.onClick.AddListener(Login);
-        registrationButton.interactable = false;
-        registrationButton.onClick.AddListener(Registration);
         calculateButton.interactable = false;
         calculateButton.onClick.AddListener(Calculate);
         deployButton.onClick.AddListener(DeployContract);
@@ -38,32 +35,14 @@ public class UIManager : MonoBehaviour
     private void OnDatabaseApiInitialized(Base.Api.Database.DatabaseApi api)
     {
         loginButton.interactable = true;
-        registrationButton.interactable = true;
     }
 
     private void Login()
     {
         loginButton.interactable = false;
-        registrationButton.interactable = false;
         EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
         {
             loginButton.interactable = true;
-            registrationButton.interactable = true;
-            if (result)
-            {
-                InitializeWork();
-            }
-        });
-    }
-
-    private void Registration()
-    {
-        loginButton.interactable = false;
-        registrationButton.interactable = false;
-        EchoApiManager.Instance.Authorization.Registration(loginInputField.text, passwordInputField.text).Then(result =>
-        {
-            loginButton.interactable = true;
-            registrationButton.interactable = true;
             if (result)
             {
                 InitializeWork();

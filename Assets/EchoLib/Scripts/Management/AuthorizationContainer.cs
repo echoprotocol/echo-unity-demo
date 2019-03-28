@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using Base.Data;
 using Base.Data.Accounts;
 using Base.Data.Balances;
@@ -12,9 +10,7 @@ using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using CustomTools.Extensions.Core.Array;
-using Newtonsoft.Json.Linq;
 using Promises;
-using Tools.HexBinDec;
 using Tools.Json;
 
 
@@ -74,78 +70,6 @@ public sealed class AuthorizationContainer
                 OnAuthorizationChanged.SafeInvoke(authorization);
             }
         }
-    }
-
-    public IPromise<bool> Registration(string userName, string password)
-    {
-        return EchoApiManager.Instance.Database.GetFullAccount(userName.Trim(), true).Then(result =>
-        {
-            if (result.IsNull())
-            {
-                //if (!NodeManager.IsInstanceExist || NodeManager.Instance.RegistrationUrl.IsNullOrEmpty())
-                //{
-                //    return Promise<bool>.Rejected(new InvalidOperationException("Registration url incorrect."));
-                //}
-                //return new Promise<bool>(async (resolve, reject) =>
-                //{
-                //    try
-                //    {
-                //        var keys = Keys.FromSeed(userName, password, false);
-                //        var request = WebRequest.CreateHttp(NodeManager.Instance.RegistrationUrl);
-                //        request.ContentType = "application/json";
-                //        request.Method = "POST";
-                //        using (var writer = new StreamWriter(await request.GetRequestStreamAsync()))
-                //        {
-                //            writer.Write(new JsonBuilder(new JsonDictionary {
-                //                { "name",          userName },
-                //                { "owner_key",     keys[AccountRole.Owner].ToString() },
-                //                { "active_key",    keys[AccountRole.Active].ToString() },
-                //                { "memo_key",      keys[AccountRole.Memo].ToString() }
-                //            }).Build());
-                //            await writer.FlushAsync();
-                //            writer.Close();
-                //        }
-                //        var jsonResponse = string.Empty;
-                //        var response = await request.GetResponseAsync() as HttpWebResponse;
-                //        using (var reader = new StreamReader(response.GetResponseStream()))
-                //        {
-                //            jsonResponse = await reader.ReadToEndAsync();
-                //            reader.Close();
-                //        }
-                //        response.Close();
-                //        if (jsonResponse.IsNullOrEmpty())
-                //        {
-                //            throw new InvalidOperationException();
-                //        }
-                //        var confirmation = await JToken.Parse(jsonResponse).First.ToObjectAsync<TransactionConfirmationData>();
-                //        var account = confirmation.Transaction.OperationResults.First().Value as SpaceTypeId;
-                //        (account.SpaceType.Equals(SpaceType.Account) ? AuthorizationBy(account.Id, password) : Promise<bool>.Resolved(false)).Then(resolve).Catch(reject);
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        reject(ex);
-                //    }
-                //});
-
-                return new Promise<bool>(async (resolve, reject) =>
-                {
-                    var keys = Keys.FromSeed(userName, password, false);
-                    EchoApiManager.Instance.Registration.RegisterAccount(userName.Trim(), keys[AccountRole.Owner], keys[AccountRole.Active], keys[AccountRole.Memo], keys.EchoRandKey(AccountRole.Owner).ToHexString()).Then(() =>
-                    {
-                        return AuthorizationBy(userName, password);
-                    });
-                });
-            }
-            else
-            {
-                return AuthorizationBy(result, password);
-            }
-        });
-    }
-
-    public void Registration(string userName, string password, Action<bool> onSuccess, Action<Exception> onFailed)
-    {
-        Registration(userName, password).Then(onSuccess).Catch(onFailed);
     }
 
     private IPromise<bool> AuthorizationBy(uint id, string password)
