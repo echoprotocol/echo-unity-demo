@@ -4,6 +4,7 @@ EchoUnityLib - Echo API implementation for Unity
 *  using Newtonsoft.Json
 *  using Promise
 
+
 1.   Connection to node
 First you need to establish a connection to the node. To do this, use two scripts: ConnectionManager and NodeManager.
 - ConnectionManager provides the ability to establish a connection to a node using the websocket-sharp lib.
@@ -13,7 +14,7 @@ First you need to establish a connection to the node. To do this, use two script
 2.  Api
 Access to the Echo API is provided by the EchoApiManager class.
 
-2.1. Api Initialization
+3. Api Initialization
 To initialize, you need to move the prefabs to the scene: EchoApiManager.prefab and ConnectionManager.prefab. EchoApiManager automatically up and maintains the connection to the node through the ConnectionManager.
 
 After successful initialization, it becomes possible to access the following Api levels:
@@ -24,10 +25,11 @@ Api methods can be found in their respective classes.
 
 Also, after the connection is established, EchoApiManager automatically subscribes to the notice distribution channel. For the aggregation and granulation of the current state of objects, the Repository class is used. it contains the latest object states received via the notice channel.
 
-2.2. Authorization
+4. Authorization
 EchoApiManager.Authorization contains current authorization information. You must call EchoApiManager.Authorization.AuthorizationBy (login, password) with a login and password.
 
 `
+>  
 EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
 {
     if (result)
