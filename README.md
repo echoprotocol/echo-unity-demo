@@ -31,7 +31,7 @@ Also, after the connection is established, EchoApiManager automatically subscrib
 
 4. Authorization
 
-EchoApiManager.Authorization contains current authorization information. You must call EchoApiManager.Authorization.AuthorizationBy (login, password) with a login and password.
+`EchoApiManager.Authorization` contains current authorization information. You must call `EchoApiManager.Authorization.AuthorizationBy (login, password)` with a login and password.
 
 ```c#
 EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
@@ -49,7 +49,7 @@ EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, pass
 
 5. Contract
 
-To work with contracts, the EchoApiManager.CallContract and EchoApiManager.DeployContract methods are used. As bytecode, the contrast code is transmitted when deploy, or the name of the method when call. The result of the execution can be obtained using EchoApiManager.Database.GetContractResult (resultId).
+To work with contracts, the `EchoApiManager.CallContract` and `EchoApiManager.DeployContract` methods are used. As bytecode, the contrast code is transmitted when deploy, or the name of the method when call. The result of the execution can be obtained using `EchoApiManager.Database.GetContractResult (resultId)`.
 
 ```c#
 var bytecode = "7490d445"; // method getSize() at contract
