@@ -29,7 +29,6 @@ Also, after the connection is established, EchoApiManager automatically subscrib
 EchoApiManager.Authorization contains current authorization information. You must call EchoApiManager.Authorization.AuthorizationBy (login, password) with a login and password.
 
 > EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
->  
 > {
 >     if (result)
 >     {
