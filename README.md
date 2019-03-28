@@ -46,6 +46,7 @@ EchoApiManager.Authorization contains current authorization information. You mus
 To work with contracts, the EchoApiManager.CallContract and EchoApiManager.DeployContract methods are used. As bytecode, the contrast code is transmitted when deploy, or the name of the method when call. The result of the execution can be obtained using EchoApiManager.Database.GetContractResult (resultId).
 
 >  
+
 > var bytecode = "7490d445"; // method getSize() at contract
 > EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, 10000000, 0, res =>
 > {
@@ -55,6 +56,7 @@ To work with contracts, the EchoApiManager.CallContract and EchoApiManager.Deplo
 >         // Parse data to value...
 >     });
 > });
+
 >  
 
 >  
