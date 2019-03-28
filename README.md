@@ -42,6 +42,7 @@ EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, pass
     }
 });
 `
+>  
 
 2.3) Contract
 To work with contracts, the EchoApiManager.CallContract and EchoApiManager.DeployContract methods are used. As bytecode, the contrast code is transmitted when deploy, or the name of the method when call. The result of the execution can be obtained using EchoApiManager.Database.GetContractResult (resultId).
