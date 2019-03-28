@@ -100,7 +100,7 @@ public class UIManager : MonoBehaviour
         var accountId = EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id;
         var contractId = uint.Parse(contractAddressInputField.text.Split('.')[2]);
         var values = regexInputField.text.Split(' ');
-        var bytecode = "7490d445";
+        var bytecode = "7490d445"; // method
         Parser.SerializeInts(ref bytecode, RegexToInts(regexInputField.text));
         Debug.Log(bytecode);
         EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, 10000000, 0, res =>
@@ -121,7 +121,7 @@ public class UIManager : MonoBehaviour
     {
         var accountId = EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id;
         var contractId = uint.Parse(contractAddressInputField.text.Split('.')[2]);
-        var bytecode = "5fe36f0a";
+        var bytecode = "5fe36f0a"; // method
         EchoApiManager.Instance.Database.CallContractNoChangingState(contractId, accountId, 0, bytecode).Then(res =>
         {
             var matrix = Parser.DeserializeIntMatrix(res, 4);

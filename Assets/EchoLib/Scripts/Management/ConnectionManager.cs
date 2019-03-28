@@ -31,7 +31,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
     [SerializeField] private bool pingHostBeforeConnecting = true;
     [SerializeField] private float delayBetweenTryConnect = 5f;
     [SerializeField] private int tryConnectCount = 5;
-    [SerializeField] private bool sendFromIndividualThread = false;
+    [SerializeField] private bool sendFromIndividualThread = true;
 
     private string url = string.Empty;
     private float lastTryConnectTime;

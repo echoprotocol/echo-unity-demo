@@ -22,8 +22,8 @@ public sealed class NodeManager : CustomTools.Singleton.SingletonMonoBehaviour<N
     private const string SELECTED_HOST_KEY = "host";
     private const string HOSTS_LIST_KEY = "hosts_list";
 
-    [SerializeField] private string[] defaultHosts = new[] { "wss://echo-dev.io/ws" };
-    [SerializeField] private bool resetAtStart;
+    [SerializeField] private string[] defaultHosts = new[] { "wss://devnet.echo-dev.io/ws" };
+    [SerializeField] private bool resetAtStart = false;
 
 
     public string[] Urls
