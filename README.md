@@ -1,8 +1,8 @@
 EchoUnityLib - Echo API implementation for Unity
 
--using websocket-sharp
--using Newtonsoft.Json
--using Promise
+*  using websocket-sharp
+*  using Newtonsoft.Json
+*  using Promise
 
 1) Connection to node
 First you need to establish a connection to the node. To do this, use two scripts: ConnectionManager and NodeManager.
@@ -26,6 +26,7 @@ Also, after the connection is established, EchoApiManager automatically subscrib
 2.2) Authorization
 EchoApiManager.Authorization contains current authorization information. You must call EchoApiManager.Authorization.AuthorizationBy (login, password) with a login and password.
 
+`
 EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
 {
     if (result)
@@ -37,6 +38,7 @@ EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, pass
         // Authorization failed
     }
 });
+`
 
 2.3) Contract
 To work with contracts, the EchoApiManager.CallContract and EchoApiManager.DeployContract methods are used. As bytecode, the contrast code is transmitted when deploy, or the name of the method when call. The result of the execution can be obtained using EchoApiManager.Database.GetContractResult (resultId).
