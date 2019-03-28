@@ -1,8 +1,8 @@
 EchoUnityLib - Echo API implementation for Unity
 
-using websocket-sharp
-using Newtonsoft.Json
-using Promise
+-using websocket-sharp
+-using Newtonsoft.Json
+-using Promise
 
 1) Connection to node
 First you need to establish a connection to the node. To do this, use two scripts: ConnectionManager and NodeManager.
