@@ -59,7 +59,7 @@ To work with contracts, the EchoApiManager.CallContract and EchoApiManager.Deplo
 
 >  
 
-``>  
+`>  
 > EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, 0, 10000000, 0, res =>
 > {
 >     EchoApiManager.Instance.Database.GetContractResult((res.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
