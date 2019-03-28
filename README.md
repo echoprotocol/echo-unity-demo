@@ -48,6 +48,7 @@ To work with contracts, the EchoApiManager.CallContract and EchoApiManager.Deplo
 > {
 >     EchoApiManager.Instance.Database.GetContractResult((res.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
 >     {
+
 >         var data = contractResult.Result.Output;
 >         // Parse data to value...
 >     });
@@ -58,6 +59,7 @@ To work with contracts, the EchoApiManager.CallContract and EchoApiManager.Deplo
 > {
 >     EchoApiManager.Instance.Database.GetContractResult((res.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
 >     {
+
 >         // Getted contract deploy result
 >     });
 > });
