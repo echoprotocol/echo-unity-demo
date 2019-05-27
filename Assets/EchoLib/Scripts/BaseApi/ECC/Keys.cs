@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Base.Data;
 using Base.Data.Accounts;
-
+using ED25519REF10;
+using Tools.HexBinDec;
 
 namespace Base.ECC
 {
@@ -73,15 +74,14 @@ namespace Base.ECC
             }
         }
 
-        public byte[] EchoRandKey(AccountRole role)
+        public string EchoRandKey(AccountRole role)
         {
             var key = keys.ContainsKey(role) ? keys[role].Private : null;
             if (key == null)
             {
-                return null;
+                return string.Empty;
             }
-            // todo: need realize ed25519 hashing
-            return new byte[0];
+            return ED25519.DerivePublicKey(key.ToBuffer()).ToHexString();
         }
 
         private Keys CheckAuthorization(AccountObject account)

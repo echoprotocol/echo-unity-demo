@@ -33,8 +33,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
 
     private readonly static List<Request> requestBuffer = new List<Request>();
 
-    [UnityEngine.SerializeField]
-    private bool sendByUpdate = true;
+    [UnityEngine.SerializeField] private bool sendByUpdate = true;
 
     private DatabaseApi database;
     private NetworkBroadcastApi networkBroadcast;
