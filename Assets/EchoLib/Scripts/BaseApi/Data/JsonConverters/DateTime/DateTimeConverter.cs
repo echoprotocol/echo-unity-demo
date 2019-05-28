@@ -18,17 +18,12 @@ namespace Base.Data.Json
 
         public static DateTime ConvertFrom(string value)
         {
-            UnityEngine.Debug.Log("in:   " + value);
-
             var result = DateTime.Now;
             if (!DateTime.TryParseExact(value, DATE_TIME_FORMAT, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
             {
                 CustomTools.Console.Error("Unable to convert:", value, "Expected format:", DATE_TIME_FORMAT);
             }
             result = SpecifyKindToUtc(result);
-
-            UnityEngine.Debug.Log("out: " + result.ToString(DATE_TIME_FORMAT, DateTimeFormatInfo.InvariantInfo));
-
             return result;
         }
 
