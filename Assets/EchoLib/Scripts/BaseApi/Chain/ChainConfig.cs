@@ -23,7 +23,7 @@ namespace Base.Config
 
         private static Dictionary<string, NetworkParameters> networks = new Dictionary<string, NetworkParameters>
         {
-            { "EchoRandDev",      new NetworkParameters( "ECHO",   "ECHO",  "70b42f6485e4e92c8846d6601dcb665e73c6795792bf35737231dbe29598c3f6" ) }
+            { "EchoRandDev",      new NetworkParameters( "ECHO",   "ECHO",  "97431b10e64309597f2bbae053363e816709ddd0042f8b611be353a1a062b388" ) }
         };
 
         private static string coreAsset = "CORE";
