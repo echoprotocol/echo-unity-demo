@@ -7,14 +7,14 @@ namespace Base.Data.Json
 {
     public sealed class DateTimeConverter : JsonCustomConverter<DateTime, string>
     {
-        private const string DATE_TIME_FORMAT = "MM/dd/yyyy HH:mm:ss";
+        private const string DATE_TIME_FORMAT = "G"; // "MM/dd/yyyy HH:mm:ss";
 
 
         protected override DateTime Deserialize(string value, Type objectType) => ConvertFrom(value);
 
         protected override string Serialize(DateTime value) => ConvertTo(value);
 
-        public static string ConvertTo(DateTime value) => SpecifyKindToUtc(value).ToString(DATE_TIME_FORMAT);
+        public static string ConvertTo(DateTime value) => SpecifyKindToUtc(value).ToString(DATE_TIME_FORMAT, DateTimeFormatInfo.InvariantInfo);
 
         public static DateTime ConvertFrom(string value)
         {
@@ -27,7 +27,7 @@ namespace Base.Data.Json
             }
             result = SpecifyKindToUtc(result);
 
-            UnityEngine.Debug.Log("out: " + result.ToString(DATE_TIME_FORMAT));
+            UnityEngine.Debug.Log("out: " + result.ToString(DATE_TIME_FORMAT, DateTimeFormatInfo.InvariantInfo));
 
             return result;
         }
