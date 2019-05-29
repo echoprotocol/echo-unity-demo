@@ -134,11 +134,6 @@ public sealed class AuthorizationContainer
         });
     }
 
-    public void AuthorizationBy(string userName, string password, Action<AuthorizationResult> onDone, Action<Exception> onError)
-    {
-        AuthorizationBy(userName, password).Then(onDone).Catch(onError);
-    }
-
     public void ResetAuthorization()
     {
         if (!Current.IsNull())
