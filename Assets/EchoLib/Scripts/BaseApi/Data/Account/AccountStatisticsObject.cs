@@ -14,6 +14,8 @@ namespace Base.Data.Accounts
         public uint TotalOperations { get; private set; }
         [JsonProperty("removed_ops")]
         public uint RemovedOperations { get; private set; }
+        [JsonProperty("total_blocks")]
+        public uint TotalBlocks { get; private set; }
         [JsonProperty("total_core_in_orders")]
         public long TotalCoreInOrders { get; private set; }
         [JsonProperty("lifetime_fees_paid")]

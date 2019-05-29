@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data.Orders
 {
-    // id "1.7.x"
+    // id "1.6.x"
     public sealed class LimitOrderObject : IdObject
     {
         [JsonProperty("expiration"), JsonConverter(typeof(DateTimeConverter))]

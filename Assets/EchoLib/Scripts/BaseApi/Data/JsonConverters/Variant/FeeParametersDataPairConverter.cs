@@ -59,10 +59,6 @@ namespace Base.Data.Json
                     return AssetGlobalSettleOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.AssetPublishFeedOperation:
                     return AssetPublishFeedOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.WitnessCreateOperation:
-                    return WitnessCreateOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.WitnessUpdateOperation:
-                    return WitnessUpdateOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.ProposalCreateOperation:
                     return ProposalCreateOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.ProposalUpdateOperation:
@@ -87,8 +83,6 @@ namespace Base.Data.Json
                     return VestingBalanceCreateOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.VestingBalanceWithdrawOperation:
                     return VestingBalanceWithdrawOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.WorkerCreateOperation:
-                    return WorkerCreateOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.CustomOperation:
                     return CustomOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.AssertOperation:
@@ -97,26 +91,36 @@ namespace Base.Data.Json
                     return BalanceClaimOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.OverrideTransferOperation:
                     return OverrideTransferOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.TransferToBlindOperation:
-                    return TransferToBlindOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.BlindTransferOperation:
-                    return BlindTransferOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.TransferFromBlindOperation:
-                    return TransferFromBlindOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.AssetSettleCancelOperation:
                     return AssetSettleCancelOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.AssetClaimFeesOperation:
                     return AssetClaimFeesOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.FbaDistributeOperation:
-                    return FbaDistributeOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.BidCollateralOperation:
                     return BidCollateralOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.ExecuteBidOperation:
                     return ExecuteBidOperationFeeParametersData.Create(value.Last as JObject);
-                case ChainTypes.FeeParameters.ContractOperation:
-                    return ContractOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.CreateContractOperation:
+                //    return CreateContractOperationFeeParametersData.Create(value.Last as JObject);
+                case ChainTypes.FeeParameters.CallContractOperation: // todo ???
+                    return CallContractOperationFeeParametersData.Create(value.Last as JObject);
                 case ChainTypes.FeeParameters.ContractTransferOperation:
                     return ContractTransferOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.ChangeSidechainConfigOperation:
+                //    return ChangeSidechainConfigOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.AccountAddressCreateOperation:
+                //    return AccountAddressCreateOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.TransferToAddressOperation:
+                //    return TransferToAddressOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.GenerateETHAddressOperation:
+                //    return GenerateETHAddressOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.CreateETHAddressOperation:
+                //    return CreateETHAddressOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.DepositETHOperation:
+                //    return DepositETHOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.WithdrawETHOperation:
+                //    return WithdrawETHOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.ApproveWithdrawETHOperation:
+                //    return ApproveWithdrawETHOperationFeeParametersData.Create(value.Last as JObject);
                 default:
                     CustomTools.Console.DebugError("Unexpected fee parameters type:", type);
                     return null;

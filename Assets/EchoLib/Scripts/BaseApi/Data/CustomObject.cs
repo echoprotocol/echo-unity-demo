@@ -3,7 +3,7 @@
 
 namespace Base.Data
 {
-    // id "1.9.x"
+    // id "1.8.x"
     public sealed class CustomObject : IdObject
     {
     }

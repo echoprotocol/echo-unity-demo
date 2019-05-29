@@ -42,8 +42,6 @@ namespace Base.Data.Json
                 //case ChainTypes.Operation.AssetSettle:
                 //case ChainTypes.Operation.AssetGlobalSettle:
                 //case ChainTypes.Operation.AssetPublishFeed:
-                //case ChainTypes.Operation.WitnessCreate:
-                //case ChainTypes.Operation.WitnessUpdate:
                 case ChainTypes.Operation.ProposalCreate:
                     return ProposalCreateOperationData.Create(value.Last as JObject);
                 //case ChainTypes.Operation.ProposalUpdate:
@@ -57,23 +55,27 @@ namespace Base.Data.Json
                 //case ChainTypes.Operation.CommitteeMemberUpdateGlobalParameters:
                 //case ChainTypes.Operation.VestingBalanceCreate:
                 //case ChainTypes.Operation.VestingBalanceWithdraw:
-                //case ChainTypes.Operation.WorkerCreate:
                 //case ChainTypes.Operation.Custom:
                 //case ChainTypes.Operation.Assert:
                 //case ChainTypes.Operation.BalanceClaim:
                 //case ChainTypes.Operation.OverrideTransfer:
-                //case ChainTypes.Operation.TransferToBlind:
-                //case ChainTypes.Operation.BlindTransfer:
-                //case ChainTypes.Operation.TransferFromBlind:
                 //case ChainTypes.Operation.AssetSettleCancel:
                 //case ChainTypes.Operation.AssetClaimFees:
-                //case ChainTypes.Operation.FbaDistribute
-                //case ChainTypes.Operation.BidCollateral
-                //case ChainTypes.Operation.ExecuteBid
-                case ChainTypes.Operation.Contract:
-                    return ContractOperationData.Create(value.Last as JObject);
+                //case ChainTypes.Operation.BidCollateral:
+                //case ChainTypes.Operation.ExecuteBid:
+                //case ChainTypes.Operation.CreateContract:
+                case ChainTypes.Operation.CallContract: // todo ??
+                    return CallContractOperationData.Create(value.Last as JObject);
                 case ChainTypes.Operation.ContractTransfer:
                     return ContractTransferOperationData.Create(value.Last as JObject);
+                //case ChainTypes.Operation.ChangeSidechainConfig:
+                //case ChainTypes.Operation.AccountAddressCreate:
+                //case ChainTypes.Operation.TransferToAddress:
+                //case ChainTypes.Operation.GenerateETHAddress:
+                //case ChainTypes.Operation.CreateETHAddress:
+                //case ChainTypes.Operation.DepositETH:
+                //case ChainTypes.Operation.WithdrawETH:
+                //case ChainTypes.Operation.ApproveWithdrawETH:
                 default:
                     CustomTools.Console.DebugError("Unexpected operation type:", type, '\n', value);
                     return null;

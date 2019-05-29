@@ -1,4 +1,3 @@
-using System;
 using Base.Config;
 using Base.Data.Accounts;
 using Base.Data.Assets;
@@ -17,7 +16,6 @@ namespace Base.Data.Operations
         private const string REFERRER_FIELD_KEY = "referrer";
         private const string REFERRER_PERCENT_FIELD_KEY = "referrer_percent";
         private const string NAME_FIELD_KEY = "name";
-        private const string OWNER_FIELD_KEY = "owner";
         private const string ACTIVE_FIELD_KEY = "active";
         private const string OPTIONS_FIELD_KEY = "options";
         private const string ED_KEY_FIELD_KEY = "ed_key";
@@ -29,7 +27,6 @@ namespace Base.Data.Operations
         public SpaceTypeId Referrer { get; private set; }
         public ushort ReferrerPercent { get; private set; }
         public string Name { get; private set; }
-        public AuthorityData Owner { get; private set; }
         public AuthorityData Active { get; private set; }
         public PublicKey EdKey { get; private set; }
         public AccountOptionsData Options { get; private set; }
@@ -41,18 +38,18 @@ namespace Base.Data.Operations
         {
             switch (role)
             {
-                case AccountRole.Owner:
-                    if (Owner != null && Owner.KeyAuths != null)
-                    {
-                        foreach (var keyAuth in Owner.KeyAuths)
-                        {
-                            if (keyAuth.IsEquelKey(key))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
+                //case AccountRole.Owner:
+                    //if (Owner != null && Owner.KeyAuths != null)
+                    //{
+                    //    foreach (var keyAuth in Owner.KeyAuths)
+                    //    {
+                    //        if (keyAuth.IsEquelKey(key))
+                    //        {
+                    //            return true;
+                    //        }
+                    //    }
+                    //}
+                    //return false;
                 case AccountRole.Active:
                     if (Active != null && Active.KeyAuths != null)
                     {
@@ -80,7 +77,6 @@ namespace Base.Data.Operations
             Referrer.ToBuffer(buffer);
             buffer.WriteUInt16(ReferrerPercent);
             buffer.WriteString(Name);
-            Owner.ToBuffer(buffer);
             Active.ToBuffer(buffer);
             EdKey.ToBuffer(buffer);
             Options.ToBuffer(buffer);
@@ -96,7 +92,6 @@ namespace Base.Data.Operations
                 { REFERRER_FIELD_KEY,           Referrer },
                 { REFERRER_PERCENT_FIELD_KEY,   ReferrerPercent },
                 { NAME_FIELD_KEY,               Name },
-                { OWNER_FIELD_KEY,              Owner },
                 { ACTIVE_FIELD_KEY,             Active },
                 { OPTIONS_FIELD_KEY,            Options },
                 { ED_KEY_FIELD_KEY,             EdKey },
@@ -113,7 +108,6 @@ namespace Base.Data.Operations
             instance.Referrer = value.TryGetValue(REFERRER_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : SpaceTypeId.EMPTY;
             instance.ReferrerPercent = value.TryGetValue(REFERRER_PERCENT_FIELD_KEY, out token) ? token.ToObject<ushort>() : ushort.MinValue;
             instance.Name = value.TryGetValue(NAME_FIELD_KEY, out token) ? token.ToObject<string>() : string.Empty;
-            instance.Owner = value.TryGetValue(OWNER_FIELD_KEY, out token) ? token.ToObject<AuthorityData>() : null;
             instance.Active = value.TryGetValue(ACTIVE_FIELD_KEY, out token) ? token.ToObject<AuthorityData>() : null;
             instance.EdKey = value.TryGetValue(ACTIVE_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
             instance.Options = value.TryGetValue(OPTIONS_FIELD_KEY, out token) ? token.ToObject<AccountOptionsData>() : null;

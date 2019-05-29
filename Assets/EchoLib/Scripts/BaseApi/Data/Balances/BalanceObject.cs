@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data.Balances
 {
-    // id "1.15.x"
+    // id "1.13.x"
     public sealed class BalanceObject : IdObject
     {
         [JsonProperty("owner")]

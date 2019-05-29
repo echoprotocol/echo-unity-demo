@@ -22,8 +22,6 @@ namespace Base.Data
         public AccountIdWeightPair[] AccountAuths { get; private set; }
         [JsonProperty("key_auths")]
         public PublicKeyWeightPair[] KeyAuths { get; private set; }
-        [JsonProperty("address_auths")]
-        public AddressWeightPair[] AddressAuths { get; private set; }
 
         public ByteBuffer ToBuffer(ByteBuffer buffer = null)
         {

@@ -1,6 +1,4 @@
 using System;
-using Base.Data.Witnesses;
-using Base.Data.Workers;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json.Linq;
@@ -27,12 +25,6 @@ namespace Base.Data.Json
                     {
                         case SpaceType.CommitteeMember:
                             result[i] = value[i].ToObject<CommitteeMemberObject>();
-                            break;
-                        case SpaceType.Witness:
-                            result[i] = value[i].ToObject<WitnessObject>();
-                            break;
-                        case SpaceType.Worker:
-                            result[i] = value[i].ToObject<WorkerObject>();
                             break;
                         default:
                             CustomTools.Console.DebugWarning("Get unexpected SpaceType for vote object:", CustomTools.Console.LogCyanColor(sample.SpaceType), sample.Id, '\n', value);

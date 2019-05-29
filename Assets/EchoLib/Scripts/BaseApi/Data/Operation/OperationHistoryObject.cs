@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data.Operations
 {
-    // id "1.11.x"
+    // id "1.10.x"
     public sealed class OperationHistoryObject : IdObject, IComparable<OperationHistoryObject>
     {
         [JsonProperty("op")]

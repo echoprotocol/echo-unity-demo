@@ -1,19 +1,19 @@
-using Base.Config;
 using Buffers;
+using Base.Config;
 using Newtonsoft.Json.Linq;
 using Tools.Json;
 
 
 namespace Base.Data.Operations.Fee
 {
-    public sealed class WitnessCreateOperationFeeParametersData : FeeParametersData
+    public sealed class CallContractOperationFeeParametersData : FeeParametersData
     {
         private const string FEE_FIELD_KEY = "fee";
 
 
         public ulong Fee { get; set; }
 
-        public override ChainTypes.FeeParameters Type => ChainTypes.FeeParameters.WitnessCreateOperation;
+        public override ChainTypes.FeeParameters Type => ChainTypes.FeeParameters.CallContractOperation;
 
         public override ByteBuffer ToBufferRaw(ByteBuffer buffer = null)
         {
@@ -29,10 +29,10 @@ namespace Base.Data.Operations.Fee
             }).Build();
         }
 
-        public static WitnessCreateOperationFeeParametersData Create(JObject value)
+        public static CallContractOperationFeeParametersData Create(JObject value)
         {
             var token = value.Root;
-            var instance = new WitnessCreateOperationFeeParametersData();
+            var instance = new CallContractOperationFeeParametersData();
             instance.Fee = value.TryGetValue(FEE_FIELD_KEY, out token) ? token.ToObject<ulong>() : 0;
             return instance;
         }

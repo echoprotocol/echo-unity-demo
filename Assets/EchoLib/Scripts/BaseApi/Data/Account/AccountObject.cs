@@ -27,12 +27,10 @@ namespace Base.Data.Accounts
         public ushort ReferrerRewardsPercentage { get; private set; }
         [JsonProperty("name")]
         public string Name { get; private set; }
-        [JsonProperty("owner")]
-        public AuthorityData Owner { get; private set; }
         [JsonProperty("active")]
         public AuthorityData Active { get; private set; }
         [JsonProperty("ed_key")]
-        public string EdKey { get; private set; }
+        public PublicKey EdKey { get; private set; }
         [JsonProperty("options")]
         public AccountOptionsData Options { get; private set; }
         [JsonProperty("statistics")]
@@ -60,20 +58,20 @@ namespace Base.Data.Accounts
         {
             switch (role)
             {
-                case AccountRole.Owner:
-                    if (!Owner.IsNull() && !Owner.KeyAuths.IsNull())
-                    {
-                        foreach (var keyAuth in Owner.KeyAuths)
-                        {
-                            if (keyAuth.IsEquelKey(key))
-                            {
-                                CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Owner->", key.Public, "\n            Owner<-", keyAuth.Key));
-                                return true;
-                            }
-                            CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.Key));
-                        }
-                    }
-                    return false;
+                //case AccountRole.Owner:
+                    //if (!Owner.IsNull() && !Owner.KeyAuths.IsNull())
+                    //{
+                    //    foreach (var keyAuth in Owner.KeyAuths)
+                    //    {
+                    //        if (keyAuth.IsEquelKey(key))
+                    //        {
+                    //            CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Owner->", key.Public, "\n            Owner<-", keyAuth.Key));
+                    //            return true;
+                    //        }
+                    //        CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.Key));
+                    //    }
+                    //}
+                    //return false;
                 case AccountRole.Active:
                     if (!Active.IsNull() && !Active.KeyAuths.IsNull())
                     {

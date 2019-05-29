@@ -1,4 +1,5 @@
-﻿using Base.Data.Operations.Fee;
+﻿using Base.Data.Assets;
+using Base.Data.Operations.Fee;
 using Newtonsoft.Json;
 
 
@@ -28,8 +29,6 @@ namespace Base.Data.Properties
         public byte MaximumAssetWhitelistAuthorities { get; private set; }
         [JsonProperty("maximum_asset_feed_publishers")]
         public byte MaximumAssetFeedPublishers { get; private set; }
-        [JsonProperty("maximum_witness_count")]
-        public ushort MaximumWitnessCount { get; private set; }
         [JsonProperty("maximum_committee_count")]
         public ushort MaximumCommitteeCount { get; private set; }
         [JsonProperty("maximum_authority_membership")]
@@ -48,12 +47,6 @@ namespace Base.Data.Properties
         public bool CountNonMemberVotes { get; private set; }
         [JsonProperty("allow_non_member_whitelists")]
         public bool AllowNonMemberWhitelists { get; private set; }
-        [JsonProperty("witness_pay_per_block")]
-        public long WitnessPayPerBlock { get; private set; }
-        [JsonProperty("witness_pay_vesting_seconds")]
-        public uint WitnessPayVestingSeconds { get; private set; }
-        [JsonProperty("worker_budget_per_day")]
-        public long WorkerBudgetPerDay { get; private set; }
         [JsonProperty("max_predicate_opcode")]
         public ushort MaxPredicateOpcode { get; private set; }
         [JsonProperty("fee_liquidation_threshold")]
@@ -64,34 +57,12 @@ namespace Base.Data.Properties
         public byte AccountFeeScaleBitshifts { get; private set; }
         [JsonProperty("max_authority_depth")]
         public byte MaxAuthorityDepth { get; private set; }
-        [JsonProperty("witness_schedule_algorithm")]
-        public byte WitnessScheduleAlgorithm { get; private set; }
-        [JsonProperty("min_round_delay")]
-        public uint MinRoundDelay { get; private set; }
-        [JsonProperty("max_round_delay")]
-        public uint MaxRoundDelay { get; private set; }
-        [JsonProperty("min_time_per_commit_move")]
-        public uint MinTimePerCommitMove { get; private set; }
-        [JsonProperty("max_time_per_commit_move")]
-        public uint MaxTimePerCommitMove { get; private set; }
-        [JsonProperty("min_time_per_reveal_move")]
-        public uint MinTimePerRevealMove { get; private set; }
-        [JsonProperty("max_time_per_reveal_move")]
-        public uint MaxTimePerRevealMove { get; private set; }
-        [JsonProperty("rake_fee_percentage")]
-        public ushort RakeFeePercentage { get; private set; }
-        [JsonProperty("maximum_registration_deadline")]
-        public uint MaximumRegistrationDeadline { get; private set; }
-        [JsonProperty("maximum_players_in_tournament")]
-        public ushort MaximumPlayersInTournament { get; private set; }
-        [JsonProperty("maximum_tournament_whitelist_length")]
-        public ushort MaximumTournamentWhitelistLength { get; private set; }
-        [JsonProperty("maximum_tournament_start_time_in_future")]
-        public uint MaximumTournamentStartTimeInFuture { get; private set; }
-        [JsonProperty("maximum_tournament_start_delay")]
-        public uint MaximumTournamentStartDelay { get; private set; }
-        [JsonProperty("maximum_tournament_number_of_wins")]
-        public ushort MaximumTournamentNumberOfWins { get; private set; }
+        [JsonProperty("echorand_config")]
+        public EchorandConfigData EchorandConfig { get; private set; }
+        [JsonProperty("sidechain_config")]
+        public SidechainConfigData SidechainConfig { get; private set; }
+        [JsonProperty("gas_price")]
+        public GasPriceData GasPrice { get; private set; }
         [JsonProperty("extensions")]
         public object[] Extensions { get; private set; }
     }

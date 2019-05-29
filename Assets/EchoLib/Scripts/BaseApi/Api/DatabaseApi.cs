@@ -432,7 +432,7 @@ namespace Base.Api.Database
                     var requestId = GenerateNewId();
                     var methodName = "get_contract_result";
                     var title = methodName + " " + requestId;
-                    var parameters = new Parameters { Id.Value, methodName, new object[] { SpaceTypeId.ToString(SpaceType.ResultContract, resultId) } };
+                    var parameters = new Parameters { Id.Value, methodName, new object[] { SpaceTypeId.ToString(SpaceType.ContractResult, resultId) } };
                     DoRequest(requestId, parameters, resolve, reject, title, debug);
                 });
             }

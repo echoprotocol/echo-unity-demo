@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data.Orders
 {
-    // id "1.8.x"
+    // id "1.7.x"
     public sealed class CallOrderObject : IdObject
     {
         [JsonProperty("borrower")]

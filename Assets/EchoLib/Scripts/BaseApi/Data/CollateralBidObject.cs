@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data
 {
-    // id "2.17.x"
+    // id "2.14.x"
     public sealed class CollateralBidObject : IdObject
     {
         [JsonProperty("bidder")]

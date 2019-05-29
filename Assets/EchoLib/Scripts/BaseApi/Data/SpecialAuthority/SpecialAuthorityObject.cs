@@ -3,7 +3,7 @@
 
 namespace Base.Data.SpecialAuthorities
 {
-    // id "2.14.x"
+    // id "2.12.x"
     public sealed class SpecialAuthorityObject : IdObject
     {
         [JsonProperty("account")]

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data
 {
-    // id "1.12.x"
+    // id "1.11.x"
     public sealed class WithdrawPermissionObject : IdObject
     {
         [JsonProperty("withdraw_from_account")]

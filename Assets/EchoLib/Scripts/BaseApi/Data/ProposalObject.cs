@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Base.Data
 {
-    // id "1.10.x"
+    // id "1.9.x"
     public sealed class ProposalObject : IdObject
     {
         [JsonProperty("expiration_time"), JsonConverter(typeof(DateTimeConverter))]
@@ -22,8 +22,6 @@ namespace Base.Data
         public SpaceTypeId[] AvailableActiveApprovals { get; private set; }
         [JsonProperty("required_owner_approvals")]
         public SpaceTypeId[] RequiredOwnerApprovals { get; private set; }
-        [JsonProperty("available_owner_approvals")]
-        public SpaceTypeId[] AvailableOwnerApprovals { get; private set; }
         [JsonProperty("available_key_approvals")]
         public PublicKey[] AvailableKeyApprovals { get; private set; }
     }

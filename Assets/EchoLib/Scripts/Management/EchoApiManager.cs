@@ -5,6 +5,7 @@ using Base.Api;
 using Base.Api.Database;
 using Base.Config;
 using Base.Data;
+using Base.Data.Assets;
 using Base.Data.Operations;
 using Base.Data.Transactions;
 using Base.Requests;
@@ -209,41 +210,35 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         ChainConfig.SetChainId(newChainId);
     }
 
-    public IPromise CallContract(uint contractId, uint accountId, string bytecode, uint feeAssetId = 0, ulong amount = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmationData> resultCallback = null)
+    public IPromise CallContract(uint contractId, uint accountId, string bytecode, uint feeAssetId = 0, long amount = 0, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {
             return Promise.Rejected(new InvalidOperationException("Isn't Authorized!"));
         }
-        var operation = new ContractOperationData
+        var operation = new CallContractOperationData
         {
             Registrar = SpaceTypeId.CreateOne(SpaceType.Account, accountId),
-            Receiver = SpaceTypeId.CreateOne(SpaceType.Contract, contractId),
+            Value = new AssetData(amount, SpaceTypeId.CreateOne(SpaceType.Asset, feeAssetId)),
             Code = bytecode.OrEmpty(),
-            Asset = SpaceTypeId.CreateOne(SpaceType.Asset, feeAssetId),
-            Value = amount,
-            GasPrice = gasPrice,
-            Gas = gas
+            Callee = SpaceTypeId.CreateOne(SpaceType.Contract, contractId)
         };
-        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Asset, resultCallback);
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Value.Asset, resultCallback);
     }
 
-    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, ulong gas = 4700000, ulong gasPrice = 0, Action<TransactionConfirmationData> resultCallback = null)
+    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {
             return Promise.Rejected(new InvalidOperationException("Isn't Authorized!"));
         }
-        var operation = new ContractOperationData
+        var operation = new CallContractOperationData
         {
             Registrar = SpaceTypeId.CreateOne(SpaceType.Account, accountId),
-            Receiver = null,
+            Value = new AssetData(0, SpaceTypeId.CreateOne(SpaceType.Asset, feeAssetId)),
             Code = bytecode.OrEmpty(),
-            Asset = SpaceTypeId.CreateOne(SpaceType.Asset, feeAssetId),
-            Value = 0,
-            GasPrice = gasPrice,
-            Gas = gas
+            Callee = null
         };
-        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Asset, resultCallback);
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Value.Asset, resultCallback);
     }
 }

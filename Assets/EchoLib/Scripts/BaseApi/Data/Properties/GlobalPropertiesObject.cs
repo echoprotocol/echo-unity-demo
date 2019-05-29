@@ -14,7 +14,5 @@ namespace Base.Data.Properties
         public uint NextAvailableVoteId { get; private set; }
         [JsonProperty("active_committee_members")]
         public SpaceTypeId[] ActiveCommitteeMembers { get; private set; }
-        [JsonProperty("active_witnesses")]
-        public SpaceTypeId[] ActiveWitnesses { get; private set; }
     }
 }
