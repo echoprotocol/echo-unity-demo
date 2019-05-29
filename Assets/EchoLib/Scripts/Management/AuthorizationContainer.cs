@@ -16,6 +16,15 @@ using Tools.Json;
 
 public sealed class AuthorizationContainer
 {
+    public enum AuthorizationResult
+    {
+        Ok,
+        Failed,
+        UserNotFound,
+        Error
+    }
+
+
     public sealed class AuthorizationData
     {
         public Keys Keys { get; private set; }
@@ -72,17 +81,9 @@ public sealed class AuthorizationContainer
         }
     }
 
-    private IPromise<bool> AuthorizationBy(uint id, string password)
+    private IPromise<AuthorizationResult> AuthorizationBy(UserNameFullAccountDataPair dataPair, string password)
     {
-        return EchoApiManager.Instance.Database.GetFullAccount(SpaceTypeId.ToString(SpaceType.Account, id), true).Then(result =>
-        {
-            return AuthorizationBy(result, password);
-        });
-    }
-
-    private IPromise<bool> AuthorizationBy(UserNameFullAccountDataPair dataPair, string password)
-    {
-        return new Promise<bool>(async (resolve, reject) =>
+        return new Promise<AuthorizationResult>(async (resolve, reject) =>
         {
             try
             {
@@ -95,31 +96,47 @@ public sealed class AuthorizationContainer
                     }
                     Current = new AuthorizationData(validKeys, dataPair);
                     Repository.OnGetObject += Current.UpdateAccountData;
-                    resolve(true);
+                    resolve(AuthorizationResult.Ok);
                 }
                 else
                 {
-                    resolve(false);
+                    resolve(AuthorizationResult.Failed);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                reject(ex);
+                resolve(AuthorizationResult.Error);
             }
         });
     }
 
-    public IPromise<bool> AuthorizationBy(string userName, string password)
+    private IPromise<AuthorizationResult> AuthorizationBy(uint id, string password)
     {
-        return EchoApiManager.Instance.Database.GetFullAccount(userName.Trim(), true).Then(result =>
+        return EchoApiManager.Instance.Database.GetFullAccount(SpaceTypeId.ToString(SpaceType.Account, id), true).Then(result =>
         {
+            if (result == null)
+            {
+                return Promise<AuthorizationResult>.Resolved(AuthorizationResult.UserNotFound);
+            }
             return AuthorizationBy(result, password);
         });
     }
 
-    public void AuthorizationBy(string userName, string password, Action<bool> onSuccess, Action<Exception> onFailed)
+    public IPromise<AuthorizationResult> AuthorizationBy(string userName, string password)
     {
-        AuthorizationBy(userName, password).Then(onSuccess).Catch(onFailed);
+        return EchoApiManager.Instance.Database.GetFullAccount(userName.Trim(), true).Then(result =>
+        {
+            if (result == null)
+            {
+                return Promise<AuthorizationResult>.Resolved(AuthorizationResult.UserNotFound);
+            }
+            return AuthorizationBy(result, password);
+        });
+    }
+
+    public void AuthorizationBy(string userName, string password, Action<AuthorizationResult> onDone, Action<Exception> onError)
+    {
+        AuthorizationBy(userName, password).Then(onDone).Catch(onError);
     }
 
     public void ResetAuthorization()

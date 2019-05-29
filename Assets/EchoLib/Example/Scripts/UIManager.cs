@@ -43,7 +43,7 @@ public class UIManager : MonoBehaviour
         EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
         {
             loginButton.interactable = true;
-            if (result)
+            if (result == AuthorizationContainer.AuthorizationResult.Ok)
             {
                 InitializeWork();
             }
