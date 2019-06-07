@@ -76,6 +76,10 @@ namespace Base.Data.Json
                 //case ChainTypes.Operation.DepositETH:
                 //case ChainTypes.Operation.WithdrawETH:
                 //case ChainTypes.Operation.ApproveWithdrawETH:
+                //case ChainTypes.Operation.ContractFundPool:
+                //case ChainTypes.Operation.ContractWhitelist:
+                //case ChainTypes.Operation.SidechainIssue:
+                //case ChainTypes.Operation.SidechainBurn:
                 default:
                     CustomTools.Console.DebugError("Unexpected operation type:", type, '\n', value);
                     return null;

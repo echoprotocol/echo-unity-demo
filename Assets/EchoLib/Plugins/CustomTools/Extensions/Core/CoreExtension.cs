@@ -29,6 +29,16 @@
             return o.GetType().IsArray;
         }
 
+        public static byte[] Clear( this byte[] a ) {
+            if ( a.IsNull() ) {
+                throw new System.NullReferenceException();
+            }
+            for ( var i = 0; i < a.Length; i++ ) {
+                a[ i ] = 0;
+            }
+            return a;
+        }
+
         public static bool IsNumeric( this System.Type t ) {
             switch ( System.Type.GetTypeCode( t ) ) {
             case System.TypeCode.Byte:

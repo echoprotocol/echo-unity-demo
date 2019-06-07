@@ -6,11 +6,10 @@ using Newtonsoft.Json;
 
 namespace Base.Data
 {
-    public enum AccountRole
+    public enum AuthorityClassification
     {
-        Owner,
-        Active,
-        Memo
+        Active/*   */= 0,
+        Echorand/* */= 1
     }
 
 

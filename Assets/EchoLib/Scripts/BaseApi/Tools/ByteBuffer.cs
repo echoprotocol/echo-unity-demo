@@ -8,7 +8,7 @@ using Tools.Time;
 
 namespace Buffers
 {
-    public class ByteBuffer
+    public class ByteBuffer : IDisposable
     {
         private const int BYTE_SIZE = 1;
         private const int SHORT_SIZE = 2;
@@ -53,6 +53,8 @@ namespace Buffers
         {
             this.littleEndian = littleEndian;
         }
+
+        public void Dispose() => buffer.Clear();
 
         public byte[] ToArray() => buffer.ToArray();
 

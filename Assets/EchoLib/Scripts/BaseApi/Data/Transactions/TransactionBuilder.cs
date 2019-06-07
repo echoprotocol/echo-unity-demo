@@ -8,7 +8,7 @@ using Base.Config;
 using Base.Data.Assets;
 using Base.Data.Operations;
 using Base.Data.Properties;
-using Base.ECC;
+using Base.Keys;
 using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
@@ -229,28 +229,28 @@ namespace Base.Data.Transactions
 
                     // Proposed transactions need to be flattened
                     var flatAssets = new List<AssetData>();
-                    Action<object> flatten = null;
-                    flatten = obj =>
+
+                    void Flatten(object obj)
                     {
                         if (obj.IsArray())
                         {
                             var array = obj as IList;
                             for (var k = 0; k < array.Count; k++)
                             {
-                                flatten(array[k]);
+                                Flatten(array[k]);
                             }
                         }
                         else
                         {
                             flatAssets.Add((AssetData)obj);
                         }
-                    };
-                    flatten(feesData.OrEmpty());
+                    }
+
+                    Flatten(feesData.OrEmpty());
 
                     var assetIndex = 0;
 
-                    Action<OperationData> setFee = null;
-                    setFee = operation =>
+                    void SetFee(OperationData operation)
                     {
                         if (operation.Fee.IsNull() || operation.Fee.Amount == 0L)
                         {
@@ -262,28 +262,29 @@ namespace Base.Data.Transactions
                             var proposedOperations = (operation as ProposalCreateOperationData).ProposedOperations;
                             for (var y = 0; y < proposedOperations.Length; y++)
                             {
-                                setFee(proposedOperations[y].Operation);
+                                SetFee(proposedOperations[y].Operation);
                             }
                         }
-                    };
+                    }
+
                     for (var i = 0; i < builder.operations.Count; i++)
                     {
-                        setFee(builder.operations[i]);
+                        SetFee(builder.operations[i]);
                     }
                 });
             }).Then(results => Promise<TransactionBuilder>.Resolved(builder));
         }
 
-        public IPromise<PublicKey[]> GetPotentialSignatures()
+        public IPromise<IPublicKey[]> GetPotentialSignatures()
         {
             return EchoApiManager.Instance.Database.GetPotentialSignatures(new SignedTransactionData(this));
         }
 
-        public IPromise<PublicKey[]> GetRequiredSignatures(PublicKey[] availableKeys)
+        public IPromise<IPublicKey[]> GetRequiredSignatures(IPublicKey[] availableKeys)
         {
             if (availableKeys.IsNullOrEmpty())
             {
-                return Promise<PublicKey[]>.Resolved(new PublicKey[0]);
+                return Promise<IPublicKey[]>.Resolved(new IPublicKey[0]);
             }
             return EchoApiManager.Instance.Database.GetRequiredSignatures(new SignedTransactionData(this), availableKeys);
         }
@@ -318,7 +319,13 @@ namespace Base.Data.Transactions
             }
             foreach (var key in signerKeys)
             {
-                signatures.Add(Signature.SignBuffer(EchoApiManager.ChainId.FromHex2Data().Concat(buffer.OrEmpty()), key.Private).ToBuffer());
+                var chainId = EchoApiManager.ChainId.FromHex2Data();
+                var data = chainId.Concat(buffer.OrEmpty());
+                chainId.Clear();
+                var signature = key.Private.Sign(data);
+                data.Clear();
+                signatures.Add(signature);
+                signature.Clear();
             }
             signerKeys.Clear();
             signed = true;

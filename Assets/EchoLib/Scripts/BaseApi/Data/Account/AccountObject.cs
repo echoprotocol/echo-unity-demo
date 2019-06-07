@@ -1,7 +1,8 @@
 using System;
 using Base.Data.Json;
 using Base.Data.SpecialAuthorities;
-using Base.ECC;
+using Base.Keys;
+using Base.Keys.EDDSA;
 using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
 
@@ -29,8 +30,8 @@ namespace Base.Data.Accounts
         public string Name { get; private set; }
         [JsonProperty("active")]
         public AuthorityData Active { get; private set; }
-        [JsonProperty("ed_key")]
-        public PublicKey EdKey { get; private set; }
+        [JsonProperty("echorand_key")]
+        public PublicKey EchorandKey { get; private set; }
         [JsonProperty("options")]
         public AccountOptionsData Options { get; private set; }
         [JsonProperty("statistics")]
@@ -54,30 +55,16 @@ namespace Base.Data.Accounts
         [JsonProperty("allowed_assets", NullValueHandling = NullValueHandling.Ignore)]
         public SpaceTypeId[] AllowedAssets { get; private set; }
 
-        public bool IsEquelKey(AccountRole role, KeyPair key)
+        public bool IsEquelKey(AuthorityClassification role, KeyPair key)
         {
             switch (role)
             {
-                //case AccountRole.Owner:
-                    //if (!Owner.IsNull() && !Owner.KeyAuths.IsNull())
-                    //{
-                    //    foreach (var keyAuth in Owner.KeyAuths)
-                    //    {
-                    //        if (keyAuth.IsEquelKey(key))
-                    //        {
-                    //            CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Owner->", key.Public, "\n            Owner<-", keyAuth.Key));
-                    //            return true;
-                    //        }
-                    //        CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Owner->", key.Public, "\ngetted_key        Owner<-", keyAuth.Key));
-                    //    }
-                    //}
-                    //return false;
-                case AccountRole.Active:
+                case AuthorityClassification.Active:
                     if (!Active.IsNull() && !Active.KeyAuths.IsNull())
                     {
                         foreach (var keyAuth in Active.KeyAuths)
                         {
-                            if (keyAuth.IsEquelKey(key))
+                            if (key.Equals(keyAuth.Key))
                             {
                                 CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Active->", key.Public, "\n            Active<-", keyAuth.Key));
                                 return true;
@@ -86,15 +73,15 @@ namespace Base.Data.Accounts
                         }
                     }
                     return false;
-                case AccountRole.Memo:
-                    if (!Options.IsNull())
+                case AuthorityClassification.Echorand:
+                    if (!EchorandKey.IsNull())
                     {
-                        if (Options.IsEquelKey(key))
+                        if (key.Equals(EchorandKey))
                         {
-                            CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Memo->", key.Public, "\n            Memo<-", Options.MemoKey));
+                            CustomTools.Console.DebugLog(CustomTools.Console.LogGreenColor("Echorand->", key.Public, "\n            Echorand<-", EchorandKey));
                             return true;
                         }
-                        CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Memo->", key.Public, "\ngetted_key        Memo<-", Options.MemoKey));
+                        CustomTools.Console.DebugLog(CustomTools.Console.LogRedColor("generated_key Echorand->", key.Public, "\ngetted_key        Echorand<-", EchorandKey));
                     }
                     return false;
                 default:

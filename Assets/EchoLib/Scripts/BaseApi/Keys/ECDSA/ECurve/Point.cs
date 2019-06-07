@@ -24,6 +24,14 @@ namespace ECurve
             this.z = z;
         }
 
+        public void Dispose()
+        {
+            x?.Dispose();
+            y?.Dispose();
+            z?.Dispose();
+            zInv?.Dispose();
+        }
+
         private BigInteger ZInv => zInv ?? (zInv = z.ModuloInverse(curve.P));
 
         public BigInteger X => x;
@@ -36,7 +44,7 @@ namespace ECurve
 
         public BigInteger AffineY => y.Multiply(ZInv).Modulo(curve.P);
 
-        public static Point FromAffine(Curve curve, BigInteger x, BigInteger y) => new Point(curve, x, y, BigInteger.One);
+        public static Point FromAffine(Curve curve, BigInteger x, BigInteger y) => new Point(curve, x, y, BigInteger.One.Clone());
 
         public bool Equals(Point other)
         {
@@ -67,7 +75,7 @@ namespace ECurve
             return v.Sign == 0;
         }
 
-        private Point Negate => new Point(curve, x, curve.P.Subtract(y), z);
+        private Point Negate => new Point(curve, x.Clone(), curve.P.Subtract(y), z.Clone());
 
         public Point Addition(Point b)
         {

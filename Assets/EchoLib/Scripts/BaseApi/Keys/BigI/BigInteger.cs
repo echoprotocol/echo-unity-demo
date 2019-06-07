@@ -14,7 +14,7 @@ namespace BigI
     }
 
 
-    public class BigInteger : IComparable<BigInteger>, IEquatable<BigInteger>
+    public class BigInteger : IComparable<BigInteger>, IEquatable<BigInteger>, IDisposable
     {
         private class NullExponential : IExponential
         {
@@ -290,6 +290,14 @@ namespace BigI
         private int sign = 0; // -1 or 0
         private int[] magnitude = new int[0];
 
+
+        public void Dispose()
+        {
+            t = 0;
+            sign = 0;
+            magnitude.Fill(0);
+            Array.Resize(ref magnitude, 0);
+        }
 
         private int this[int index]
         {
@@ -612,14 +620,11 @@ namespace BigI
         }
 
         // copy this
-        public BigInteger Clone
+        public BigInteger Clone()
         {
-            get
-            {
-                var result = new BigInteger();
-                CopyTo(result);
-                return result;
-            }
+            var result = new BigInteger();
+            CopyTo(result);
+            return result;
         }
 
         // this + a
@@ -857,8 +862,8 @@ namespace BigI
             {
                 return Zero;
             }
-            var u = m.Clone;
-            var v = Clone;
+            var u = m.Clone();
+            var v = Clone();
             var a = ValueOf(1);
             var b = ValueOf(0);
             var c = ValueOf(0);

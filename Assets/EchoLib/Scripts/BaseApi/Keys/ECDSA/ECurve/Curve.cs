@@ -55,7 +55,7 @@ namespace ECurve
             this.h = h;
 
             g = Point.FromAffine(this, gX, gY);
-            infinity = new Point(this, null, null, BigInteger.Zero);
+            infinity = new Point(this, null, null, BigInteger.Zero.Clone());
 
             // result caching
             pOverFour = p.Addition(BigInteger.One).ShiftRight(2);

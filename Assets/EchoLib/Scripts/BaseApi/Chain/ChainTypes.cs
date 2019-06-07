@@ -55,7 +55,8 @@ namespace Base.Config
             ContractBalance/*                         */= 15,
             ContractHistory/*                         */= 16,
             ContractStatistics/*                      */= 17,
-            AccountAddress/*                          */= 18
+            AccountAddress/*                          */= 18,
+            ContractPool/*                            */= 19
         }
 
 
@@ -118,6 +119,10 @@ namespace Base.Config
             DepositETH/*                              */= 48,
             WithdrawETH/*                             */= 49,
             ApproveWithdrawETH/*                      */= 50,
+            ContractFundPool/*                        */= 51,
+            ContractWhitelist/*                       */= 52,
+            SidechainIssue/*                          */= 53, // VIRTUAL
+            SidechainBurn/*                           */= 54 // VIRTUAL
         }
 
 
@@ -174,6 +179,10 @@ namespace Base.Config
             DepositETHOperation/*                             */= 48,
             WithdrawETHOperation/*                            */= 49,
             ApproveWithdrawETHOperation/*                     */= 50,
+            ContractFundPoolOperation/*                       */= 51,
+            ContractWhitelistOperation/*                      */= 52,
+            SidechainIssueOperation/*                         */= 53,
+            SidechainBurnOperation/*                          */= 54
         }
 
 

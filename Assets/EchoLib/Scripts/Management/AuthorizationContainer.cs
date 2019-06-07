@@ -5,7 +5,7 @@ using Base.Data.Accounts;
 using Base.Data.Balances;
 using Base.Data.Pairs;
 using Base.Data.Transactions;
-using Base.ECC;
+using Base.Keys;
 using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
@@ -87,7 +87,7 @@ public sealed class AuthorizationContainer
         {
             try
             {
-                var validKeys = await Keys.FromSeed(dataPair.Key, password, false).CheckAuthorizationAsync(dataPair.Value.Account);
+                var validKeys = await Keys.FromSeed(dataPair.Key, password).CheckAuthorizationAsync(dataPair.Value.Account);
                 if (!validKeys.IsNull())
                 {
                     if (!Current.IsNull())
@@ -152,7 +152,7 @@ public sealed class AuthorizationContainer
         var existPublicKeys = Current.Keys.PublicKeys;
         return new Promise((resolve, reject) => TransactionBuilder.SetRequiredFees(builder, asset).Then(b => b.GetPotentialSignatures().Then(potentialPublicKeys =>
         {
-            var availableKeys = new List<PublicKey>();
+            var availableKeys = new List<IPublicKey>();
             foreach (var existPublicKey in existPublicKeys)
             {
                 if (!availableKeys.Contains(existPublicKey) && Array.IndexOf(potentialPublicKeys, existPublicKey) != -1)

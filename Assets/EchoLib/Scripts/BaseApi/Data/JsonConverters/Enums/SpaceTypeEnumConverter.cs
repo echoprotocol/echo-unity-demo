@@ -48,6 +48,7 @@ namespace Base.Data.Json
         private readonly static string CONTRACT_HISTORY =/*                */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType.ContractHistory);
         private readonly static string CONTRACT_STATISTICS =/*             */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType.ContractStatistics);
         private readonly static string ACCOUNT_ADDRESS =/*                 */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType.AccountAddress);
+        private readonly static string CONTRACT_POOL =/*                   */string.Format("{0}.{1}", (int)Space.ImplementationIds, (int)ImplementationType.ContractPool);
 
 
         protected override Enum Deserialize(string value, Type objectType) => ConvertFrom(value);
@@ -96,6 +97,7 @@ namespace Base.Data.Json
                 case Enum.ContractHistory:/*                       */return CONTRACT_HISTORY;
                 case Enum.ContractStatistics:/*                    */return CONTRACT_STATISTICS;
                 case Enum.AccountAddress:/*                        */return ACCOUNT_ADDRESS;
+                case Enum.ContractPool:/*                          */return CONTRACT_POOL;
             }
             return string.Empty;
         }
@@ -140,6 +142,7 @@ namespace Base.Data.Json
             if (CONTRACT_HISTORY.Equals(value))/*                  */return Enum.ContractHistory;
             if (CONTRACT_STATISTICS.Equals(value))/*               */return Enum.ContractStatistics;
             if (ACCOUNT_ADDRESS.Equals(value))/*                   */return Enum.AccountAddress;
+            if (CONTRACT_POOL.Equals(value))/*                     */return Enum.ContractPool;
             return Enum.Unknown;
         }
     }

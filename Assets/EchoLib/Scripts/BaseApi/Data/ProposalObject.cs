@@ -1,7 +1,7 @@
 ﻿using System;
 using Base.Data.Json;
 using Base.Data.Transactions;
-using Base.ECC;
+using Base.Keys.EDDSA;
 using Newtonsoft.Json;
 
 

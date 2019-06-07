@@ -1,7 +1,8 @@
 using Base.Config;
 using Base.Data.Accounts;
 using Base.Data.Assets;
-using Base.ECC;
+using Base.Keys;
+using Base.Keys.EDDSA;
 using Buffers;
 using Newtonsoft.Json.Linq;
 using Tools.Json;
@@ -34,36 +35,24 @@ namespace Base.Data.Operations
 
         public override ChainTypes.Operation Type => ChainTypes.Operation.AccountCreate;
 
-        public bool IsEquelKey(AccountRole role, KeyPair key)
+        public bool IsEquelKey(AuthorityClassification role, KeyPair key)
         {
             switch (role)
             {
-                //case AccountRole.Owner:
-                    //if (Owner != null && Owner.KeyAuths != null)
-                    //{
-                    //    foreach (var keyAuth in Owner.KeyAuths)
-                    //    {
-                    //        if (keyAuth.IsEquelKey(key))
-                    //        {
-                    //            return true;
-                    //        }
-                    //    }
-                    //}
-                    //return false;
-                case AccountRole.Active:
+                case AuthorityClassification.Active:
                     if (Active != null && Active.KeyAuths != null)
                     {
                         foreach (var keyAuth in Active.KeyAuths)
                         {
-                            if (keyAuth.IsEquelKey(key))
+                            if (key.Equals(keyAuth.Key))
                             {
                                 return true;
                             }
                         }
                     }
                     return false;
-                case AccountRole.Memo:
-                    return Options != null && Options.IsEquelKey(key);
+                case AuthorityClassification.Echorand:
+                    return key.Equals(EdKey);
                 default:
                     return false;
             }

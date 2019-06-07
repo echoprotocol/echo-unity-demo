@@ -1,5 +1,5 @@
 ﻿using Base.Data.Pairs;
-using Base.ECC;
+using Base.Keys.EDDSA;
 
 
 namespace Base.Data.Json

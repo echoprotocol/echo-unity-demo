@@ -8,7 +8,7 @@ using Base.Data.Operations;
 using Base.Data.Pairs;
 using Base.Data.Properties;
 using Base.Data.Transactions;
-using Base.ECC;
+using Base.Keys;
 using Base.Requests;
 using CustomTools.Extensions.Core.Array;
 using Newtonsoft.Json.Linq;
@@ -283,7 +283,15 @@ namespace Base.Api.Database
 
         #endregion
 
-        public IPromise<AssetData[]> GetRequiredFees(OperationData[] operations, uint assetId)
+        // for call_contract_operation
+        //
+        //struct fee_result
+        //{
+        //    asset fee;
+        //    asset user_to_pay;
+        //};
+
+        public IPromise<AssetData[]> GetRequiredFees(OperationData[] operations, uint assetId) // todo variable result
         {
             if (IsInitialized)
             {
@@ -309,11 +317,11 @@ namespace Base.Api.Database
             return GetRequiredFees(new[] { operation }, assetId).Then(fees => fees.FirstOr(null));
         }
 
-        public IPromise<PublicKey[]> GetRequiredSignatures(SignedTransactionData transaction, PublicKey[] existKeys)
+        public IPromise<IPublicKey[]> GetRequiredSignatures(SignedTransactionData transaction, IPublicKey[] existKeys)
         {
             if (IsInitialized)
             {
-                return new Promise<PublicKey[]>((resolve, reject) =>
+                return new Promise<Keys.EDDSA.PublicKey[]>((resolve, reject) =>
                 {
 #if ECHO_DEBUG
                     var debug = true;
@@ -325,16 +333,16 @@ namespace Base.Api.Database
                     var title = methodName + " " + requestId;
                     var parameters = new Parameters { Id.Value, methodName, new object[] { transaction, Array.ConvertAll(existKeys, key => key.ToString()) } };
                     DoRequest(requestId, parameters, resolve, reject, title, debug);
-                });
+                }).Then(keys => keys.Convert(key => (IPublicKey)key));
             }
             return Init().Then(api => api.GetRequiredSignatures(transaction, existKeys));
         }
 
-        public IPromise<PublicKey[]> GetPotentialSignatures(SignedTransactionData transaction)
+        public IPromise<IPublicKey[]> GetPotentialSignatures(SignedTransactionData transaction)
         {
             if (IsInitialized)
             {
-                return new Promise<PublicKey[]>((resolve, reject) =>
+                return new Promise<Keys.EDDSA.PublicKey[]>((resolve, reject) =>
                 {
 #if ECHO_DEBUG
                     var debug = true;
@@ -346,7 +354,7 @@ namespace Base.Api.Database
                     var title = methodName + " " + requestId;
                     var parameters = new Parameters { Id.Value, methodName, new object[] { transaction } };
                     DoRequest(requestId, parameters, resolve, reject, title, debug);
-                });
+                }).Then(keys => keys.Convert(key => (IPublicKey)key));
             }
             return Init().Then(api => api.GetPotentialSignatures(transaction));
         }
@@ -375,6 +383,27 @@ namespace Base.Api.Database
             }
             return Init().Then(api => api.SubscribeNotice(subscribeResultCallback));
         }
+
+//        public IPromise SubscribeContracts(uint[] contractIds) // todo
+//        {
+//            if (IsInitialized)
+//            {
+//                return new Promise((resolve, reject) =>
+//                {
+//#if ECHO_DEBUG
+//                    var debug = true;
+//#else
+//                    var debug = false;
+//#endif
+        //            var requestId = GenerateNewId();
+        //            var methodName = "subscribe_contracts";
+        //            var title = methodName + " " + requestId;
+        //            var parameters = new Parameters { Id.Value, methodName, new object[] { SpaceTypeId.ToStrings(SpaceType.Asset, contractIds) } };
+        //            DoRequest(requestId, parameters, resolve, reject, title, debug);
+        //        });
+        //    }
+        //    return Init().Then(api => api.SubscribeContracts(contractIds));
+        //}
 
         public IPromise<AssetData[]> GetAccountBalances(uint accountId, uint[] assetIds)
         {

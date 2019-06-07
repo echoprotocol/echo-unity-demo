@@ -49,7 +49,8 @@ namespace Base.Data
         ContractBalance,
         ContractHistory,
         ContractStatistics,
-        AccountAddress
+        AccountAddress,
+        ContractPool
     }
 
 

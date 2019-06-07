@@ -1,4 +1,4 @@
-﻿using Base.ECC;
+﻿using Base.Keys.EDDSA;
 using Base.Requests;
 using Promises;
 
@@ -26,7 +26,7 @@ namespace Base.Api.Database
             }).Then(apiId => (RegistrationApi)Init(apiId));
         }
 
-        public IPromise RegisterAccount(string name, PublicKey ownerKey, PublicKey activeKey, PublicKey memoKey, string echorandKey)
+        public IPromise RegisterAccount(string name, PublicKey active, PublicKey echorandKey, System.Action callback) // todo
         {
             if (IsInitialized)
             {
@@ -40,11 +40,13 @@ namespace Base.Api.Database
                     var requestId = GenerateNewId();
                     var methodName = "register_account";
                     var title = methodName + " " + requestId;
-                    var parameters = new Parameters { Id.Value, methodName, new object[] { name, ownerKey, activeKey, memoKey, echorandKey } };
+                    var parameters = new Parameters { Id.Value, methodName, new object[] { name, active, echorandKey } };
                     DoRequestVoid(requestId, parameters, resolve, reject, title, debug);
                 });
             }
-            return Init().Then(api => api.RegisterAccount(name, ownerKey, activeKey, memoKey, echorandKey));
+            return Init().Then(api => api.RegisterAccount(name, active, echorandKey, callback));
         }
     }
 }
+
+

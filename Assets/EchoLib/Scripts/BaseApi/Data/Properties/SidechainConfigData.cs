@@ -10,9 +10,11 @@ namespace Base.Data.Properties
         [JsonProperty("eth_committee_update_method")]
         public ETHMethodData ETHCommitteeUpdateMethod { get; private set; }
         [JsonProperty("eth_gen_address_method")]
-        public ETHMethodData ETHGenAddressMethod { get; private set; }
+        public ETHMethodData ETHGenerateAddressMethod { get; private set; }
         [JsonProperty("eth_withdraw_method")]
         public ETHMethodData ETHWithdrawMethod { get; private set; }
+        [JsonProperty("eth_update_addr_method")]
+        public ETHMethodData ETHUpdateAddressMethod { get; private set; }
         [JsonProperty("eth_committee_updated_topic")]
         public string ETHCommitteeUpdatedTopic { get; private set; }
         [JsonProperty("eth_gen_address_topic")]

@@ -7,7 +7,7 @@ using Tools.Assert;
 using Tools.Hash;
 
 
-namespace Base.ECC
+namespace Base.Keys.ECDSA
 {
     public static class ECDSA
     {
@@ -34,7 +34,7 @@ namespace Base.ECC
             var isSecondKey = (i >> 1) != 0;
 
             // 1.1 Let x = r + jn
-            var x = isSecondKey ? r.Addition(n) : r;
+            var x = isSecondKey ? r.Addition(n) : r.Clone();
             var R = curve.PointFromX(isYOdd, x);
 
             // 1.4 Check that nR is at infinity

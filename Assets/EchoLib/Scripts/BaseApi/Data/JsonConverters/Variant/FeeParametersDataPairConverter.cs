@@ -121,6 +121,14 @@ namespace Base.Data.Json
                 //    return WithdrawETHOperationFeeParametersData.Create(value.Last as JObject);
                 //case ChainTypes.FeeParameters.ApproveWithdrawETHOperation:
                 //    return ApproveWithdrawETHOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.ContractFundPoolOperation:
+                //    return ContractFundPoolOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.ContractWhitelistOperation:
+                //    return ContractWhitelistOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.SidechainIssueOperation:
+                //    return SidechainIssueOperationFeeParametersData.Create(value.Last as JObject);
+                //case ChainTypes.FeeParameters.SidechainBurnOperation:
+                //    return SidechainBurnOperationFeeParametersData.Create(value.Last as JObject);
                 default:
                     CustomTools.Console.DebugError("Unexpected fee parameters type:", type);
                     return null;

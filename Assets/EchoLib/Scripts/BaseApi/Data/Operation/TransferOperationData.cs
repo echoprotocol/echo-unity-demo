@@ -14,7 +14,6 @@ namespace Base.Data.Operations
         private const string FROM_FIELD_KEY = "from";
         private const string TO_FIELD_KEY = "to";
         private const string AMOUNT_FIELD_KEY = "amount";
-        private const string MEMO_FIELD_KEY = "memo";
         private const string EXTENSIONS_FIELD_KEY = "extensions";
 
 
@@ -22,7 +21,6 @@ namespace Base.Data.Operations
         public SpaceTypeId From { get; private set; }
         public SpaceTypeId To { get; private set; }
         public AssetData Amount { get; private set; }
-        public MemoData Memo { get; private set; }
         public object[] Extensions { get; private set; }
 
         public override ChainTypes.Operation Type => ChainTypes.Operation.Transfer;
@@ -39,7 +37,6 @@ namespace Base.Data.Operations
             From.ToBuffer(buffer);
             To.ToBuffer(buffer);
             Amount.ToBuffer(buffer);
-            buffer.WriteOptionalClass(Memo, (b, value) => value.ToBuffer(b));
             buffer.WriteArray(Extensions, (b, item) =>
             {
                 if (!item.IsNull())
@@ -57,7 +54,6 @@ namespace Base.Data.Operations
             builder.WriteKeyValuePair(FROM_FIELD_KEY, From);
             builder.WriteKeyValuePair(TO_FIELD_KEY, To);
             builder.WriteKeyValuePair(AMOUNT_FIELD_KEY, Amount);
-            builder.WriteOptionalClassKeyValuePair(MEMO_FIELD_KEY, Memo);
             builder.WriteKeyValuePair(EXTENSIONS_FIELD_KEY, Extensions);
             return builder.Build();
         }
@@ -70,7 +66,6 @@ namespace Base.Data.Operations
             instance.From = value.TryGetValue(FROM_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : SpaceTypeId.EMPTY;
             instance.To = value.TryGetValue(TO_FIELD_KEY, out token) ? token.ToObject<SpaceTypeId>() : SpaceTypeId.EMPTY;
             instance.Amount = value.TryGetValue(AMOUNT_FIELD_KEY, out token) ? token.ToObject<AssetData>() : AssetData.EMPTY;
-            instance.Memo = value.TryGetValue(MEMO_FIELD_KEY, out token) ? token.ToObject<MemoData>() : null; // optional
             instance.Extensions = value.TryGetValue(EXTENSIONS_FIELD_KEY, out token) ? token.ToObject<object[]>() : new object[0];
             return instance;
         }

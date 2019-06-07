@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using BigI;
+using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
 using Tools.Assert;
 
 
-namespace Base.ECC
+namespace Base.Keys.ECDSA
 {
-    public class ECSignature
+    public class ECSignature : System.IDisposable
     {
         public class Compact
         {
@@ -38,6 +39,12 @@ namespace Base.ECC
             this.s = s;
         }
 
+        public void Dispose()
+        {
+            r.Dispose();
+            s.Dispose();
+        }
+
         // Import operations
         public static Compact ParseCompact(byte[] buffer)
         {
@@ -52,8 +59,12 @@ namespace Base.ECC
             // Recovery param only
             i = (byte)(i & 3);
 
-            var r = BigInteger.FromBuffer(buffer.Slice(1, 33));
-            var s = BigInteger.FromBuffer(buffer.Slice(33));
+            var data = buffer.Slice(1, 33);
+            var r = BigInteger.FromBuffer(data);
+            data.Clear();
+            data = buffer.Slice(33);
+            var s = BigInteger.FromBuffer(data);
+            data.Clear();
 
             return new Compact(compressed, i, new ECSignature(r, s));
         }
@@ -89,7 +100,9 @@ namespace Base.ECC
             Assert.Equal(offset, buffer.Length, "Invalid DER encoding");
 
             var r = BigInteger.FromBuffer(rB);
+            rB.Clear();
             var s = BigInteger.FromBuffer(sB);
+            sB.Clear();
 
             Assert.Check(r.Sign >= 0, "R value is negative");
             Assert.Check(s.Sign >= 0, "S value is negative");
@@ -108,16 +121,20 @@ namespace Base.ECC
             sequence.Add(0x02);
             sequence.Add((byte)rBa.Length);
             sequence.AddRange(rBa);
+            rBa.Clear();
 
             // INTEGER
             sequence.Add(0x02);
             sequence.Add((byte)sBa.Length);
             sequence.AddRange(sBa);
+            sBa.Clear();
 
             // SEQUENCE
             sequence.InsertRange(0, new byte[] { 0x30, (byte)sequence.Count });
 
-            return sequence.ToArray();
+            var result = sequence.ToArray();
+            sequence.Clear();
+            return result;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Base.ECC;
-using Buffers;
+﻿using Buffers;
 using CustomTools.Extensions.Core;
 using Newtonsoft.Json;
 
@@ -8,8 +7,6 @@ namespace Base.Data.Accounts
 {
     public sealed class AccountOptionsData : SerializableObject, ISerializeToBuffer
     {
-        [JsonProperty("memo_key")]
-        public PublicKey MemoKey { get; private set; }
         [JsonProperty("voting_account")]
         public SpaceTypeId VotingAccount { get; private set; }
         [JsonProperty("delegating_account")]
@@ -21,12 +18,9 @@ namespace Base.Data.Accounts
         [JsonProperty("extensions")]
         public object[] Extensions { get; private set; }
 
-        public bool IsEquelKey(KeyPair key) => key.Equals(MemoKey);
-
         public ByteBuffer ToBuffer(ByteBuffer buffer = null)
         {
             buffer = buffer ?? new ByteBuffer(ByteBuffer.LITTLE_ENDING);
-            MemoKey.ToBuffer(buffer);
             VotingAccount.ToBuffer(buffer);
             DelegatingAccount.ToBuffer(buffer);
             buffer.WriteUInt16(NumCommittee);
