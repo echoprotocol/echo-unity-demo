@@ -19,7 +19,7 @@ namespace Base.Data.Operations
         private const string NAME_FIELD_KEY = "name";
         private const string ACTIVE_FIELD_KEY = "active";
         private const string OPTIONS_FIELD_KEY = "options";
-        private const string ED_KEY_FIELD_KEY = "ed_key";
+        private const string ECHORAND_KEY_FIELD_KEY = "echorand_key";
         private const string EXTENSIONS_FIELD_KEY = "extensions";
 
 
@@ -29,7 +29,7 @@ namespace Base.Data.Operations
         public ushort ReferrerPercent { get; private set; }
         public string Name { get; private set; }
         public AuthorityData Active { get; private set; }
-        public PublicKey EdKey { get; private set; }
+        public PublicKey EchorandKey { get; private set; }
         public AccountOptionsData Options { get; private set; }
         public object Extensions { get; private set; }
 
@@ -52,7 +52,7 @@ namespace Base.Data.Operations
                     }
                     return false;
                 case AuthorityClassification.Echorand:
-                    return key.Equals(EdKey);
+                    return key.Equals(EchorandKey);
                 default:
                     return false;
             }
@@ -67,7 +67,7 @@ namespace Base.Data.Operations
             buffer.WriteUInt16(ReferrerPercent);
             buffer.WriteString(Name);
             Active.ToBuffer(buffer);
-            EdKey.ToBuffer(buffer);
+            EchorandKey.ToBuffer(buffer);
             Options.ToBuffer(buffer);
             //Extensions.ToBuffer(buffer); // todo
             return buffer;
@@ -83,7 +83,7 @@ namespace Base.Data.Operations
                 { NAME_FIELD_KEY,               Name },
                 { ACTIVE_FIELD_KEY,             Active },
                 { OPTIONS_FIELD_KEY,            Options },
-                { ED_KEY_FIELD_KEY,             EdKey },
+                { ECHORAND_KEY_FIELD_KEY,       EchorandKey },
                 { EXTENSIONS_FIELD_KEY,         Extensions }
             }).Build();
         }
@@ -98,7 +98,7 @@ namespace Base.Data.Operations
             instance.ReferrerPercent = value.TryGetValue(REFERRER_PERCENT_FIELD_KEY, out token) ? token.ToObject<ushort>() : ushort.MinValue;
             instance.Name = value.TryGetValue(NAME_FIELD_KEY, out token) ? token.ToObject<string>() : string.Empty;
             instance.Active = value.TryGetValue(ACTIVE_FIELD_KEY, out token) ? token.ToObject<AuthorityData>() : null;
-            instance.EdKey = value.TryGetValue(ACTIVE_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
+            instance.EchorandKey = value.TryGetValue(ECHORAND_KEY_FIELD_KEY, out token) ? token.ToObject<PublicKey>() : null;
             instance.Options = value.TryGetValue(OPTIONS_FIELD_KEY, out token) ? token.ToObject<AccountOptionsData>() : null;
             instance.Extensions = value.TryGetValue(EXTENSIONS_FIELD_KEY, out token) ? token.ToObject<object>() : new object();
             return instance;
