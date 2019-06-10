@@ -210,7 +210,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
         ChainConfig.SetChainId(newChainId);
     }
 
-    public IPromise CallContract(uint contractId, uint accountId, string bytecode, uint feeAssetId = 0, long amount = 0, Action<TransactionConfirmationData> resultCallback = null)
+    public IPromise CallContract(uint contractId, uint accountId, string bytecode, string password, uint feeAssetId = 0, long amount = 0, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {
@@ -223,10 +223,10 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
             Code = bytecode.OrEmpty(),
             Callee = SpaceTypeId.CreateOne(SpaceType.Contract, contractId)
         };
-        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Value.Asset, resultCallback);
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), password, operation.Value.Asset, resultCallback);
     }
 
-    public IPromise DeployContract(uint accountId, string bytecode, uint feeAssetId = 0, Action<TransactionConfirmationData> resultCallback = null)
+    public IPromise DeployContract(uint accountId, string bytecode, string password, uint feeAssetId = 0, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!Authorization.IsAuthorized)
         {
@@ -239,6 +239,6 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
             Code = bytecode.OrEmpty(),
             Callee = null
         };
-        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), operation.Value.Asset, resultCallback);
+        return Authorization.ProcessTransaction(new TransactionBuilder().AddOperation(operation), password, operation.Value.Asset, resultCallback);
     }
 }

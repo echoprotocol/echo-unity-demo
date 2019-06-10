@@ -60,7 +60,7 @@ public class UIManager : MonoBehaviour
     private void DeployContract()
     {
         deployButton.interactable = false;
-        EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, 0, res =>
+        EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, "", 0, res =>
         {
             deployButton.interactable = true;
             CustomTools.Console.Warning(res);
@@ -103,7 +103,7 @@ public class UIManager : MonoBehaviour
         var bytecode = "7490d445"; // method
         Parser.SerializeInts(ref bytecode, RegexToInts(regexInputField.text));
         Debug.Log(bytecode);
-        EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, res =>
+        EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, "", 0, 0, res =>
         {
             calculateButton.interactable = true;
             CustomTools.Console.Warning(res);

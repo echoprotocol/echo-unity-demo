@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Base.Data;
 using Base.Data.Accounts;
 using Base.Data.Balances;
@@ -18,21 +19,19 @@ public sealed class AuthorizationContainer
 {
     public enum AuthorizationResult
     {
-        Ok,
-        Failed,
-        UserNotFound,
-        Error
+        Ok,             // authorized
+        Failed,         // username password pair is't correct
+        UserNotFound,   // user nor found
+        Error           // some error
     }
 
 
     public sealed class AuthorizationData
     {
-        public Keys Keys { get; private set; }
         public UserNameFullAccountDataPair UserNameData { get; private set; }
 
-        public AuthorizationData(Keys keys, UserNameFullAccountDataPair userNameData)
+        public AuthorizationData(UserNameFullAccountDataPair userNameData)
         {
-            Keys = keys;
             UserNameData = userNameData;
         }
 
@@ -59,6 +58,22 @@ public sealed class AuthorizationContainer
                     }
                 }
             }
+        }
+
+        public async Task<bool> CheckAuthorizationAsync(string password)
+        {
+            var keys = Keys.FromSeed(UserNameData.Key, password);
+            var result = await keys.CheckAuthorizationAsync(UserNameData.Value.Account);
+            keys.Dispose();
+            return result != null;
+        }
+
+        public bool CheckAuthorizationSync(string password)
+        {
+            var keys = Keys.FromSeed(UserNameData.Key, password);
+            var result = keys.CheckAuthorizationSync(UserNameData.Value.Account);
+            keys.Dispose();
+            return result != null;
         }
     }
 
@@ -87,14 +102,14 @@ public sealed class AuthorizationContainer
         {
             try
             {
-                var validKeys = await Keys.FromSeed(dataPair.Key, password).CheckAuthorizationAsync(dataPair.Value.Account);
-                if (!validKeys.IsNull())
+                var authData = new AuthorizationData(dataPair);
+                if (await authData.CheckAuthorizationAsync(password))
                 {
                     if (!Current.IsNull())
                     {
                         Repository.OnGetObject -= Current.UpdateAccountData;
                     }
-                    Current = new AuthorizationData(validKeys, dataPair);
+                    Current = authData;
                     Repository.OnGetObject += Current.UpdateAccountData;
                     resolve(AuthorizationResult.Ok);
                 }
@@ -143,41 +158,73 @@ public sealed class AuthorizationContainer
         Current = null;
     }
 
-    public IPromise ProcessTransaction(TransactionBuilder builder, SpaceTypeId asset = null, Action<TransactionConfirmationData> resultCallback = null)
+    public IPromise ProcessTransaction(TransactionBuilder builder, string password, SpaceTypeId asset = null, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!IsAuthorized)
         {
             return Promise.Rejected(new InvalidOperationException("Isn't Authorized!"));
         }
-        var existPublicKeys = Current.Keys.PublicKeys;
-        return new Promise((resolve, reject) => TransactionBuilder.SetRequiredFees(builder, asset).Then(b => b.GetPotentialSignatures().Then(potentialPublicKeys =>
+        return new Promise(async (resolve, reject) =>
         {
-            var availableKeys = new List<IPublicKey>();
-            foreach (var existPublicKey in existPublicKeys)
+            var keys = Keys.FromSeed(Current.UserNameData.Key, password);
+
+            void Resolve()
             {
-                if (!availableKeys.Contains(existPublicKey) && Array.IndexOf(potentialPublicKeys, existPublicKey) != -1)
+                keys.Dispose();
+                resolve();
+            };
+
+            void Reject(Exception ex)
+            {
+                keys.Dispose();
+                reject(ex);
+            };
+
+            try
+            {
+                var validKeys = await keys.CheckAuthorizationAsync(Current.UserNameData.Value.Account);
+                if (!validKeys.IsNull())
                 {
-                    availableKeys.Add(existPublicKey);
+                    var existPublicKeys = validKeys.PublicKeys;
+                    TransactionBuilder.SetRequiredFees(builder, asset).Then(b => b.GetPotentialSignatures().Then(potentialPublicKeys =>
+                    {
+                        var availableKeys = new List<IPublicKey>();
+                        foreach (var existPublicKey in existPublicKeys)
+                        {
+                            if (!availableKeys.Contains(existPublicKey) && Array.IndexOf(potentialPublicKeys, existPublicKey) != -1)
+                            {
+                                availableKeys.Add(existPublicKey);
+                            }
+                        }
+                        if (availableKeys.IsNullOrEmpty())
+                        {
+                            Reject(new InvalidOperationException("Available key doesn't find!"));
+                        }
+                        return b.GetRequiredSignatures(availableKeys.ToArray()).Then(requiredPublicKeys =>
+                        {
+                            if (requiredPublicKeys.IsNullOrEmpty())
+                            {
+                                Reject(new InvalidOperationException("Required key doesn't find!"));
+                            }
+                            if (!IsAuthorized)
+                            {
+                                Reject(new InvalidOperationException("Isn't Authorized!"));
+                            }
+                            var selectedPublicKey = requiredPublicKeys.First(); // select key
+                            b.AddSigner(new KeyPair(validKeys[selectedPublicKey])).Broadcast(resultCallback).Then(Resolve).Catch(Reject);
+                        }).Catch(Reject);
+                    }).Catch(Reject)).Catch(Reject);
+                }
+                else
+                {
+                    Reject(new InvalidOperationException("Isn't Authorized!"));
                 }
             }
-            if (availableKeys.IsNullOrEmpty())
+            catch (Exception ex)
             {
-                reject(new InvalidOperationException("Available key doesn't find!"));
+                Reject(ex);
             }
-            return b.GetRequiredSignatures(availableKeys.ToArray()).Then(requiredPublicKeys =>
-            {
-                if (requiredPublicKeys.IsNullOrEmpty())
-                {
-                    reject(new InvalidOperationException("Required key doesn't find!"));
-                }
-                if (!IsAuthorized)
-                {
-                    reject(new InvalidOperationException("Isn't Authorized!"));
-                }
-                var selectedPublicKey = requiredPublicKeys.First(); // select key
-                b.AddSigner(new KeyPair(Current.Keys[selectedPublicKey])).Broadcast(resultCallback).Then(resolve).Catch(reject);
-            }).Catch(reject);
-        }).Catch(reject)).Catch(reject));
+        });
     }
 
     public bool IsAuthorized => !Current.IsNull();

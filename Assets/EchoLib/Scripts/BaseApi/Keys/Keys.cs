@@ -65,7 +65,7 @@ namespace Base.Keys
             }
         }
 
-        private Keys CheckAuthorization(AccountObject account)
+        public Keys CheckAuthorizationSync(AccountObject account)
         {
             if (account == null)
             {
@@ -84,7 +84,7 @@ namespace Base.Keys
 
         public async Task<Keys> CheckAuthorizationAsync(AccountObject account)
         {
-            return await Task.Run(() => CheckAuthorization(account));
+            return await Task.Run(() => CheckAuthorizationSync(account));
         }
 
         public void Dispose()
