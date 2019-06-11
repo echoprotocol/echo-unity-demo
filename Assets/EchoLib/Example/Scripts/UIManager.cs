@@ -1,5 +1,7 @@
 ﻿using Base.Data;
+using Base.Keys;
 using CustomTools.Extensions.Core.Array;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +9,22 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    private class PassContainer : IPass
+    {
+        private string password;
+
+
+        public PassContainer(string password)
+        {
+            this.password = password;
+        }
+
+        public void Dispose() => password = null;
+
+        public byte[] Get() => Encoding.UTF8.GetBytes(password.Trim());
+    }
+
+
     [SerializeField] private GameObject login;
     [SerializeField] private GameObject work;
     [SerializeField] private Button loginButton;
@@ -40,7 +58,7 @@ public class UIManager : MonoBehaviour
     private void Login()
     {
         loginButton.interactable = false;
-        EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, passwordInputField.text).Then(result =>
+        EchoApiManager.Instance.Authorization.AuthorizationBy(loginInputField.text, new PassContainer(passwordInputField.text)).Then(result =>
         {
             loginButton.interactable = true;
             if (result == AuthorizationContainer.AuthorizationResult.Ok)
@@ -60,7 +78,7 @@ public class UIManager : MonoBehaviour
     private void DeployContract()
     {
         deployButton.interactable = false;
-        EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, "", 0, res =>
+        EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, 0, res =>
         {
             deployButton.interactable = true;
             CustomTools.Console.Warning(res);
@@ -103,7 +121,7 @@ public class UIManager : MonoBehaviour
         var bytecode = "7490d445"; // method
         Parser.SerializeInts(ref bytecode, RegexToInts(regexInputField.text));
         Debug.Log(bytecode);
-        EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, "", 0, 0, res =>
+        EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, res =>
         {
             calculateButton.interactable = true;
             CustomTools.Console.Warning(res);

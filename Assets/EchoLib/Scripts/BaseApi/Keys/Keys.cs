@@ -9,9 +9,6 @@ namespace Base.Keys
 {
     public class Keys : IDisposable
     {
-        private const string ACTIVE_KEY = "active";
-        private const string ECHORAND_KEY = "echorand";
-
         private readonly Dictionary<AuthorityClassification, KeyPair> keys = new Dictionary<AuthorityClassification, KeyPair>();
 
 
@@ -22,13 +19,13 @@ namespace Base.Keys
             this.keys = keys;
         }
 
-        public static Keys FromSeed(string userName, string password)
+        public static Keys FromSeed(string userName, IPass password)
         {
             var keys = new Dictionary<AuthorityClassification, KeyPair>();
             var roles = new[] { AuthorityClassification.Active, AuthorityClassification.Echorand };
             foreach (var role in roles)
             {
-                keys[role] = new KeyPair(GetRole(role), userName, password, EDDSA.KeyFactory.Create());
+                keys[role] = new KeyPair(role, userName, password, EDDSA.KeyFactory.Create());
             }
             return new Keys(keys);
         }
@@ -94,19 +91,6 @@ namespace Base.Keys
                 pair.Value.Dispose();
             }
             keys.Clear();
-        }
-
-        private static string GetRole(AuthorityClassification role)
-        {
-            if (role.Equals(AuthorityClassification.Active))
-            {
-                return ACTIVE_KEY;
-            }
-            if (role.Equals(AuthorityClassification.Echorand))
-            {
-                return ECHORAND_KEY;
-            }
-            return string.Empty;
         }
     }
 }

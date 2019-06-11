@@ -26,12 +26,16 @@ public sealed class AuthorizationContainer
     }
 
 
-    public sealed class AuthorizationData
+    public sealed class AuthorizationData : IDisposable
     {
+        private readonly IPass password;
+
+
         public UserNameFullAccountDataPair UserNameData { get; private set; }
 
-        public AuthorizationData(UserNameFullAccountDataPair userNameData)
+        public AuthorizationData(UserNameFullAccountDataPair userNameData, IPass password)
         {
+            this.password = password;
             UserNameData = userNameData;
         }
 
@@ -60,21 +64,25 @@ public sealed class AuthorizationContainer
             }
         }
 
-        public async Task<bool> CheckAuthorizationAsync(string password)
+        public async Task<bool> CheckAuthorizationAsync()
         {
-            var keys = Keys.FromSeed(UserNameData.Key, password);
+            var keys = GetKeys();
             var result = await keys.CheckAuthorizationAsync(UserNameData.Value.Account);
             keys.Dispose();
             return result != null;
         }
 
-        public bool CheckAuthorizationSync(string password)
+        public bool CheckAuthorizationSync()
         {
-            var keys = Keys.FromSeed(UserNameData.Key, password);
+            var keys = GetKeys();
             var result = keys.CheckAuthorizationSync(UserNameData.Value.Account);
             keys.Dispose();
             return result != null;
         }
+
+        public void Dispose() => password?.Dispose();
+
+        public Keys GetKeys() => Keys.FromSeed(UserNameData.Key, password);
     }
 
 
@@ -96,14 +104,14 @@ public sealed class AuthorizationContainer
         }
     }
 
-    private IPromise<AuthorizationResult> AuthorizationBy(UserNameFullAccountDataPair dataPair, string password)
+    private IPromise<AuthorizationResult> AuthorizationBy(UserNameFullAccountDataPair dataPair, IPass password)
     {
         return new Promise<AuthorizationResult>(async (resolve, reject) =>
         {
             try
             {
-                var authData = new AuthorizationData(dataPair);
-                if (await authData.CheckAuthorizationAsync(password))
+                var authData = new AuthorizationData(dataPair, password);
+                if (await authData.CheckAuthorizationAsync())
                 {
                     if (!Current.IsNull())
                     {
@@ -125,7 +133,7 @@ public sealed class AuthorizationContainer
         });
     }
 
-    private IPromise<AuthorizationResult> AuthorizationBy(uint id, string password)
+    private IPromise<AuthorizationResult> AuthorizationBy(uint id, IPass password)
     {
         return EchoApiManager.Instance.Database.GetFullAccount(SpaceTypeId.ToString(SpaceType.Account, id), true).Then(result =>
         {
@@ -137,7 +145,7 @@ public sealed class AuthorizationContainer
         });
     }
 
-    public IPromise<AuthorizationResult> AuthorizationBy(string userName, string password)
+    public IPromise<AuthorizationResult> AuthorizationBy(string userName, IPass password)
     {
         return EchoApiManager.Instance.Database.GetFullAccount(userName.Trim(), true).Then(result =>
         {
@@ -155,10 +163,11 @@ public sealed class AuthorizationContainer
         {
             Repository.OnGetObject -= Current.UpdateAccountData;
         }
+        Current?.Dispose();
         Current = null;
     }
 
-    public IPromise ProcessTransaction(TransactionBuilder builder, string password, SpaceTypeId asset = null, Action<TransactionConfirmationData> resultCallback = null)
+    public IPromise ProcessTransaction(TransactionBuilder builder, SpaceTypeId asset = null, Action<TransactionConfirmationData> resultCallback = null)
     {
         if (!IsAuthorized)
         {
@@ -166,23 +175,23 @@ public sealed class AuthorizationContainer
         }
         return new Promise(async (resolve, reject) =>
         {
-            var keys = Keys.FromSeed(Current.UserNameData.Key, password);
+            Keys keys = null;
 
             void Resolve()
             {
-                keys.Dispose();
+                keys?.Dispose();
                 resolve();
-            };
+            }
 
             void Reject(Exception ex)
             {
-                keys.Dispose();
+                keys?.Dispose();
                 reject(ex);
-            };
+            }
 
             try
             {
-                var validKeys = await keys.CheckAuthorizationAsync(Current.UserNameData.Value.Account);
+                var validKeys = await (keys = Current.GetKeys()).CheckAuthorizationAsync(Current.UserNameData.Value.Account);
                 if (!validKeys.IsNull())
                 {
                     var existPublicKeys = validKeys.PublicKeys;
