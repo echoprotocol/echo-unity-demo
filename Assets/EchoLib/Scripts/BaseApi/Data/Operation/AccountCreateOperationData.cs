@@ -82,8 +82,8 @@ namespace Base.Data.Operations
                 { REFERRER_PERCENT_FIELD_KEY,   ReferrerPercent },
                 { NAME_FIELD_KEY,               Name },
                 { ACTIVE_FIELD_KEY,             Active },
-                { OPTIONS_FIELD_KEY,            Options },
                 { ECHORAND_KEY_FIELD_KEY,       EchorandKey },
+                { OPTIONS_FIELD_KEY,            Options },
                 { EXTENSIONS_FIELD_KEY,         Extensions }
             }).Build();
         }

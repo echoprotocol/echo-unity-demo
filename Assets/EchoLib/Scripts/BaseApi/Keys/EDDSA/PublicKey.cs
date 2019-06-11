@@ -68,14 +68,8 @@ namespace Base.Keys.EDDSA
                 addressPrefix = ChainConfig.AddressPrefix;
             }
             var buffer = ToBuffer();
-            var hash = RIPEMD160.Create().HashAndDispose(buffer);
-            var checksum = hash.Slice(0, 4);
-            hash.Clear();
-            var key = buffer.Concat(checksum);
+            var result = addressPrefix + Base58.Encode(buffer);
             buffer.Clear();
-            checksum.Clear();
-            var result = addressPrefix + Base58.Encode(key);
-            key.Clear();
             return result;
         }
 
@@ -93,19 +87,7 @@ namespace Base.Keys.EDDSA
                     string.Format("Expecting key to begin with {0}, instead got {1}", addressPrefix, prefix)
                 );
                 publicKey = publicKey.Substring(addressPrefix.Length);
-                var key = Base58.Decode(publicKey);
-                var checksum = key.Slice(key.Length - 4);
-                var buffer = key.Slice(0, key.Length - 4);
-                key.Clear();
-                var hash = RIPEMD160.Create().HashAndDispose(buffer);
-                var newChecksum = hash.Slice(0, 4);
-                hash.Clear();
-                if (!checksum.DeepEqual(newChecksum))
-                {
-                    throw new InvalidOperationException("Checksum did not match");
-                }
-                checksum.Clear();
-                newChecksum.Clear();
+                var buffer = Base58.Decode(publicKey);
                 var result = FromBuffer(buffer);
                 buffer.Clear();
                 return result;
@@ -114,50 +96,6 @@ namespace Base.Keys.EDDSA
             {
                 return null;
             }
-        }
-
-        public string ToAddressString(string addressPrefix = null)
-        {
-            if (addressPrefix.IsNull())
-            {
-                addressPrefix = ChainConfig.AddressPrefix;
-            }
-            var buffer = ToBuffer();
-            var hash = SHA512.Create().HashAndDispose(buffer);
-            buffer.Clear();
-            var firstChecksum = RIPEMD160.Create().HashAndDispose(hash);
-            hash.Clear();
-            var secondChecksum = RIPEMD160.Create().HashAndDispose(firstChecksum);
-            var checksum = secondChecksum.Slice(0, 4);
-            secondChecksum.Clear();
-            buffer = firstChecksum.Concat(checksum);
-            firstChecksum.Clear();
-            checksum.Clear();
-            var result = addressPrefix + Base58.Encode(buffer);
-            buffer.Clear();
-            return result;
-        }
-
-        public string ToPtsAddy()
-        {
-            var buffer = ToBuffer();
-            var firstHash = SHA256.Create().HashAndDispose(buffer);
-            buffer.Clear();
-            var secondHash = RIPEMD160.Create().HashAndDispose(firstHash);
-            firstHash.Clear();
-            var hash = new byte[] { 0x38 }.Concat(secondHash); // version 56(decimal)
-            secondHash.Clear();
-            var firstChecksum = SHA256.Create().HashAndDispose(hash);
-            var secondChecksum = SHA256.Create().HashAndDispose(firstChecksum);
-            firstChecksum.Clear();
-            var checksum = secondChecksum.Slice(0, 4);
-            secondChecksum.Clear();
-            buffer = hash.Concat(checksum);
-            checksum.Clear();
-            hash.Clear();
-            var result = Base58.Encode(buffer);
-            buffer.Clear();
-            return result;
         }
 
         public static IPublicKey FromHex(string hexString)
@@ -184,21 +122,30 @@ namespace Base.Keys.EDDSA
             {
                 return true;
             }
-            if (!(obj is IPublicKey))
+            if (obj is PublicKey)
             {
-                return false;
+                return Equals((PublicKey)obj);
             }
-            return Equals((IPublicKey)obj);
+            return false;
         }
 
         public bool Equals(IPublicKey other) => ToString().Equals(other.ToNullableString());
 
         public int CompareTo(IPublicKey other)
         {
-            return string.Compare(ToAddressString(), other.ToAddressString(), StringComparison.Ordinal);
+            if (other is PublicKey)
+            {
+                return CompareTo((PublicKey)other);
+            }
+            throw new ArgumentException("Can't compare different public key types");
         }
 
-        public static int Compare(IPublicKey a, IPublicKey b) => a.CompareTo(b);
+        private int CompareTo(PublicKey other)
+        {
+            return string.Compare(ToPublicKeyString(), other.ToPublicKeyString(), StringComparison.Ordinal);
+        }
+
+        public static int Compare(PublicKey a, PublicKey b) => a.CompareTo(b);
 
         public ByteBuffer ToBuffer(ByteBuffer buffer = null)
         {

@@ -218,21 +218,30 @@ namespace Base.Keys.ECDSA
             {
                 return true;
             }
-            if (!(obj is PublicKey))
+            if (obj is PublicKey)
             {
-                return false;
+                return Equals((PublicKey)obj);
             }
-            return Equals((IPublicKey)obj);
+            return false;
         }
 
         public bool Equals(IPublicKey other) => ToString().Equals(other.ToNullableString());
 
         public int CompareTo(IPublicKey other)
         {
+            if (other is PublicKey)
+            {
+                return CompareTo((PublicKey)other);
+            }
+            throw new ArgumentException("Can't compare different public key types");
+        }
+
+        private int CompareTo(PublicKey other)
+        {
             return string.Compare(ToAddressString(), other.ToAddressString(), StringComparison.Ordinal);
         }
 
-        public static int Compare(IPublicKey a, IPublicKey b) => a.CompareTo(b);
+        public static int Compare(PublicKey a, PublicKey b) => a.CompareTo(b);
 
         public ByteBuffer ToBuffer(ByteBuffer buffer = null)
         {
