@@ -62,26 +62,24 @@ namespace Base.Keys
             }
         }
 
-        public Keys CheckAuthorizationSync(AccountObject account)
+        public async Task<Keys> GetValidatedKeysFor(AccountObject account)
         {
-            if (account == null)
+            return await Task.Run(() =>
             {
-                return null;
-            }
-            var result = new Dictionary<AuthorityClassification, KeyPair>();
-            foreach (var pair in keys)
-            {
-                if (account.IsEquelKey(pair.Key, pair.Value))
+                if (account == null)
                 {
-                    result[pair.Key] = pair.Value;
+                    return null;
                 }
-            }
-            return (result.Count > 0) ? new Keys(result) : null;
-        }
-
-        public async Task<Keys> CheckAuthorizationAsync(AccountObject account)
-        {
-            return await Task.Run(() => CheckAuthorizationSync(account));
+                var result = new Dictionary<AuthorityClassification, KeyPair>();
+                foreach (var pair in keys)
+                {
+                    if (account.IsEquelKey(pair.Key, pair.Value))
+                    {
+                        result[pair.Key] = pair.Value;
+                    }
+                }
+                return (result.Count > 0) ? new Keys(result) : null;
+            });
         }
 
         public void Dispose()
