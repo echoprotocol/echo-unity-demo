@@ -1127,7 +1127,7 @@ namespace BigI
         private byte[] ToByteArrayUnsigned()
         {
             var byteArray = ToByteArray();
-            return byteArray[0] == 0 ? byteArray.Slice(1) : byteArray;
+            return ((byteArray[0] == 0) && (byteArray.Length > 1)) ? byteArray.Slice(1) : byteArray;
         }
 
         public byte[] ToBuffer(int size)
