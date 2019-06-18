@@ -25,12 +25,21 @@ namespace Base.Storage
 {
     public static class Repository
     {
+        private const int BLOCKS_LIMIT = 100;
+
+        public static event Action<uint, SignedBlockData> OnGetBlock;
         public static event Action<IdObject> OnGetObject;
         public static event Action<string> OnGetString;
 
+        private readonly static Dictionary<uint, SignedBlockData> blocks = new Dictionary<uint, SignedBlockData>();
         private readonly static Dictionary<SpaceType, IdObjectDictionary> root = new Dictionary<SpaceType, IdObjectDictionary>();
         private readonly static object rootLocler = new object();
+        private readonly static object blocksLocler = new object();
 
+        private static DatabaseApi databaseApi;
+
+
+        private static void GetBlock(uint blockNumber, SignedBlockData block) => OnGetBlock.SafeInvoke(blockNumber, block);
 
         private static void GetObject(IdObject idObject) => OnGetObject.SafeInvoke(idObject);
 
@@ -51,7 +60,16 @@ namespace Base.Storage
                     {
                         continue;
                     }
-                    Add(idObject);
+                    if (idObject.SpaceType == SpaceType.DynamicGlobalProperties)
+                    {
+                        var blockNumber = (idObject as DynamicGlobalPropertiesObject).HeadBlockNumber;
+                        databaseApi?.GetBlock(blockNumber).Then(block =>
+                        {
+                            AddBlock(blockNumber, block);
+                            GetBlock(blockNumber, block);
+                        });
+                    }
+                    AddObject(idObject);
                     notifyObjectList.Add(idObject);
                     CustomTools.Console.DebugLog("Update object:", CustomTools.Console.LogGreenColor(idObject.SpaceType), idObject.Id, '\n', CustomTools.Console.LogWhiteColor(idObject));
                 }
@@ -70,13 +88,15 @@ namespace Base.Storage
             {
                 GetObject(newObject);
             }
+            notifyObjectList.Clear();
             foreach (var newString in notifyStringList)
             {
                 GetString(newString);
             }
+            notifyStringList.Clear();
         }
 
-        private static void Add(IdObject idObject)
+        private static void AddObject(IdObject idObject)
         {
             lock (rootLocler)
             {
@@ -84,22 +104,40 @@ namespace Base.Storage
             }
         }
 
-        private static IPromise AddInPromise(IdObject idObject)
+        private static void AddBlock(uint blockNumber, SignedBlockData block)
         {
-            Add(idObject);
+            lock (blocksLocler)
+            {
+                if (blocks.Count > BLOCKS_LIMIT)
+                {
+                    blocks.Clear();
+                }
+                blocks[blockNumber] = block;
+            }
+        }
+
+        private static IPromise AddObjectInPromise(IdObject idObject)
+        {
+            AddObject(idObject);
             return Promise.Resolved();
         }
 
         private static IPromise Init(DatabaseApi api)
         {
             return Promise.All(
-                api.GetDynamicGlobalProperties().Then(AddInPromise),
-                api.GetGlobalProperties().Then(AddInPromise),
-                api.GetAsset().Then(AddInPromise)
+                api.GetDynamicGlobalProperties().Then(AddObjectInPromise),
+                api.GetGlobalProperties().Then(AddObjectInPromise),
+                api.GetAsset().Then(AddObjectInPromise)
             );
         }
 
         public static IPromise SubscribeToNotice(DatabaseApi api) => api.SubscribeNotice(ChangeNotifyAsync).Then(() => Init(api));
+
+        public static IPromise SubscribeToDynamicGlobalProperties(DatabaseApi api)
+        {
+            databaseApi = api;
+            return api.SubscribeToDynamicGlobalProperties().Then(() => Init(api));
+        }
 
         public static bool IsExist(SpaceTypeId spaceTypeId)
         {
@@ -120,7 +158,7 @@ namespace Base.Storage
             }
             return getter.IsNull() ? Promise<T>.Resolved(null) : getter.Invoke().Then(idObject =>
             {
-                Add(idObject);
+                AddObjectInPromise(idObject);
                 return Promise<T>.Resolved(idObject);
             });
         }

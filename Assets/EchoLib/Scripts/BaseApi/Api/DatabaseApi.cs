@@ -111,7 +111,7 @@ namespace Base.Api.Database
             GetGlobalProperties().Then(onSuccess).Catch(onFailed);
         }
 
-        public IPromise<SignedBlockData> GetBlock(int blockNumber)
+        public IPromise<SignedBlockData> GetBlock(uint blockNumber)
         {
             if (IsInitialized)
             {
@@ -132,7 +132,7 @@ namespace Base.Api.Database
             return Init().Then(api => api.GetBlock(blockNumber));
         }
 
-        public void GetBlock(int blockNumber, Action<SignedBlockData> onSuccess, Action<Exception> onFailed)
+        public void GetBlock(uint blockNumber, Action<SignedBlockData> onSuccess, Action<Exception> onFailed)
         {
             GetBlock(blockNumber).Then(onSuccess).Catch(onFailed);
         }
@@ -384,17 +384,28 @@ namespace Base.Api.Database
             return Init().Then(api => api.SubscribeNotice(subscribeResultCallback));
         }
 
-//        public IPromise SubscribeContracts(uint[] contractIds) // todo
-//        {
-//            if (IsInitialized)
-//            {
-//                return new Promise((resolve, reject) =>
-//                {
-//#if ECHO_DEBUG
-//                    var debug = true;
-//#else
-//                    var debug = false;
-//#endif
+        public IPromise SubscribeToDynamicGlobalProperties()
+        {
+            return GetDynamicGlobalProperties().Then(properties => GetObject<DynamicGlobalPropertiesObject>(properties.Id).Then(result => Promise.Resolved()));
+        }
+
+
+
+
+
+
+
+        //        public IPromise SubscribeContracts(uint[] contractIds) // todo
+        //        {
+        //            if (IsInitialized)
+        //            {
+        //                return new Promise((resolve, reject) =>
+        //                {
+        //#if ECHO_DEBUG
+        //                    var debug = true;
+        //#else
+        //                    var debug = false;
+        //#endif
         //            var requestId = GenerateNewId();
         //            var methodName = "subscribe_contracts";
         //            var title = methodName + " " + requestId;

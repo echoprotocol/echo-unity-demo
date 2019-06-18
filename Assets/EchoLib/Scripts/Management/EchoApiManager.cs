@@ -133,7 +133,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
                     NetworkBroadcast.Init().Then(NetworkBroadcastApiInitialized),
                     History.Init().Then(HistoryApiInitialized),
                     Registration.Init().Then(RegistrationApiInitialized)
-                ).Then((Action)InitializeDone).Catch(ex =>
+                ).Then(InitializeDone).Catch(ex =>
                 {
                     CustomTools.Console.DebugError("EchoApiManager class", CustomTools.Console.LogRedColor(ex.Message), "Initialize all api");
                 });
@@ -147,11 +147,11 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
 
     private IPromise DatabaseApiInitialized(DatabaseApi api)
     {
-        return api.GetChainId().Then((Action<string>)SetChainId).Then(result => Repository.SubscribeToNotice(api).Then(() =>
+        return api.GetChainId().Then(SetChainId).Then(result => Repository.SubscribeToNotice(api).Then(() => Repository.SubscribeToDynamicGlobalProperties(api).Then(() =>
         {
             OnDatabaseApiInitialized.SafeInvoke(api);
             return Promise.Resolved();
-        }));
+        })));
     }
 
     private IPromise NetworkBroadcastApiInitialized(NetworkBroadcastApi api)
