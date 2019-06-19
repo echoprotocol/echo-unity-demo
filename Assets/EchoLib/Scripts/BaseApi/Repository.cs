@@ -136,7 +136,7 @@ namespace Base.Storage
         public static IPromise SubscribeToDynamicGlobalProperties(DatabaseApi api)
         {
             databaseApi = api;
-            return api.SubscribeToDynamicGlobalProperties().Then(() => Init(api));
+            return api.SubscribeToDynamicGlobalProperties();
         }
 
         public static bool IsExist(SpaceTypeId spaceTypeId)

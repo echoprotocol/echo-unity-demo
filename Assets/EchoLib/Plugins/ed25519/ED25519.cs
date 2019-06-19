@@ -21,6 +21,16 @@ namespace ED25519REF10
         [DllImport("ed25519")] private static extern void ed25519_sign(byte[] sig, byte[] msg, long msglen, byte[] pk, byte[] sk);
         [DllImport("ed25519")] private static extern int ed25519_verify(byte[] sig, byte[] msg, long msglen, byte[] pk);
 
+#elif UNITY_IOS
+
+        [DllImport("__Internal")] private static extern int ed25519_create_keypair(byte[] sk, byte[] pk);
+        [DllImport("__Internal")] private static extern void ed25519_derive_public_key(byte[] sk, byte[] pk);
+        [DllImport("__Internal")] private static extern void ed25519_sign(byte[] sig, byte[] msg, long msglen, byte[] pk, byte[] sk);
+        [DllImport("__Internal")] private static extern int ed25519_verify(byte[] sig, byte[] msg, long msglen, byte[] pk);
+
+#elif UNITY_ANDROID
+
+
 #else
 
         private static int ed25519_create_keypair(byte[] sk, byte[] pk) { return 0; }
