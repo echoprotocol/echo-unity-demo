@@ -173,8 +173,7 @@
 		50EE32A922BA6B58000D88C1 = {
 			isa = PBXGroup;
 			children = (
-				50EE32BE22BA6B92000D88C1 /* Sources */,
-				50EE32B422BA6B58000D88C1 /* ed25519 */,
+				50EE32B422BA6B58000D88C1 /* Classes */,
 				50EE32B322BA6B58000D88C1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -187,13 +186,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		50EE32B422BA6B58000D88C1 /* ed25519 */ = {
+		50EE32B422BA6B58000D88C1 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				50EE32BE22BA6B92000D88C1 /* Sources */,
 				50EE32B522BA6B58000D88C1 /* ed25519.h */,
 				50EE32B622BA6B58000D88C1 /* ed25519.m */,
 			);
-			path = ed25519;
+			path = Classes;
 			sourceTree = "<group>";
 		};
 		50EE32BE22BA6B92000D88C1 /* Sources */ = {

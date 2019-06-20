@@ -14,7 +14,7 @@ namespace ED25519REF10
         private const int SIGNATURE_SIZE = 64;
 
 
-#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN
 
         [DllImport("ed25519")] private static extern int ed25519_create_keypair(byte[] sk, byte[] pk);
         [DllImport("ed25519")] private static extern void ed25519_derive_public_key(byte[] sk, byte[] pk);
