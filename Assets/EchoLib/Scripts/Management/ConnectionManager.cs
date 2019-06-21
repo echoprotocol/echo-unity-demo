@@ -91,7 +91,7 @@ public sealed class ConnectionManager : CustomTools.Singleton.SingletonMonoBehav
 
     public static bool IsConnected
     {
-        get { return IsServerAvaliable && (openConnection.ReadyState.Equals(WebSocketState.Connecting) || openConnection.ReadyState.Equals(WebSocketState.Open)); }
+        get { return IsServerAvaliable && (openConnection.ReadyState.Equals(WebSocketState.Connecting) || openConnection.ReadyState.Equals(WebSocketState.Open)) && openConnection.IsAlive; }
     }
 
     public static bool IsServerAvaliable => !openConnection.IsNull() && lastServerAvaliableFlag;

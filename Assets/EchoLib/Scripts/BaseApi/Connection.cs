@@ -19,6 +19,7 @@ namespace Base
 
         private LockedQueue<Request> sendingQueue;
         private LockedQueue<Response> receivedQueue;
+        private bool pinging;
         private Uri uri;
         private WebSocket webSocket;
         private CallbackControl callbackManager;
@@ -29,6 +30,8 @@ namespace Base
 
 
         public WebSocketState ReadyState => webSocket.IsNull() ? WebSocketState.Closed : webSocket.ReadyState;
+
+        public bool IsAlive => !webSocket.IsNull() && webSocket.IsAlive;
 
         public string Url => uri.OriginalString;
 
@@ -43,6 +46,7 @@ namespace Base
             {
                 new Thread(ThreadDequeuSendMessages).Start(sendingQueue = new LockedQueue<Request>());
             }
+            new Thread(ThreadPing).Start(pinging = true);
         }
 
 
@@ -127,6 +131,22 @@ namespace Base
                 }
             }
             CustomTools.Console.DebugLog("Client::ThreadDequeuSendMessages() Thread done");
+        }
+
+        private void ThreadPing(object parameter)
+        {
+            while (pinging)
+            {
+                if (IsConnected)
+                {
+                    Thread.Sleep(2000);
+                    if (webSocket != null && !webSocket.IsAlive)
+                    {
+                        CustomTools.Console.DebugLog("Client::ThreadPing() Connection broken");
+                    }
+                }
+            }
+            CustomTools.Console.DebugLog("Client::ThreadPing() Thread done");
         }
         #endregion
 
@@ -239,6 +259,7 @@ namespace Base
                     sendingQueue.Clear();
                     sendingQueue = null;
                 }
+                pinging = false;
                 connectionOpenEvent.Reset();
                 connectionOpenEvent.Close();
                 if (!receivedQueue.IsNull())
