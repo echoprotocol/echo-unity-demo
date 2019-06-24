@@ -64,7 +64,7 @@ EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, res 
 ```
 
 ```c#
-EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, 0, res =>
+EchoApiManager.Instance.DeployContract(accountId, bytecode, 0, res =>
 {
     EchoApiManager.Instance.Database.GetContractResult((res.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
     {
