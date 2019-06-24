@@ -74,5 +74,3 @@ EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Cur
 ```
 
 The whole library is built on the mechanism of deferred call (promise). Before using Api it is recommended to study.
-
-The EchoLib/Example/Scenes directory contains the scene Calculator.unity with an example of the work of a contract of a primitive calculator contract. The EchoLib/Example/Contract directory contains the source code of the contract and its bytecode.
