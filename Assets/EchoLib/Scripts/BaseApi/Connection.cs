@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Authentication;
 using System.Threading;
 using Base.Eventing;
 using Base.Queues;
@@ -299,6 +300,7 @@ namespace Base
                 webSocket.OnClose += WebSocketClose;
                 webSocket.OnMessage += WebSocketMessageReceived;
                 webSocket.OnError += WebSocketError;
+                webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Default | SslProtocols.Ssl2 | SslProtocols.Tls11 | SslProtocols.Tls12;
                 webSocket.ConnectAsync();
             }
         }
