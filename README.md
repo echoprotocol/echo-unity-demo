@@ -53,7 +53,7 @@ To work with contracts, the `EchoApiManager.CallContract` and `EchoApiManager.De
 
 ```c#
 var bytecode = "7490d445"; // method getSize() at contract
-EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, 10000000, 0, res =>
+EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, res =>
 {
     EchoApiManager.Instance.Database.GetContractResult((res.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
     {
@@ -64,7 +64,7 @@ EchoApiManager.Instance.CallContract(contractId, accountId, bytecode, 0, 0, 1000
 ```
 
 ```c#
-EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Current.UserNameData.Value.Account.Id.Id, bytecodeInputField.text, 0, 10000000, 0, res =>
+EchoApiManager.Instance.DeployContract(accountId, bytecode, 0, res =>
 {
     EchoApiManager.Instance.Database.GetContractResult((res.Transaction.OperationResults.First().Value as SpaceTypeId).Id).Then(contractResult =>
     {
@@ -74,5 +74,3 @@ EchoApiManager.Instance.DeployContract(EchoApiManager.Instance.Authorization.Cur
 ```
 
 The whole library is built on the mechanism of deferred call (promise). Before using Api it is recommended to study.
-
-The EchoLib/Example/Scenes directory contains the scene Calculator.unity with an example of the work of a contract of a primitive calculator contract. The EchoLib/Example/Contract directory contains the source code of the contract and its bytecode.
