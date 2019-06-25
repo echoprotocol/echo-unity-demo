@@ -1,8 +1,9 @@
 EchoUnityLib - Echo API implementation for Unity
 
-*  using websocket-sharp
-*  using Newtonsoft.Json
-*  using Promise
+*  using [websocket-sharp](https://github.com/sta/websocket-sharp)
+*  using [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+*  using [Base58Check](https://github.com/adamcaudill/Base58Check)
+*  using [RSG.Promise](https://github.com/Real-Serious-Games/C-Sharp-Promise)
 
 
 1.   Connection to node
@@ -73,4 +74,4 @@ EchoApiManager.Instance.DeployContract(accountId, bytecode, 0, res =>
 });
 ```
 
-The whole library is built on the mechanism of deferred call (promise). Before using Api it is recommended to study.
+The whole library is built on the mechanism of deferred call [Promise](https://en.wikipedia.org/wiki/Futures_and_promises). Before using Api it is recommended to study.
