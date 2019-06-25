@@ -1,16 +1,14 @@
 using System;
-using System.Security.Cryptography;
 using Base.Config;
 using Base.Data.Json;
+using Base58Check;
 using BigI;
 using Buffers;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
 using ED25519REF10;
 using Newtonsoft.Json;
-using SimpleBase;
 using Tools.Assert;
-using Tools.Hash;
 using Tools.HexBinDec;
 
 
@@ -68,7 +66,7 @@ namespace Base.Keys.EDDSA
                 addressPrefix = ChainConfig.AddressPrefix;
             }
             var buffer = ToBuffer();
-            var result = addressPrefix + Base58.Encode(buffer);
+            var result = addressPrefix + Base58CheckEncoding.Encode(buffer);
             buffer.Clear();
             return result;
         }
@@ -87,7 +85,7 @@ namespace Base.Keys.EDDSA
                     string.Format("Expecting key to begin with {0}, instead got {1}", addressPrefix, prefix)
                 );
                 publicKey = publicKey.Substring(addressPrefix.Length);
-                var buffer = Base58.Decode(publicKey);
+                var buffer = Base58CheckEncoding.Decode(publicKey);
                 var result = FromBuffer(buffer);
                 buffer.Clear();
                 return result;

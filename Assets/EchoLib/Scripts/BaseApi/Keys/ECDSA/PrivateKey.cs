@@ -1,11 +1,11 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using Base58Check;
 using BigI;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
 using ECurve;
-using SimpleBase;
 using Tools.Assert;
 using Tools.Hash;
 using Tools.HexBinDec;
@@ -66,7 +66,7 @@ namespace Base.Keys.ECDSA
 
         public static IPrivateKey FromWif(string wif)
         {
-            var fullBuffer = Base58.Decode(wif);
+            var fullBuffer = Base58CheckEncoding.Decode(wif);
             Assert.Equal(0x80, fullBuffer.First(), string.Format("Expected version {0}, instead got {1}", 0x80, fullBuffer.First()));
             var buffer = fullBuffer.Slice(0, fullBuffer.Length - 4);
             var checksum = fullBuffer.Slice(fullBuffer.Length - 4);
@@ -102,7 +102,7 @@ namespace Base.Keys.ECDSA
             var fullBuffer = buffer.Concat(checksum);
             buffer.Clear();
             checksum.Clear();
-            var wif = Base58.Encode(fullBuffer);
+            var wif = Base58CheckEncoding.Encode(fullBuffer);
             fullBuffer.Clear();
             return wif;
         }

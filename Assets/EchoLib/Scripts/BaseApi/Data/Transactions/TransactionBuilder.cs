@@ -12,7 +12,7 @@ using Base.Keys;
 using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Array;
-using Promises;
+using RSG;
 using Tools.Hash;
 using Tools.HexBinDec;
 using Tools.Json;
@@ -272,7 +272,7 @@ namespace Base.Data.Transactions
                         SetFee(builder.operations[i]);
                     }
                 });
-            }).Then(results => Promise<TransactionBuilder>.Resolved(builder));
+            }).Then(() => Promise<TransactionBuilder>.Resolved(builder));
         }
 
         public IPromise<IPublicKey[]> GetPotentialSignatures()

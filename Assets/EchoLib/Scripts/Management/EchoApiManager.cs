@@ -14,7 +14,8 @@ using Base.Storage;
 using CustomTools.Extensions.Core;
 using CustomTools.Extensions.Core.Action;
 using CustomTools.Extensions.Core.Array;
-using Promises;
+using RSG;
+using Tools.HexBinDec;
 using WebSocketSharp;
 
 
@@ -160,7 +161,7 @@ public sealed class EchoApiManager : CustomTools.Singleton.SingletonMonoBehaviou
 
     private IPromise DatabaseApiInitialized(DatabaseApi api)
     {
-        return api.GetChainId().Then(SetChainId).Then(result => Repository.SubscribeToNotice(api).Then(() => Repository.SubscribeToDynamicGlobalProperties(api).Then(() =>
+        return api.GetChainId().Then(SetChainId).Then(() => Repository.SubscribeToNotice(api).Then(() => Repository.SubscribeToDynamicGlobalProperties(api).Then(() =>
         {
             OnDatabaseApiInitialized.SafeInvoke(api);
             return Promise.Resolved();
