@@ -105,7 +105,7 @@ namespace Base.Keys.ECDSA
                     string.Format("Expecting key to begin with {0}, instead got {1}", addressPrefix, prefix)
                 );
                 publicKey = publicKey.Substring(addressPrefix.Length);
-                var key = Base58CheckEncoding.Decode(publicKey);
+                var key = Base58CheckEncoding.DecodePlain(publicKey);
                 var checksum = key.Slice(key.Length - 4);
                 var buffer = key.Slice(0, key.Length - 4);
                 key.Clear();
@@ -143,7 +143,7 @@ namespace Base.Keys.ECDSA
             buffer = firstChecksum.Concat(checksum);
             firstChecksum.Clear();
             checksum.Clear();
-            var result = addressPrefix + Base58CheckEncoding.Encode(buffer);
+            var result = addressPrefix + Base58CheckEncoding.EncodePlain(buffer);
             buffer.Clear();
             return result;
         }
@@ -165,7 +165,7 @@ namespace Base.Keys.ECDSA
             buffer = hash.Concat(checksum);
             checksum.Clear();
             hash.Clear();
-            var result = Base58CheckEncoding.Encode(buffer);
+            var result = Base58CheckEncoding.EncodePlain(buffer);
             buffer.Clear();
             return result;
         }

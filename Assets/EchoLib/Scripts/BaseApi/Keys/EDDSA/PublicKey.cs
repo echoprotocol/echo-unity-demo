@@ -66,7 +66,7 @@ namespace Base.Keys.EDDSA
                 addressPrefix = ChainConfig.AddressPrefix;
             }
             var buffer = ToBuffer();
-            var result = addressPrefix + Base58CheckEncoding.Encode(buffer);
+            var result = addressPrefix + Base58CheckEncoding.EncodePlain(buffer);
             buffer.Clear();
             return result;
         }
@@ -85,7 +85,7 @@ namespace Base.Keys.EDDSA
                     string.Format("Expecting key to begin with {0}, instead got {1}", addressPrefix, prefix)
                 );
                 publicKey = publicKey.Substring(addressPrefix.Length);
-                var buffer = Base58CheckEncoding.Decode(publicKey);
+                var buffer = Base58CheckEncoding.DecodePlain(publicKey);
                 var result = FromBuffer(buffer);
                 buffer.Clear();
                 return result;

@@ -63,7 +63,7 @@ namespace Base.Keys.EDDSA
 
         public static IPrivateKey FromWif(string wif)
         {
-            var fullBuffer = Base58CheckEncoding.Decode(wif);
+            var fullBuffer = Base58CheckEncoding.DecodePlain(wif);
             Assert.Equal(0x80, fullBuffer.First(), string.Format("Expected version {0}, instead got {1}", 0x80, fullBuffer.First()));
             var buffer = fullBuffer.Slice(0, fullBuffer.Length - 4);
             var checksum = fullBuffer.Slice(fullBuffer.Length - 4);
@@ -99,7 +99,7 @@ namespace Base.Keys.EDDSA
             var fullBuffer = buffer.Concat(checksum);
             buffer.Clear();
             checksum.Clear();
-            var wif = Base58CheckEncoding.Encode(fullBuffer);
+            var wif = Base58CheckEncoding.EncodePlain(fullBuffer);
             fullBuffer.Clear();
             return wif;
         }
