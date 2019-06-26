@@ -1,7 +1,7 @@
 EchoUnityLib - Echo API implementation for Unity
 
 *  using [websocket-sharp](https://github.com/sta/websocket-sharp)
-*  using [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+*  using [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) (for iOS with support AOT [here](https://www.parentelement.com/assets/json_net_unity))
 *  using [Base58Check](https://github.com/adamcaudill/Base58Check)
 *  using [RSG.Promise](https://github.com/Real-Serious-Games/C-Sharp-Promise)
 
