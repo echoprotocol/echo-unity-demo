@@ -153,6 +153,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y $(OutDir)*.dll $(SolutionDir)..\..\Assets\EchoLib\Plugins\ed25519\Win\x86_64\</Command>
+      <Message>Copy DLLs to $(SolutionDir)..\..\Assets\EchoLib\Plugins\ed25519\Win\x86_64\</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="crypto_verify.h" />
