@@ -7,68 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5044934522958DCC00644C9B /* sha3_512.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934322958DCC00644C9B /* sha3_512.c */; };
+		5044934522958DCC00644C9B /* sha512.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934322958DCC00644C9B /* sha512.c */; };
 		5044934622958DCC00644C9B /* sha3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934422958DCC00644C9B /* sha3.c */; };
-		5044939122958DEA00644C9B /* base.py in Resources */ = {isa = PBXBuildFile; fileRef = 5044934922958DE800644C9B /* base.py */; };
-		5044939222958DEA00644C9B /* d2.py in Resources */ = {isa = PBXBuildFile; fileRef = 5044934B22958DE800644C9B /* d2.py */; };
-		5044939322958DEA00644C9B /* ge_tobytes.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934C22958DE800644C9B /* ge_tobytes.c */; };
-		5044939422958DEA00644C9B /* ge_p3_tobytes.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934D22958DE800644C9B /* ge_p3_tobytes.c */; };
-		5044939522958DEA00644C9B /* ge_p1p1_to_p3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934E22958DE800644C9B /* ge_p1p1_to_p3.c */; };
-		5044939622958DEA00644C9B /* fe_tobytes.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934F22958DE800644C9B /* fe_tobytes.c */; };
-		5044939722958DEA00644C9B /* fe_1.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044935022958DE800644C9B /* fe_1.c */; };
-		5044939822958DEA00644C9B /* sc_muladd.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044935122958DE800644C9B /* sc_muladd.c */; };
-		5044939922958DEA00644C9B /* fe_isnegative.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044935922958DE800644C9B /* fe_isnegative.c */; };
-		5044939A22958DEA00644C9B /* ge_double_scalarmult.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044935B22958DE800644C9B /* ge_double_scalarmult.c */; };
-		5044939B22958DEA00644C9B /* ge_msub.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044935C22958DE800644C9B /* ge_msub.c */; };
-		5044939C22958DEA00644C9B /* fe_add.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044935D22958DE800644C9B /* fe_add.c */; };
-		5044939D22958DEA00644C9B /* fe_sub.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044935E22958DE800644C9B /* fe_sub.c */; };
-		5044939E22958DEA00644C9B /* ge_p2_dbl.q in Resources */ = {isa = PBXBuildFile; fileRef = 5044936022958DE800644C9B /* ge_p2_dbl.q */; };
-		5044939F22958DEA00644C9B /* ge_p3_to_cached.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044936222958DE900644C9B /* ge_p3_to_cached.c */; };
-		504493A022958DEA00644C9B /* ge_frombytes.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044936522958DE900644C9B /* ge_frombytes.c */; };
-		504493A122958DEA00644C9B /* pow225521.q in Resources */ = {isa = PBXBuildFile; fileRef = 5044936722958DE900644C9B /* pow225521.q */; };
-		504493A222958DEA00644C9B /* fe_frombytes.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044936922958DE900644C9B /* fe_frombytes.c */; };
-		504493A322958DEA00644C9B /* d.py in Resources */ = {isa = PBXBuildFile; fileRef = 5044936A22958DE900644C9B /* d.py */; };
-		504493A422958DEA00644C9B /* fe_sq.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044936B22958DE900644C9B /* fe_sq.c */; };
-		504493A522958DEA00644C9B /* ge_scalarmult_base.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044936C22958DE900644C9B /* ge_scalarmult_base.c */; };
-		504493A622958DEA00644C9B /* __init__.py in Resources */ = {isa = PBXBuildFile; fileRef = 5044936D22958DE900644C9B /* __init__.py */; };
+		5044939322958DEA00644C9B /* ge.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044934C22958DE800644C9B /* ge.c */; };
+		504493A222958DEA00644C9B /* fe.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044936922958DE900644C9B /* fe.c */; };
 		504493A722958DEA00644C9B /* ed25519.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044936E22958DE900644C9B /* ed25519.c */; };
-		504493A822958DEA00644C9B /* pow22523.q in Resources */ = {isa = PBXBuildFile; fileRef = 5044936F22958DE900644C9B /* pow22523.q */; };
-		504493A922958DEA00644C9B /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5044937022958DE900644C9B /* CMakeLists.txt */; };
-		504493AA22958DEA00644C9B /* fe_copy.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937122958DE900644C9B /* fe_copy.c */; };
-		504493AB22958DEA00644C9B /* ge_p3_0.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937222958DE900644C9B /* ge_p3_0.c */; };
-		504493AC22958DEA00644C9B /* ge_sub.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937322958DE900644C9B /* ge_sub.c */; };
-		504493AD22958DEA00644C9B /* q2h.sh in Resources */ = {isa = PBXBuildFile; fileRef = 5044937422958DE900644C9B /* q2h.sh */; };
-		504493AE22958DEA00644C9B /* fe_pow22523.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937522958DE900644C9B /* fe_pow22523.c */; };
-		504493AF22958DEA00644C9B /* ge_p1p1_to_p2.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937722958DE900644C9B /* ge_p1p1_to_p2.c */; };
-		504493B022958DEA00644C9B /* ge_add.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937822958DE900644C9B /* ge_add.c */; };
-		504493B122958DEA00644C9B /* ge_p3_to_p2.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937922958DE900644C9B /* ge_p3_to_p2.c */; };
-		504493B222958DEA00644C9B /* sqrtm1.py in Resources */ = {isa = PBXBuildFile; fileRef = 5044937A22958DE900644C9B /* sqrtm1.py */; };
-		504493B322958DEA00644C9B /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 5044937B22958DE900644C9B /* Makefile */; };
-		504493B422958DEA00644C9B /* ge_p2_dbl.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937C22958DE900644C9B /* ge_p2_dbl.c */; };
-		504493B522958DEA00644C9B /* fe_mul.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937D22958DE900644C9B /* fe_mul.c */; };
-		504493B622958DEA00644C9B /* ge_madd.q in Resources */ = {isa = PBXBuildFile; fileRef = 5044937E22958DE900644C9B /* ge_madd.q */; };
-		504493B722958DEA00644C9B /* fe_invert.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044937F22958DE900644C9B /* fe_invert.c */; };
-		504493B822958DEA00644C9B /* ge_precomp_0.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938022958DE900644C9B /* ge_precomp_0.c */; };
-		504493B922958DEA00644C9B /* ge_sub.q in Resources */ = {isa = PBXBuildFile; fileRef = 5044938122958DE900644C9B /* ge_sub.q */; };
-		504493BA22958DEA00644C9B /* fe_0.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938422958DE900644C9B /* fe_0.c */; };
-		504493BB22958DEA00644C9B /* ge_p3_dbl.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938522958DEA00644C9B /* ge_p3_dbl.c */; };
-		504493BC22958DEA00644C9B /* ge_msub.q in Resources */ = {isa = PBXBuildFile; fileRef = 5044938722958DEA00644C9B /* ge_msub.q */; };
-		504493BD22958DEA00644C9B /* fe_neg.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938822958DEA00644C9B /* fe_neg.c */; };
-		504493BE22958DEA00644C9B /* fe_cmov.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938922958DEA00644C9B /* fe_cmov.c */; };
-		504493BF22958DEA00644C9B /* sc_reduce.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938A22958DEA00644C9B /* sc_reduce.c */; };
-		504493C022958DEA00644C9B /* ge_add.q in Resources */ = {isa = PBXBuildFile; fileRef = 5044938B22958DEA00644C9B /* ge_add.q */; };
-		504493C122958DEA00644C9B /* fe_sq2.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938C22958DEA00644C9B /* fe_sq2.c */; };
-		504493C222958DEA00644C9B /* ge_madd.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938D22958DEA00644C9B /* ge_madd.c */; };
-		504493C322958DEA00644C9B /* ge_p2_0.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938E22958DEA00644C9B /* ge_p2_0.c */; };
-		504493C422958DEA00644C9B /* base2.py in Resources */ = {isa = PBXBuildFile; fileRef = 5044938F22958DEA00644C9B /* base2.py */; };
-		504493C522958DEA00644C9B /* fe_isnonzero.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044939022958DEA00644C9B /* fe_isnonzero.c */; };
+		504493BF22958DEA00644C9B /* sc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5044938A22958DEA00644C9B /* sc.c */; };
 		504493C622958E3E00644C9B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5050D422228B017B00171238 /* Info.plist */; };
 		504493C82295951000644C9B /* ed25519.bundle in Copy Bundle into Unity project */ = {isa = PBXBuildFile; fileRef = 5050D41F228B017B00171238 /* ed25519.bundle */; };
 		50DAAAEA22944D8B00EF8883 /* random.c in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAAE222944D8B00EF8883 /* random.c */; };
 		50DAAAEC22944DB000EF8883 /* crypto_verify.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAAE122944D8B00EF8883 /* crypto_verify.h */; };
 		50DAAAEE22944DB400EF8883 /* ed25519.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAAE722944D8B00EF8883 /* ed25519.h */; };
 		50DAAAEF22944DB700EF8883 /* errcode.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAAE822944D8B00EF8883 /* errcode.h */; };
-		50DAAAF022944DB900EF8883 /* randombytes.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAADF22944D8B00EF8883 /* randombytes.h */; };
+		50DAAAF022944DB900EF8883 /* random.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAADF22944D8B00EF8883 /* random.h */; };
 		50DAAAF122944DBC00EF8883 /* sha_context.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAAE422944D8B00EF8883 /* sha_context.h */; };
 		50DAAAF222944DBE00EF8883 /* unused.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAAE022944D8B00EF8883 /* unused.h */; };
 		50DAAAF322944DC000EF8883 /* sha512.h in Sources */ = {isa = PBXBuildFile; fileRef = 50DAAAE622944D8B00EF8883 /* sha512.h */; };
@@ -90,80 +41,18 @@
 
 /* Begin PBXFileReference section */
 		5044934222958DCC00644C9B /* sha3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha3.h; sourceTree = "<group>"; };
-		5044934322958DCC00644C9B /* sha3_512.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha3_512.c; sourceTree = "<group>"; };
+		5044934322958DCC00644C9B /* sha512.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha512.c; sourceTree = "<group>"; };
 		5044934422958DCC00644C9B /* sha3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha3.c; sourceTree = "<group>"; };
-		5044934822958DE800644C9B /* ge_add.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ge_add.h; sourceTree = "<group>"; };
-		5044934922958DE800644C9B /* base.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = base.py; sourceTree = "<group>"; };
-		5044934A22958DE800644C9B /* ge_sub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ge_sub.h; sourceTree = "<group>"; };
-		5044934B22958DE800644C9B /* d2.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = d2.py; sourceTree = "<group>"; };
-		5044934C22958DE800644C9B /* ge_tobytes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_tobytes.c; sourceTree = "<group>"; };
-		5044934D22958DE800644C9B /* ge_p3_tobytes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p3_tobytes.c; sourceTree = "<group>"; };
-		5044934E22958DE800644C9B /* ge_p1p1_to_p3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p1p1_to_p3.c; sourceTree = "<group>"; };
-		5044934F22958DE800644C9B /* fe_tobytes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_tobytes.c; sourceTree = "<group>"; };
-		5044935022958DE800644C9B /* fe_1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_1.c; sourceTree = "<group>"; };
-		5044935122958DE800644C9B /* sc_muladd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sc_muladd.c; sourceTree = "<group>"; };
-		5044935222958DE800644C9B /* api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = api.h; sourceTree = "<group>"; };
-		5044935722958DE800644C9B /* base2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base2.h; sourceTree = "<group>"; };
-		5044935822958DE800644C9B /* d2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d2.h; sourceTree = "<group>"; };
-		5044935922958DE800644C9B /* fe_isnegative.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_isnegative.c; sourceTree = "<group>"; };
-		5044935A22958DE800644C9B /* d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d.h; sourceTree = "<group>"; };
-		5044935B22958DE800644C9B /* ge_double_scalarmult.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_double_scalarmult.c; sourceTree = "<group>"; };
-		5044935C22958DE800644C9B /* ge_msub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_msub.c; sourceTree = "<group>"; };
-		5044935D22958DE800644C9B /* fe_add.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_add.c; sourceTree = "<group>"; };
-		5044935E22958DE800644C9B /* fe_sub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_sub.c; sourceTree = "<group>"; };
-		5044935F22958DE800644C9B /* ge_p2_dbl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ge_p2_dbl.h; sourceTree = "<group>"; };
-		5044936022958DE800644C9B /* ge_p2_dbl.q */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ge_p2_dbl.q; sourceTree = "<group>"; };
-		5044936122958DE800644C9B /* ge_msub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ge_msub.h; sourceTree = "<group>"; };
-		5044936222958DE900644C9B /* ge_p3_to_cached.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p3_to_cached.c; sourceTree = "<group>"; };
+		5044934C22958DE800644C9B /* ge.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge.c; sourceTree = "<group>"; };
 		5044936322958DE900644C9B /* ge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ge.h; sourceTree = "<group>"; };
-		5044936422958DE900644C9B /* pow22523.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pow22523.h; sourceTree = "<group>"; };
-		5044936522958DE900644C9B /* ge_frombytes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_frombytes.c; sourceTree = "<group>"; };
 		5044936622958DE900644C9B /* sc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc.h; sourceTree = "<group>"; };
-		5044936722958DE900644C9B /* pow225521.q */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pow225521.q; sourceTree = "<group>"; };
-		5044936822958DE900644C9B /* base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base.h; sourceTree = "<group>"; };
-		5044936922958DE900644C9B /* fe_frombytes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_frombytes.c; sourceTree = "<group>"; };
-		5044936A22958DE900644C9B /* d.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = d.py; sourceTree = "<group>"; };
-		5044936B22958DE900644C9B /* fe_sq.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_sq.c; sourceTree = "<group>"; };
-		5044936C22958DE900644C9B /* ge_scalarmult_base.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_scalarmult_base.c; sourceTree = "<group>"; };
-		5044936D22958DE900644C9B /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		5044936922958DE900644C9B /* fe.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe.c; sourceTree = "<group>"; };
 		5044936E22958DE900644C9B /* ed25519.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ed25519.c; sourceTree = "<group>"; };
-		5044936F22958DE900644C9B /* pow22523.q */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pow22523.q; sourceTree = "<group>"; };
-		5044937022958DE900644C9B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		5044937122958DE900644C9B /* fe_copy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_copy.c; sourceTree = "<group>"; };
-		5044937222958DE900644C9B /* ge_p3_0.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p3_0.c; sourceTree = "<group>"; };
-		5044937322958DE900644C9B /* ge_sub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_sub.c; sourceTree = "<group>"; };
-		5044937422958DE900644C9B /* q2h.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = q2h.sh; sourceTree = "<group>"; };
-		5044937522958DE900644C9B /* fe_pow22523.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_pow22523.c; sourceTree = "<group>"; };
 		5044937622958DE900644C9B /* fe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fe.h; sourceTree = "<group>"; };
-		5044937722958DE900644C9B /* ge_p1p1_to_p2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p1p1_to_p2.c; sourceTree = "<group>"; };
-		5044937822958DE900644C9B /* ge_add.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_add.c; sourceTree = "<group>"; };
-		5044937922958DE900644C9B /* ge_p3_to_p2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p3_to_p2.c; sourceTree = "<group>"; };
-		5044937A22958DE900644C9B /* sqrtm1.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = sqrtm1.py; sourceTree = "<group>"; };
-		5044937B22958DE900644C9B /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		5044937C22958DE900644C9B /* ge_p2_dbl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p2_dbl.c; sourceTree = "<group>"; };
-		5044937D22958DE900644C9B /* fe_mul.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_mul.c; sourceTree = "<group>"; };
-		5044937E22958DE900644C9B /* ge_madd.q */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ge_madd.q; sourceTree = "<group>"; };
-		5044937F22958DE900644C9B /* fe_invert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_invert.c; sourceTree = "<group>"; };
-		5044938022958DE900644C9B /* ge_precomp_0.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_precomp_0.c; sourceTree = "<group>"; };
-		5044938122958DE900644C9B /* ge_sub.q */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ge_sub.q; sourceTree = "<group>"; };
-		5044938222958DE900644C9B /* pow225521.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pow225521.h; sourceTree = "<group>"; };
-		5044938322958DE900644C9B /* sqrtm1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqrtm1.h; sourceTree = "<group>"; };
-		5044938422958DE900644C9B /* fe_0.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_0.c; sourceTree = "<group>"; };
-		5044938522958DEA00644C9B /* ge_p3_dbl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p3_dbl.c; sourceTree = "<group>"; };
-		5044938622958DEA00644C9B /* ge_madd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ge_madd.h; sourceTree = "<group>"; };
-		5044938722958DEA00644C9B /* ge_msub.q */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ge_msub.q; sourceTree = "<group>"; };
-		5044938822958DEA00644C9B /* fe_neg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_neg.c; sourceTree = "<group>"; };
-		5044938922958DEA00644C9B /* fe_cmov.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_cmov.c; sourceTree = "<group>"; };
-		5044938A22958DEA00644C9B /* sc_reduce.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sc_reduce.c; sourceTree = "<group>"; };
-		5044938B22958DEA00644C9B /* ge_add.q */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ge_add.q; sourceTree = "<group>"; };
-		5044938C22958DEA00644C9B /* fe_sq2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_sq2.c; sourceTree = "<group>"; };
-		5044938D22958DEA00644C9B /* ge_madd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_madd.c; sourceTree = "<group>"; };
-		5044938E22958DEA00644C9B /* ge_p2_0.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge_p2_0.c; sourceTree = "<group>"; };
-		5044938F22958DEA00644C9B /* base2.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = base2.py; sourceTree = "<group>"; };
-		5044939022958DEA00644C9B /* fe_isnonzero.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe_isnonzero.c; sourceTree = "<group>"; };
+		5044938A22958DEA00644C9B /* sc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sc.c; sourceTree = "<group>"; };
 		5050D41F228B017B00171238 /* ed25519.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ed25519.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		5050D422228B017B00171238 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		50DAAADF22944D8B00EF8883 /* randombytes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = randombytes.h; sourceTree = "<group>"; };
+		50DAAADF22944D8B00EF8883 /* random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
 		50DAAAE022944D8B00EF8883 /* unused.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unused.h; sourceTree = "<group>"; };
 		50DAAAE122944D8B00EF8883 /* crypto_verify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypto_verify.h; sourceTree = "<group>"; };
 		50DAAAE222944D8B00EF8883 /* random.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = random.c; sourceTree = "<group>"; };
@@ -195,7 +84,9 @@
 		5044934122958DBC00644C9B /* hash */ = {
 			isa = PBXGroup;
 			children = (
-				5044934322958DCC00644C9B /* sha3_512.c */,
+				50DAAAE422944D8B00EF8883 /* sha_context.h */,
+				50DAAAE622944D8B00EF8883 /* sha512.h */,
+				5044934322958DCC00644C9B /* sha512.c */,
 				5044934422958DCC00644C9B /* sha3.c */,
 				5044934222958DCC00644C9B /* sha3.h */,
 			);
@@ -205,75 +96,13 @@
 		5044934722958DD700644C9B /* ref10 */ = {
 			isa = PBXGroup;
 			children = (
-				5044936D22958DE900644C9B /* __init__.py */,
-				5044935222958DE800644C9B /* api.h */,
-				5044936822958DE900644C9B /* base.h */,
-				5044934922958DE800644C9B /* base.py */,
-				5044935722958DE800644C9B /* base2.h */,
-				5044938F22958DEA00644C9B /* base2.py */,
-				5044937022958DE900644C9B /* CMakeLists.txt */,
-				5044935A22958DE800644C9B /* d.h */,
-				5044936A22958DE900644C9B /* d.py */,
-				5044935822958DE800644C9B /* d2.h */,
-				5044934B22958DE800644C9B /* d2.py */,
 				5044936E22958DE900644C9B /* ed25519.c */,
-				5044938422958DE900644C9B /* fe_0.c */,
-				5044935022958DE800644C9B /* fe_1.c */,
-				5044935D22958DE800644C9B /* fe_add.c */,
-				5044938922958DEA00644C9B /* fe_cmov.c */,
-				5044937122958DE900644C9B /* fe_copy.c */,
-				5044936922958DE900644C9B /* fe_frombytes.c */,
-				5044937F22958DE900644C9B /* fe_invert.c */,
-				5044935922958DE800644C9B /* fe_isnegative.c */,
-				5044939022958DEA00644C9B /* fe_isnonzero.c */,
-				5044937D22958DE900644C9B /* fe_mul.c */,
-				5044938822958DEA00644C9B /* fe_neg.c */,
-				5044937522958DE900644C9B /* fe_pow22523.c */,
-				5044936B22958DE900644C9B /* fe_sq.c */,
-				5044938C22958DEA00644C9B /* fe_sq2.c */,
-				5044935E22958DE800644C9B /* fe_sub.c */,
-				5044934F22958DE800644C9B /* fe_tobytes.c */,
 				5044937622958DE900644C9B /* fe.h */,
-				5044937822958DE900644C9B /* ge_add.c */,
-				5044934822958DE800644C9B /* ge_add.h */,
-				5044938B22958DEA00644C9B /* ge_add.q */,
-				5044935B22958DE800644C9B /* ge_double_scalarmult.c */,
-				5044936522958DE900644C9B /* ge_frombytes.c */,
-				5044938D22958DEA00644C9B /* ge_madd.c */,
-				5044938622958DEA00644C9B /* ge_madd.h */,
-				5044937E22958DE900644C9B /* ge_madd.q */,
-				5044935C22958DE800644C9B /* ge_msub.c */,
-				5044936122958DE800644C9B /* ge_msub.h */,
-				5044938722958DEA00644C9B /* ge_msub.q */,
-				5044937722958DE900644C9B /* ge_p1p1_to_p2.c */,
-				5044934E22958DE800644C9B /* ge_p1p1_to_p3.c */,
-				5044938E22958DEA00644C9B /* ge_p2_0.c */,
-				5044937C22958DE900644C9B /* ge_p2_dbl.c */,
-				5044935F22958DE800644C9B /* ge_p2_dbl.h */,
-				5044936022958DE800644C9B /* ge_p2_dbl.q */,
-				5044937222958DE900644C9B /* ge_p3_0.c */,
-				5044938522958DEA00644C9B /* ge_p3_dbl.c */,
-				5044936222958DE900644C9B /* ge_p3_to_cached.c */,
-				5044937922958DE900644C9B /* ge_p3_to_p2.c */,
-				5044934D22958DE800644C9B /* ge_p3_tobytes.c */,
-				5044938022958DE900644C9B /* ge_precomp_0.c */,
-				5044936C22958DE900644C9B /* ge_scalarmult_base.c */,
-				5044937322958DE900644C9B /* ge_sub.c */,
-				5044934A22958DE800644C9B /* ge_sub.h */,
-				5044938122958DE900644C9B /* ge_sub.q */,
-				5044934C22958DE800644C9B /* ge_tobytes.c */,
+				5044936922958DE900644C9B /* fe.c */,
 				5044936322958DE900644C9B /* ge.h */,
-				5044937B22958DE900644C9B /* Makefile */,
-				5044936422958DE900644C9B /* pow22523.h */,
-				5044936F22958DE900644C9B /* pow22523.q */,
-				5044938222958DE900644C9B /* pow225521.h */,
-				5044936722958DE900644C9B /* pow225521.q */,
-				5044937422958DE900644C9B /* q2h.sh */,
-				5044935122958DE800644C9B /* sc_muladd.c */,
-				5044938A22958DEA00644C9B /* sc_reduce.c */,
+				5044934C22958DE800644C9B /* ge.c */,
 				5044936622958DE900644C9B /* sc.h */,
-				5044938322958DE900644C9B /* sqrtm1.h */,
-				5044937A22958DE900644C9B /* sqrtm1.py */,
+				5044938A22958DEA00644C9B /* sc.c */,
 			);
 			path = ref10;
 			sourceTree = "<group>";
@@ -303,10 +132,8 @@
 				50DAAAE122944D8B00EF8883 /* crypto_verify.h */,
 				50DAAAE722944D8B00EF8883 /* ed25519.h */,
 				50DAAAE822944D8B00EF8883 /* errcode.h */,
+				50DAAADF22944D8B00EF8883 /* random.h */,
 				50DAAAE222944D8B00EF8883 /* random.c */,
-				50DAAADF22944D8B00EF8883 /* randombytes.h */,
-				50DAAAE422944D8B00EF8883 /* sha_context.h */,
-				50DAAAE622944D8B00EF8883 /* sha512.h */,
 				50DAAAE022944D8B00EF8883 /* unused.h */,
 			);
 			path = Sources;
@@ -370,21 +197,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				504493C622958E3E00644C9B /* Info.plist in Resources */,
-				504493AD22958DEA00644C9B /* q2h.sh in Resources */,
-				5044939222958DEA00644C9B /* d2.py in Resources */,
-				504493BC22958DEA00644C9B /* ge_msub.q in Resources */,
-				504493C022958DEA00644C9B /* ge_add.q in Resources */,
-				504493B222958DEA00644C9B /* sqrtm1.py in Resources */,
-				504493A122958DEA00644C9B /* pow225521.q in Resources */,
-				504493B922958DEA00644C9B /* ge_sub.q in Resources */,
-				5044939E22958DEA00644C9B /* ge_p2_dbl.q in Resources */,
-				504493B622958DEA00644C9B /* ge_madd.q in Resources */,
-				504493A322958DEA00644C9B /* d.py in Resources */,
-				504493A922958DEA00644C9B /* CMakeLists.txt in Resources */,
-				504493C422958DEA00644C9B /* base2.py in Resources */,
-				504493A822958DEA00644C9B /* pow22523.q in Resources */,
-				504493A622958DEA00644C9B /* __init__.py in Resources */,
-				5044939122958DEA00644C9B /* base.py in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,53 +208,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				50DAAAF322944DC000EF8883 /* sha512.h in Sources */,
-				5044934522958DCC00644C9B /* sha3_512.c in Sources */,
-				5044939722958DEA00644C9B /* fe_1.c in Sources */,
+				5044934522958DCC00644C9B /* sha512.c in Sources */,
 				50DAAAF222944DBE00EF8883 /* unused.h in Sources */,
-				5044939822958DEA00644C9B /* sc_muladd.c in Sources */,
-				5044939922958DEA00644C9B /* fe_isnegative.c in Sources */,
 				50DAAAF122944DBC00EF8883 /* sha_context.h in Sources */,
-				5044939622958DEA00644C9B /* fe_tobytes.c in Sources */,
-				504493C522958DEA00644C9B /* fe_isnonzero.c in Sources */,
-				5044939B22958DEA00644C9B /* ge_msub.c in Sources */,
-				504493A222958DEA00644C9B /* fe_frombytes.c in Sources */,
-				5044939F22958DEA00644C9B /* ge_p3_to_cached.c in Sources */,
-				504493B522958DEA00644C9B /* fe_mul.c in Sources */,
-				504493BF22958DEA00644C9B /* sc_reduce.c in Sources */,
-				50DAAAF022944DB900EF8883 /* randombytes.h in Sources */,
-				5044939522958DEA00644C9B /* ge_p1p1_to_p3.c in Sources */,
-				504493AB22958DEA00644C9B /* ge_p3_0.c in Sources */,
-				504493B422958DEA00644C9B /* ge_p2_dbl.c in Sources */,
-				504493B122958DEA00644C9B /* ge_p3_to_p2.c in Sources */,
+				504493A222958DEA00644C9B /* fe.c in Sources */,
+				504493BF22958DEA00644C9B /* sc.c in Sources */,
+				50DAAAF022944DB900EF8883 /* random.h in Sources */,
 				50DAAAEF22944DB700EF8883 /* errcode.h in Sources */,
-				504493A022958DEA00644C9B /* ge_frombytes.c in Sources */,
-				504493AA22958DEA00644C9B /* fe_copy.c in Sources */,
-				504493B322958DEA00644C9B /* Makefile in Sources */,
-				504493C322958DEA00644C9B /* ge_p2_0.c in Sources */,
-				504493B722958DEA00644C9B /* fe_invert.c in Sources */,
-				5044939322958DEA00644C9B /* ge_tobytes.c in Sources */,
-				504493A522958DEA00644C9B /* ge_scalarmult_base.c in Sources */,
+				5044939322958DEA00644C9B /* ge.c in Sources */,
 				50DAAAEE22944DB400EF8883 /* ed25519.h in Sources */,
-				504493AC22958DEA00644C9B /* ge_sub.c in Sources */,
-				5044939C22958DEA00644C9B /* fe_add.c in Sources */,
 				5044934622958DCC00644C9B /* sha3.c in Sources */,
-				5044939422958DEA00644C9B /* ge_p3_tobytes.c in Sources */,
-				504493AF22958DEA00644C9B /* ge_p1p1_to_p2.c in Sources */,
-				504493C122958DEA00644C9B /* fe_sq2.c in Sources */,
-				504493C222958DEA00644C9B /* ge_madd.c in Sources */,
 				504493A722958DEA00644C9B /* ed25519.c in Sources */,
-				504493BB22958DEA00644C9B /* ge_p3_dbl.c in Sources */,
-				504493A422958DEA00644C9B /* fe_sq.c in Sources */,
-				5044939D22958DEA00644C9B /* fe_sub.c in Sources */,
-				5044939A22958DEA00644C9B /* ge_double_scalarmult.c in Sources */,
-				504493AE22958DEA00644C9B /* fe_pow22523.c in Sources */,
-				504493BD22958DEA00644C9B /* fe_neg.c in Sources */,
-				504493B022958DEA00644C9B /* ge_add.c in Sources */,
 				50DAAAEC22944DB000EF8883 /* crypto_verify.h in Sources */,
 				50DAAAEA22944D8B00EF8883 /* random.c in Sources */,
-				504493BE22958DEA00644C9B /* fe_cmov.c in Sources */,
-				504493BA22958DEA00644C9B /* fe_0.c in Sources */,
-				504493B822958DEA00644C9B /* ge_precomp_0.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
