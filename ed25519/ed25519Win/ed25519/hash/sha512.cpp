@@ -1,4 +1,5 @@
-#include "errcode.h"
+#include "../stdafx.h"
+#include "../errcode.h"
 #include "sha512.h"
 #include "sha3.h"
 

@@ -1,3 +1,4 @@
+#include "../stdafx.h"
 #include "ge.h"
 
 void ge_tobytes(unsigned char *s,const ge_p2 *h)

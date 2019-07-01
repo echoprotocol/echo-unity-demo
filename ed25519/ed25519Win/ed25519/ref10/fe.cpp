@@ -1,5 +1,6 @@
+#include "../stdafx.h"
 #include "fe.h"
-#include "crypto_verify.h"
+#include "../crypto_verify.h"
 
 static uint64_t load_3(const unsigned char *in)
 {

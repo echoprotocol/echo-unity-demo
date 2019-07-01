@@ -140,7 +140,7 @@ void sha3_Update(void *priv, void const *bufIn, size_t len)
     unsigned tail;
     size_t i;
     
-    const uint8_t *buf = bufIn;
+    const uint8_t *buf = (uint8_t*)bufIn;
     
     SHA3_TRACE_BUF("called to update with:", buf, len);
     

@@ -1,10 +1,6 @@
 #ifndef PROJECT_SHA512_H_
 #define PROJECT_SHA512_H_
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-    
 #include "sha_context.h"
     
 #define SHA_512_SIZE 64  // bytes
@@ -47,9 +43,5 @@ extern "C" {
      */
     extern int sha512(unsigned char *out, const unsigned char *message,
                       unsigned long long message_len);
-    
-#if defined(__cplusplus)
-}
-#endif
 
 #endif /* PROJECT_SHA512_H_ */

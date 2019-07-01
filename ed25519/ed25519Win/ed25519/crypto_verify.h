@@ -1,10 +1,6 @@
 #ifndef VERIFY_GUARD_H
 #define VERIFY_GUARD_H
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-    
 #define VERIFY_F(i) differentbits |= x[i] ^ y[i];
     
     static inline int crypto_verify_32(const unsigned char *x,
@@ -48,9 +44,5 @@ extern "C" {
     }
     
 #undef VERIFY_F
-    
-#if defined(__cplusplus)
-}
-#endif
 
 #endif

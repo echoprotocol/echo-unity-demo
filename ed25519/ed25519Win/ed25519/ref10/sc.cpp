@@ -1,5 +1,6 @@
+#include "../stdafx.h"
 #include "sc.h"
-#include "unused.h"
+#include "../unused.h"
 #include <stdint.h>
 
 static uint64_t load_3(const unsigned char *in)
