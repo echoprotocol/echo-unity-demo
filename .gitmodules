@@ -1,0 +1,3 @@
+[submodule "Assets/EchoLib"]
+	path = Assets/EchoLib
+	url = git@gitlab.pixelplex.by:645.echo/unity-lib-src.git
