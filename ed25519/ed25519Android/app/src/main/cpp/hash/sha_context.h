@@ -1,8 +1,0 @@
-//
-// Created by Max on 6/27/19.
-//
-
-#ifndef ED25519ANDROID_SHA_CONTEXT_H
-#define ED25519ANDROID_SHA_CONTEXT_H
-
-#endif //ED25519ANDROID_SHA_CONTEXT_H
