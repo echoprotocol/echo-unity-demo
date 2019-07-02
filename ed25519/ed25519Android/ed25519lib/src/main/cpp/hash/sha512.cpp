@@ -17,7 +17,7 @@ int sha512_update(sha_context *ctx, const unsigned char *in, unsigned long long 
 }
 
 int sha512_final(sha_context *ctx, unsigned char *out) {
-    //sha3_Finalize((sha3_context *) ctx, out);
+    sha3_Finalize((sha3_context *) ctx, out);
     return ED25519_SUCCESS;
 }
 

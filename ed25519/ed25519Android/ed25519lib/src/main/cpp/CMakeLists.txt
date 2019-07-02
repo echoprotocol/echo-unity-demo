@@ -20,7 +20,6 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-#        ed25519-lib.cpp
         ed25519.cpp
         random.cpp
         hash/sha512.cpp

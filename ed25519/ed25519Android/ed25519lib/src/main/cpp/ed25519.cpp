@@ -2,8 +2,8 @@
 // Created by Max on 6/27/19.
 //
 
-#include "ed25519.h"
 #include "crypto_verify.h"
+#include "ed25519.h"
 #include <string.h>
 #include <stdio.h>
 #include "ge.h"
