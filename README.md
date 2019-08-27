@@ -1,9 +1,7 @@
-EchoUnityLib - Echo API implementation for Unity
+# EchoUnityDemo (echo-unity-demo)
 
-*  using [websocket-sharp](https://github.com/sta/websocket-sharp)
-*  using [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) (for iOS with support AOT [here](https://www.parentelement.com/assets/json_net_unity))
-*  using [Base58Check](https://github.com/adamcaudill/Base58Check)
-*  using [RSG.Promise](https://github.com/Real-Serious-Games/C-Sharp-Promise)
+Example unity project, how using [echo-unity-lib](https://github.com/echoprotocol/echo-unity-lib) at Unity.
+
 
 
 1.   Connection to node
